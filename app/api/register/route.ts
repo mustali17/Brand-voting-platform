@@ -1,28 +1,36 @@
 import User from "@/models/User";
 import connect from "@/utils/db";
 import bcrypt from "bcryptjs";
-import { NextResponse } from "next/server";
+import { NextResponse,NextRequest } from "next/server";
+import { RegisterUserSchema } from "@/lib/schemas";
 
-export const POST = async (request: any) => {
-  const { email, password } = await request.json();
+export const POST = async (request: NextRequest) => {
+  const body = await request.json();
+  const parsed = RegisterUserSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  }
 
   await connect();
+  const { name, email, password } = parsed.data;
 
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    return new NextResponse("Email is already in use", { status: 400 });
+    return new NextResponse("User already exists", { status: 409 });
   }
 
   const hashedPassword = await bcrypt.hash(password, 5);
   const newUser = new User({
+    name,
     email,
     password: hashedPassword,
   });
 
   try {
     await newUser.save();
-    return new NextResponse("user is registered", { status: 200 });
+    return NextResponse.json({ success: true, userId: newUser._id });
   } catch (err: any) {
     return new NextResponse(err, {
       status: 500,
