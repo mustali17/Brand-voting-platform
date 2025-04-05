@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Home, Search, Compass, Film, MessageCircle, Heart, PlusSquare, Hash, MoreHorizontal } from "lucide-react"
+import { Home, Search, Compass, Film, MessageCircle, Heart, PlusSquare, Hash, MoreHorizontal, ThumbsUp, ThumbsDown } from "lucide-react"
 
 export default function HomePage() {
   return (
@@ -123,55 +123,11 @@ export default function HomePage() {
               />
              </div>
               {/* reaction */}
-              <div className="flex items-center px-4 py-2 border-t border-gray-200 bg-gray-50">
-                <button className="flex items-center mr-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-5 h-5 mr-1"
-                  >
-                    <path d="M12 19V5M5 12l7-7 7 7" />
-                  </svg>
-                  <span className="font-medium">754</span>
-                </button>
-                <button className="flex items-center mr-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-5 h-5 mr-1"
-                  >
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                  <span className="font-medium">194</span>
-                </button>
-                <button className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-5 h-5 mr-1"
-                  >
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                    <polyline points="16 6 12 2 8 6" />
-                    <line x1="12" y1="2" x2="12" y2="15" />
-                  </svg>
-                  <span className="font-medium">Share</span>
-                </button>
-              </div>
+              <div className="flex justify-center mt-2  items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700">
+      <ThumbsUp className="w-4 h-4 cursor-pointer hover:text-blue-500" />
+      <span className="text-sm font-medium">754</span>
+      <ThumbsDown className="w-4 h-4 cursor-pointer hover:text-red-500" />
+    </div>
             </div>
           </div>
         </div>
