@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const BrandSchema = new Schema({
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     logoUrl: { type: String, required: true },
     website: { type: String, required: true },
     description: { type: String },

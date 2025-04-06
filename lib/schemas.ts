@@ -16,7 +16,6 @@ export const RegisterBrandSchema = z.object({
   logoUrl: z.string().url(),
   website: z.string().url(),
   description: z.string(),
-  ownerId: z.string(),
 });
 
 export const VerifyBrandSchema = z.object({

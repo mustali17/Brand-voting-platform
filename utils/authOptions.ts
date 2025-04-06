@@ -66,7 +66,13 @@ export const authOptions: AuthOptions = {
             });
 
             await newUser.save();
+            user.id = newUser._id.toString();
+            user.role = newUser.role.toString();
+          }else {
+            user.id = existingUser._id.toString();
+            user.role = existingUser.role.toString();
           }
+          
           return true;
         } catch (err) {
           console.log("Error saving user", err);
@@ -78,12 +84,16 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role as string;
+        token.id = user.id as string;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token, user }) {
       if (token?.role) {
         session.user.role = token.role as string;
+      }
+      if (token?.id) {
+        session.user.id = token.id as string;
       }
       return session;
     }

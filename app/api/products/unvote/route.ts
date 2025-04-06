@@ -5,7 +5,7 @@ import Vote from "@/models/Vote";
 import connect from "@/utils/db";
 import { authOptions } from "@/utils/authOptions";
 /**
- * POST /api/products/vote
+ * POST /api/products/unvote
  * Body: { productId: string }
  * Auth required
  */
@@ -20,32 +20,19 @@ export async function POST(req: NextRequest) {
     const { productId } = await req.json();
     await connect();
 
-    const product = await Product.findById(productId);
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    const existingVote = await Vote.findOne({
+    const vote = await Vote.findOneAndDelete({
       userId: session.user.id,
-      productId: productId
+      productId
     });
 
-    if (existingVote) {
-      return NextResponse.json({ error: "Already voted" }, { status: 400 });
+    if (!vote) {
+      return NextResponse.json({ error: "Vote not found" }, { status: 404 });
     }
 
-    await Vote.create({
-      userId: session.user.id,
-      productId,
-      createdAt: new Date()
-    });
+    await Product.findByIdAndUpdate(productId, { $inc: { votes: -1 } });
 
-    product.votes += 1;
-    await product.save();
-
-    return NextResponse.json({ success: true, votes: product.votes });
+    return NextResponse.json({ success: true, message: "Vote removed" });
   } catch (error) {
-    console.log("🚀 ~ POST ~ error:", error)
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

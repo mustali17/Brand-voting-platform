@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connect from "@/utils/db";
 import Product from "@/models/Product";
-import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 
@@ -18,6 +17,10 @@ import { authOptions } from "@/utils/authOptions";
 
 export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
     const { searchParams } = new URL(req.url);
     const brandId = searchParams.get("brandId");
     const category = searchParams.get("category");
@@ -31,27 +34,25 @@ export async function GET(req: NextRequest) {
     try {
       await connect();
   
-      const filter: any = {
-        name: { $regex: search, $options: "i" }
-      };
-      if (brandId) filter.brand = brandId;
+      const filter: any = {};
+
+      if (search) {
+        filter.$or = [
+          { name: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+          { subcategory: { $regex: search, $options: "i" } }
+        ];
+      }
+      if (brandId) filter.brandId = brandId;
       if (category) filter.category = category;
       if (subcategory) filter.subcategory = subcategory;
   
-      if (session) {
-        const user = await User.findById(session.user.id);
-        if (user) {
-          filter.$or = [
-            { brand: { $in: user.following } },
-            { category: { $in: user.interests || [] } }
-          ];
-        }
-      }
   
-      const products = await Product.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
+    const products = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
   
       const total = await Product.countDocuments(filter);
   

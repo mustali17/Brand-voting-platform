@@ -98,6 +98,7 @@ export async function DELETE(req: NextRequest) {
   
       return NextResponse.json({ success: true, followedBrands: user.following });
     } catch (error) {
+      console.log("🚀 ~ GET ~ error:", error)
       return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
   }
