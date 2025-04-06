@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
+    name: { type: String, required: true },
     email: {
       type: String,
       unique: true,
@@ -13,6 +14,8 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
+    following: [{ type: Schema.Types.ObjectId, ref: "Brand" }],
   },
   { timestamps: true }
 );
