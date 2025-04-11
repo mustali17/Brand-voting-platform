@@ -20,16 +20,16 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession();
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={inter.className}>
-        <SessionProvider session={session}>
-          <div className="mx-auto max-w-5xl text-2xl gap-2 mb-10">
-            <Navbar />
-            <Providers>
-            {children}
-            </Providers>
-          </div>
-        </SessionProvider>
+        <Providers>
+          <SessionProvider session={session}>
+            <div className='mx-auto max-w-screen text-2xl gap-2 mb-10'>
+              <Navbar />
+              <Providers>{children}</Providers>
+            </div>
+          </SessionProvider>
+        </Providers>
       </body>
     </html>
   );
