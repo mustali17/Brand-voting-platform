@@ -51,6 +51,16 @@ export const userApi = createApi({
       }),
       invalidatesTags: (result, error, id) => [{ type: "User", id }],
     }),
+
+    // Send Otp
+    sendOtp: builder.mutation<{ email: string }, Partial<UserDto>>({
+      query: (newUser) => ({
+        url: USER,
+        method: "POST",
+        body: newUser,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 

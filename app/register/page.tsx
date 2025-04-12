@@ -1,19 +1,43 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import toast from "react-hot-toast";
-import { Input } from "@/components/ui/input";
-import InputLabel from "@/components/ui/input-label";
+import FormComponent from "@/components/ui/FormComponent";
 import { useCreateUserMutation } from "@/lib/services/user.service";
 import { InputFormType } from "@/utils/models/common.model";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 const formList: InputFormType[] = [
   {
-    name: "fullName",
+    name: "name",
     key: "name",
+    label: "Full Name",
+    type: "text",
+  },
+  {
+    name: "email",
+    key: "email",
+    label: "Email",
+    type: "email",
+  },
+  {
+    name: "password",
+    key: "password",
+    label: "Password",
+    type: "password",
+  },
+  {
+    name: "confirmPassword",
+    key: "confirmPassword",
+    label: "Confirm Password",
+    type: "password",
+  },
+
+  {
+    name: "agree",
+    key: "agree",
+    label: "Accept our terms and privacy policy",
+    type: "checkbox",
   },
 ];
 
@@ -25,10 +49,14 @@ const RegisterPage = () => {
     postUserData,
     { isLoading: userSubmittingLoading, isError: userSubmitError },
   ] = useCreateUserMutation();
+  const {
+    control,
+    handleSubmit: formHandleSubmit,
+    formState: { errors },
+  } = useForm();
   //#endregion
 
   //#region Internal Hooks
-  const [error, setError] = useState("");
   useEffect(() => {
     if (sessionStatus === "authenticated") {
       router.replace("/dashboard");
@@ -37,65 +65,16 @@ const RegisterPage = () => {
   //#endregion
 
   //#region Internal Function
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    return emailRegex.test(email);
-  };
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const email = e.target[0].value;
-    const password = e.target[1].value;
-    const confirmPassword = e.target[2].value;
-
-    if (!isValidEmail(email)) {
-      setError("Email is invalid");
-      toast.error("Email is invalid");
-      return;
-    }
-
-    if (!password || password.length < 8) {
-      setError("Password is invalid");
-      toast.error("Password is invalid");
-      return;
-    }
-
-    if (confirmPassword !== password) {
-      setError("Passwords are not equal");
-      toast.error("Passwords are not equal");
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-      if (res.status === 400) {
-        toast.error("This email is already registered");
-        setError("The email already in use");
-      }
-      if (res.status === 200) {
-        setError("");
-        toast.success("Registration successful");
-        router.push("/login");
-      }
-    } catch (error) {
-      toast.error("Error, try again");
-      setError("Error, try again");
-      console.log(error);
-    }
+  const onSubmit = async (dto: any) => {
+    console.log("dto", dto);
   };
   //#endregion
 
+  //#region UI Component
   if (sessionStatus === "loading") {
     return <h1>Loading...</h1>;
   }
+  //#endregion
   return (
     sessionStatus !== "authenticated" && (
       <div className='flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8'>
@@ -107,7 +86,7 @@ const RegisterPage = () => {
 
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]'>
           <div className='bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12'>
-            <form className='space-y-6' onSubmit={handleSubmit}>
+            {/* <form className='space-y-6' onSubmit={handleSubmit}>
               <div>
                 <InputLabel htmlFor='name' label='Full Name' />
                 <Input type='text' id='name' name='name' />
@@ -197,7 +176,16 @@ const RegisterPage = () => {
                   {error && error}
                 </p>
               </div>
-            </form>
+            </form> */}
+
+            <FormComponent
+              formList={formList}
+              control={control}
+              errors={errors}
+              submitButtonText='Sign up'
+              handleSubmit={formHandleSubmit}
+              submit={onSubmit}
+            />
           </div>
         </div>
       </div>

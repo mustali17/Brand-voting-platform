@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import SessionProvider from "@/utils/SessionProvider";
 import Navbar from "@/components/Navbar";
 import Providers from "@/Providers";
+import { StoreProviders } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,14 +23,14 @@ export default async function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <Providers>
+        <StoreProviders>
           <SessionProvider session={session}>
             <div className='mx-auto max-w-screen text-2xl gap-2 mb-10'>
               <Navbar />
               <Providers>{children}</Providers>
             </div>
           </SessionProvider>
-        </Providers>
+        </StoreProviders>
       </body>
     </html>
   );
