@@ -4,6 +4,7 @@ export const RegisterUserSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
+  provider: z.enum(["credentials", "google"]).optional(),
 });
 
 export const UpdateUserSchema = z.object({

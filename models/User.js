@@ -17,8 +17,7 @@ const userSchema = new Schema(
     role: { type: String, enum: ["user", "admin"], default: "user" },
     following: [{ type: Schema.Types.ObjectId, ref: "Brand" }],
     emailVerified: { type: Boolean, default: false },
-    otp: { type: String },
-    otpExpires: { type: Date },
+    provider: { type: String, default: "credentials" }, // "google", "credentials"
   },
   { timestamps: true }
 );
