@@ -1,9 +1,11 @@
 import User from "@/models/User";
 import connect from "@/utils/db";
 import bcrypt from "bcryptjs";
-import { NextResponse,NextRequest } from "next/server";
-import { RegisterUserSchema } from "@/lib/schemas";
+import { NextResponse, NextRequest } from "next/server";
+import { RegisterUserSchema, UpdateUserSchema } from "@/lib/schemas";
+import mongoose from "mongoose";
 
+// Create a new user
 export const POST = async (request: NextRequest) => {
   const body = await request.json();
   const parsed = RegisterUserSchema.safeParse(body);
@@ -35,5 +37,17 @@ export const POST = async (request: NextRequest) => {
     return new NextResponse(err, {
       status: 500,
     });
+  }
+};
+
+// Get all users
+export const GET = async (request: NextRequest) => {
+  try {
+    await connect();
+    
+    const users = await User.find().select("-password");
+    return NextResponse.json(users);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 };
