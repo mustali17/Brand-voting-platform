@@ -62,7 +62,8 @@ export const authOptions: AuthOptions = {
           if (!existingUser) {
             const newUser = new User({
               email: user.email,
-              name: user.name || user.email?.split('@')[0] || "User"
+              name: user.name || user.email?.split('@')[0] || "User",
+              provider: account.provider,
             });
 
             await newUser.save();
