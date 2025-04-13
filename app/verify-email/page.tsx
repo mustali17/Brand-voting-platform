@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Card, CardContent } from "@/components/ui/card";
 import { useVerifyOtpMutation } from "@/lib/services/user.service";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function MobileVerification() {
   //#region External Hook

@@ -39,7 +39,7 @@ const FormComponent = <T extends FieldValues>({
   const validaton = useValidation();
   return (
     <div className='grid grid-cols-1'>
-      {formList.map((item, index) => (
+      {formList.map((item) => (
         <div
           key={item.key}
           className={`p-4 py-2 rounded ${

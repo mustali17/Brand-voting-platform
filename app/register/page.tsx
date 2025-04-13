@@ -1,16 +1,12 @@
 "use client";
 import FormComponent from "@/components/ui/FormComponent";
-import {
-  useCreateUserMutation,
-  useSendOtpMutation,
-} from "@/lib/services/user.service";
+import { useSendOtpMutation } from "@/lib/services/user.service";
 import { InputFormType } from "@/utils/models/common.model";
-import { clear } from "console";
+import bcrypt from "bcryptjs";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import bcrypt from "bcryptjs";
 
 const formList: InputFormType[] = [
   {
@@ -62,10 +58,6 @@ const RegisterPage = () => {
   //#region External Hooks
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
-  const [
-    postUserData,
-    { isLoading: userSubmittingLoading, isError: userSubmitError },
-  ] = useCreateUserMutation();
   const [sendOtp, { isLoading: sendOtpLoading, isError: sendOtpError }] =
     useSendOtpMutation();
   const {
@@ -88,6 +80,7 @@ const RegisterPage = () => {
   //#endregion
 
   //#region Internal Hooks
+  const [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     if (sessionStatus === "authenticated") {
       router.replace("/dashboard");
@@ -128,9 +121,12 @@ const RegisterPage = () => {
       delete dto.confirmPassword;
       delete dto.agree;
       const data = await sendOtp({ email: dto.email }).unwrap();
-      if (data) {
+      if (data.success) {
         localStorage.setItem("signUpData", JSON.stringify(dto));
         router.push("/verify-email");
+      }
+      if (data.error) {
+        setErrorMessage(data.error);
       }
     }
   };
@@ -152,6 +148,10 @@ const RegisterPage = () => {
 
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]'>
           <div className='bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12'>
+            {errorMessage ? (
+              <p className='text-red-500 text-sm'>{errorMessage}</p>
+            ) : null}
+
             <FormComponent<SignUpFormType>
               formList={formList}
               control={control}
@@ -159,7 +159,7 @@ const RegisterPage = () => {
               submitButtonText='Sign up'
               handleSubmit={formHandleSubmit}
               submit={onSubmit}
-              isSubmitting={userSubmittingLoading}
+              isSubmitting={sendOtpLoading}
             />
           </div>
         </div>

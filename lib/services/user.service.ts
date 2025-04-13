@@ -75,6 +75,7 @@ export const userApi = createApi({
       {
         success: boolean;
         message: string;
+        error?: string;
       },
       { email: string }
     >({
