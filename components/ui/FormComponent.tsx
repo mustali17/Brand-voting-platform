@@ -3,7 +3,9 @@ import { ErrorMessage } from "@hookform/error-message";
 import {
   Control,
   Controller,
-  FieldError,
+  FieldErrors,
+  FieldValues,
+  Path,
   UseFormHandleSubmit,
 } from "react-hook-form";
 import { Button } from "./button";
@@ -11,28 +13,37 @@ import { Input } from "./input";
 import CustomSelect from "./react-select";
 import InputLabel from "./input-label";
 import { Checkbox } from "./checkbox";
+import { useValidation } from "@/lib/hook/useValidation";
 
-interface FormProps {
+interface FormProps<T extends FieldValues> {
   formList: InputFormType[];
   submitButtonText: string;
-  control: Control;
-  errors: FieldError | any;
-  handleSubmit: UseFormHandleSubmit<any>;
-  submit: (data: any) => void;
+  control: Control<T>;
+  errors: FieldErrors<T>;
+  handleSubmit: UseFormHandleSubmit<T>;
+  submit: (data: T) => void;
+  submitBtnDisabled?: boolean;
 }
 
-const FormComponent = ({
+const FormComponent = <T extends FieldValues>({
   formList,
   submitButtonText,
   control,
   errors,
   handleSubmit,
   submit,
-}: FormProps) => {
+  submitBtnDisabled,
+}: FormProps<T>) => {
+  const validaton = useValidation();
   return (
     <div className='grid grid-cols-1'>
       {formList.map((item, index) => (
-        <div key={item.key} className='p-4 py-2 rounded'>
+        <div
+          key={item.key}
+          className={`p-4 py-2 rounded ${
+            item.type === "checkbox" ? "flex items-center space-x-2" : ""
+          }`}
+        >
           {item.label && item.type !== "checkbox" && (
             <InputLabel
               label={item.label}
@@ -40,14 +51,15 @@ const FormComponent = ({
             />
           )}
           <Controller
-            name={item.name || ""}
+            name={item.name as Path<T>}
             control={control}
-            defaultValue={""}
+            defaultValue={undefined}
+            rules={validaton[item.validation as keyof typeof validaton]}
             render={({ field }) => {
               return item.type === "select" ? (
                 <CustomSelect {...field} options={[]} />
               ) : item.type === "checkbox" ? (
-                <Checkbox {...field} />
+                <Checkbox {...field} onCheckedChange={field.onChange} />
               ) : (
                 <Input
                   {...field}
@@ -65,8 +77,10 @@ const FormComponent = ({
           )}
           <ErrorMessage
             errors={errors}
-            name={item.name || ""}
-            render={({ message }) => <p>{message}</p>}
+            name={item.name as keyof T as any}
+            render={({ message }) => (
+              <p className='text-red-500 text-sm'>{message}</p>
+            )}
           />
         </div>
       ))}
@@ -74,6 +88,7 @@ const FormComponent = ({
         className='mt-4'
         title={submitButtonText}
         onClick={handleSubmit(submit)}
+        disabled={submitBtnDisabled}
       />
     </div>
   );

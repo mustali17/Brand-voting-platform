@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../api/baseQuery";
 import { UserDto } from "@/utils/models/user.model";
-import { USER } from "../api/apiEndPoints";
+import { SEND_OTP, USER } from "../api/apiEndPoints";
+import { boolean, string } from "zod";
 
 export const userApi = createApi({
   reducerPath: "userApi",
@@ -53,9 +54,15 @@ export const userApi = createApi({
     }),
 
     // Send Otp
-    sendOtp: builder.mutation<{ email: string }, Partial<UserDto>>({
+    sendOtp: builder.mutation<
+      {
+        success: boolean;
+        message: string;
+      },
+      { email: string }
+    >({
       query: (newUser) => ({
-        url: USER,
+        url: USER + SEND_OTP,
         method: "POST",
         body: newUser,
       }),
@@ -70,4 +77,5 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useSendOtpMutation,
 } = userApi;

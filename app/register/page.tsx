@@ -1,7 +1,11 @@
 "use client";
 import FormComponent from "@/components/ui/FormComponent";
-import { useCreateUserMutation } from "@/lib/services/user.service";
+import {
+  useCreateUserMutation,
+  useSendOtpMutation,
+} from "@/lib/services/user.service";
 import { InputFormType } from "@/utils/models/common.model";
+import { clear } from "console";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -13,24 +17,28 @@ const formList: InputFormType[] = [
     key: "name",
     label: "Full Name",
     type: "text",
+    validation: "nullValidation",
   },
   {
     name: "email",
     key: "email",
     label: "Email",
     type: "email",
+    validation: "emailValidation",
   },
   {
     name: "password",
     key: "password",
     label: "Password",
     type: "password",
+    validation: "passwordValidation",
   },
   {
     name: "confirmPassword",
     key: "confirmPassword",
     label: "Confirm Password",
     type: "password",
+    validation: "passwordValidation",
   },
 
   {
@@ -41,6 +49,14 @@ const formList: InputFormType[] = [
   },
 ];
 
+interface SignUpFormType {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agree: boolean;
+}
+
 const RegisterPage = () => {
   //#region External Hooks
   const router = useRouter();
@@ -49,11 +65,25 @@ const RegisterPage = () => {
     postUserData,
     { isLoading: userSubmittingLoading, isError: userSubmitError },
   ] = useCreateUserMutation();
+  const [sendOtp, { isLoading: sendOtpLoading, isError: sendOtpError }] =
+    useSendOtpMutation();
   const {
     control,
     handleSubmit: formHandleSubmit,
-    formState: { errors },
-  } = useForm();
+    setError,
+    watch,
+    clearErrors,
+    formState: { errors, isValid },
+  } = useForm<SignUpFormType>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agree: undefined,
+    },
+    mode: "onSubmit",
+  });
   //#endregion
 
   //#region Internal Hooks
@@ -62,11 +92,39 @@ const RegisterPage = () => {
       router.replace("/dashboard");
     }
   }, [sessionStatus, router]);
+
+  useEffect(() => {
+    const password = watch("password");
+    const confirmPassword = watch("confirmPassword");
+    const agree = watch("agree");
+    if (password !== confirmPassword) {
+      setError("confirmPassword", {
+        type: "manual",
+        message: "Passwords do not match",
+      });
+    }
+    if (!agree && agree !== undefined) {
+      setError("agree", {
+        type: "manual",
+        message: "You must accept the terms and conditions",
+      });
+    } else {
+      clearErrors("agree");
+    }
+  }, [watch("confirmPassword"), watch("agree")]);
   //#endregion
 
   //#region Internal Function
-  const onSubmit = async (dto: any) => {
+  const onSubmit = async (dto: SignUpFormType) => {
     console.log("dto", dto);
+
+    if (dto.email) {
+      const data = await sendOtp({ email: dto.email }).unwrap();
+      console.log("data", data);
+      if (data) {
+        router.push("/verify-email");
+      }
+    }
   };
   //#endregion
 
@@ -178,7 +236,7 @@ const RegisterPage = () => {
               </div>
             </form> */}
 
-            <FormComponent
+            <FormComponent<SignUpFormType>
               formList={formList}
               control={control}
               errors={errors}
