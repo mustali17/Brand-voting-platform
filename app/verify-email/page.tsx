@@ -7,13 +7,24 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-
 import { Card, CardContent } from "@/components/ui/card";
+import { useVerifyOtpMutation } from "@/lib/services/user.service";
+import { useRouter } from "next/navigation";
 
-export default function OTP() {
+export default function MobileVerification() {
+  //#region External Hook
+  const [verifyOtp, { isLoading: verifyOtpLoading, isError: verifyOtpError }] =
+    useVerifyOtpMutation();
+
+  const router = useRouter();
+  //#endregion
+
+  //#region Internal Hook
   const [code, setCode] = useState("");
   const [isResending, setIsResending] = useState(false);
-
+  const [error, setError] = useState("");
+  //#endregion
+  //#region Internal Function
   const handleResend = () => {
     setIsResending(true);
     // Simulate resend delay
@@ -21,6 +32,35 @@ export default function OTP() {
       setIsResending(false);
     }, 2000);
   };
+
+  const handleVerify = async (code: string) => {
+    if (code.length === 6) {
+      const signUpData = localStorage.getItem("signUpData");
+      if (!signUpData) {
+        return;
+      }
+      const parsedData = JSON.parse(signUpData);
+      const { email } = parsedData;
+      // Call the verifyOtp mutation with the email and code
+      const res = await verifyOtp({
+        code,
+        email,
+      }).unwrap();
+      if (res.success) {
+        // Handle successful verification
+        console.log("Verification successful");
+        localStorage.removeItem("signUpData");
+        // Redirect to the next page or show a success message
+        router.push("/login");
+      }
+      if (res.error) {
+        // Handle error
+        console.log("Verification failed", res.error);
+        setError(res.error);
+      }
+    }
+  };
+  //#endregion
 
   return (
     <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
@@ -31,38 +71,52 @@ export default function OTP() {
               <h1 className='text-2xl font-bold tracking-tight'>
                 Email Verification
               </h1>
-              <p className='text-gray-500 text-sm'>
-                Enter the 4-digit verification code that was sent to your email.
+              <p className='text-gray-500 text-md'>
+                Enter the 6-digit verification code that was sent to your email.
               </p>
             </div>
-
-            <div className='w-full max-w-xs'>
-              <InputOTP maxLength={4} value={code} onChange={setCode}>
-                <InputOTPGroup className='gap-3 justify-center'>
+            {error ? <p className='text-red-400'>{error}</p> : <></>}
+            <div className='flex justify-center w-full'>
+              <InputOTP maxLength={6} value={code} onChange={setCode}>
+                <InputOTPGroup className='flex justify-center gap-2'>
                   <InputOTPSlot
                     index={0}
-                    className='w-16 h-16 text-xl bg-gray-50 border-gray-200'
+                    className='w-12 h-12 text-lg bg-gray-50 border-gray-200'
                   />
                   <InputOTPSlot
                     index={1}
-                    className='w-16 h-16 text-xl bg-gray-50 border-gray-200'
+                    className='w-12 h-12 text-lg bg-gray-50 border-gray-200'
                   />
                   <InputOTPSlot
                     index={2}
-                    className='w-16 h-16 text-xl bg-gray-50 border-gray-200'
+                    className='w-12 h-12 text-lg bg-gray-50 border-gray-200'
                   />
                   <InputOTPSlot
                     index={3}
-                    className='w-16 h-16 text-xl bg-gray-50 border-gray-200'
+                    className='w-12 h-12 text-lg bg-gray-50 border-gray-200'
+                  />
+                  <InputOTPSlot
+                    index={4}
+                    className='w-12 h-12 text-lg bg-gray-50 border-gray-200'
+                  />
+                  <InputOTPSlot
+                    index={5}
+                    className='w-12 h-12 text-lg bg-gray-50 border-gray-200'
                   />
                 </InputOTPGroup>
               </InputOTP>
             </div>
 
             <div className='w-full space-y-4'>
-              <Button className='w-full h-12 text-base font-medium rounded-lg bg-indigo-500 hover:bg-indigo-600'>
-                Verify Account
-              </Button>
+              <Button
+                title={"Verify Code"}
+                className='mt-4 w-full h-12 text-base font-medium rounded-lg bg-black'
+                onClick={() => {
+                  handleVerify(code);
+                }}
+                isLoading={verifyOtpLoading}
+                disabled={verifyOtpLoading}
+              />
 
               <div className='text-center text-gray-500 text-sm'>
                 Didn't receive code?{" "}

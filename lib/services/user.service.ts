@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../api/baseQuery";
 import { UserDto } from "@/utils/models/user.model";
-import { SEND_OTP, USER } from "../api/apiEndPoints";
+import { SEND_OTP, USER, VERIFY_OTP } from "../api/apiEndPoints";
 import { boolean, string } from "zod";
 
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery,
-  tagTypes: ["User"],
+  tagTypes: ["User", "otp"],
   endpoints: (builder) => ({
     // READ: Get all users
     getUsers: builder.query<UserDto[], void>({
@@ -53,6 +53,23 @@ export const userApi = createApi({
       invalidatesTags: (result, error, id) => [{ type: "User", id }],
     }),
 
+    // Verify Otp
+    verifyOtp: builder.mutation<
+      {
+        success: boolean;
+        message: string;
+        error?: string;
+      },
+      { email: string; code: string }
+    >({
+      query: (newUser) => ({
+        url: USER + VERIFY_OTP,
+        method: "POST",
+        body: newUser,
+      }),
+      invalidatesTags: ["otp"],
+    }),
+
     // Send Otp
     sendOtp: builder.mutation<
       {
@@ -66,7 +83,7 @@ export const userApi = createApi({
         method: "POST",
         body: newUser,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["otp"],
     }),
   }),
 });
@@ -78,4 +95,5 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useSendOtpMutation,
+  useVerifyOtpMutation,
 } = userApi;

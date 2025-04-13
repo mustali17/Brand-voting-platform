@@ -23,6 +23,7 @@ interface FormProps<T extends FieldValues> {
   handleSubmit: UseFormHandleSubmit<T>;
   submit: (data: T) => void;
   submitBtnDisabled?: boolean;
+  isSubmitting?: boolean;
 }
 
 const FormComponent = <T extends FieldValues>({
@@ -33,6 +34,7 @@ const FormComponent = <T extends FieldValues>({
   handleSubmit,
   submit,
   submitBtnDisabled,
+  isSubmitting,
 }: FormProps<T>) => {
   const validaton = useValidation();
   return (
@@ -89,6 +91,7 @@ const FormComponent = <T extends FieldValues>({
         title={submitButtonText}
         onClick={handleSubmit(submit)}
         disabled={submitBtnDisabled}
+        isLoading={isSubmitting}
       />
     </div>
   );

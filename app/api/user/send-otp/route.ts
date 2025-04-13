@@ -6,19 +6,23 @@ import Otp from "@/models/Otp";
 import { sendVerificationEmail } from "@/utils/emailService";
 
 const OTP_EXPIRY_MINUTES = 10;
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 10;
 
 export async function POST(req: NextRequest) {
   await connect();
   const { email } = await req.json();
-  if (!email) return NextResponse.json({ error: "Email is required" }, { status: 400 });
+  if (!email)
+    return NextResponse.json({ error: "Email is required" }, { status: 400 });
 
   const existing = await Otp.findOne({ email });
 
   if (existing && existing.attempts >= MAX_ATTEMPTS) {
     const timeSince = Date.now() - new Date(existing.createdAt).getTime();
     if (timeSince < OTP_EXPIRY_MINUTES * 60 * 1000) {
-      return NextResponse.json({ error: "Too many attempts, try again later." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Too many attempts, try again later." },
+        { status: 429 }
+      );
     }
   }
 
@@ -39,14 +43,20 @@ export async function POST(req: NextRequest) {
     // });
 
     const emailResult = await sendVerificationEmail(email, otp);
-    
+
     if (!emailResult.success) {
       console.error("Failed to send verification email", emailResult.error);
-      return NextResponse.json({ error: "Failed to send OTP" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to send OTP" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true, message: "OTP sent to email" });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to send email" },
+      { status: 500 }
+    );
   }
 }
