@@ -5,6 +5,7 @@ const OtpSchema = new mongoose.Schema({
   code: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   attempts: { type: Number, default: 0 },
+  verified: { type: Boolean, default: false },
 });
 
 export default mongoose.models.Otp || mongoose.model("Otp", OtpSchema);
