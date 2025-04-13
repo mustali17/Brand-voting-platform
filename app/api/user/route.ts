@@ -24,13 +24,17 @@ export const POST = async (request: NextRequest) => {
     return new NextResponse("User already exists", { status: 409 });
   }
 
-  // Check if OTP is verified
-  // Enforce OTP verification only if provider is 'credentials'
-  if (provider === "credentials") {
+  // Check if OTP is verified or provider is 'google'
+  let emailVerified = false;
+
+  if (provider === "google") {
+    emailVerified = true;
+  } else if (provider === "credentials") {
     const otpEntry = await OTP.findOne({ email, verified: true });
     if (!otpEntry) {
       return new NextResponse("Email not verified via OTP", { status: 403 });
     }
+    emailVerified = true;
   }
 
   const hashedPassword = await bcrypt.hash(password, 5);
@@ -39,6 +43,7 @@ export const POST = async (request: NextRequest) => {
     email,
     password: hashedPassword,
     provider,
+    emailVerified,
   });
 
   try {
