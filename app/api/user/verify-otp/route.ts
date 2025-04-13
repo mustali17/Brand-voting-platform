@@ -10,6 +10,14 @@ export async function POST(req: NextRequest) {
 
   if (!record) return NextResponse.json({ error: "No OTP found" }, { status: 404 });
 
+   // Check if already verified
+   if (record.verified) {
+    return NextResponse.json({ 
+      success: true, 
+      message: "Email already verified" 
+    });
+  }
+
   const now = new Date().getTime();
   const expiry = new Date(record.createdAt).getTime() + 10 * 60 * 1000;
 
@@ -21,6 +29,10 @@ export async function POST(req: NextRequest) {
   if (record.code !== code) {
     return NextResponse.json({ error: "Invalid OTP" }, { status: 400 });
   }
+
+   // OTP is valid - mark as verified
+   record.verified = true;
+   await record.save();
 
   return NextResponse.json({ success: true, message: "OTP verified" });
 }
