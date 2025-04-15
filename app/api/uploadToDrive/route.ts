@@ -1,60 +1,71 @@
-import formidable from 'formidable';
+import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import fs from 'fs';
-import { NextApiRequest, NextApiResponse } from 'next';
+import stream from 'stream';
 
-// Disable Next.js default body parsing
-export const config = {
-  api: {
-    bodyParser: false,
-    //#region
-  },
-  //#endregion
-};
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const form = new formidable.IncomingForm();
-
-  form.parse(
-    req,
-    async (
-      err: Error | null,
-      fields: formidable.Fields,
-      files: formidable.Files
-    ) => {
-      if (err) return res.status(500).json({ error: 'Form parse error' });
-
-      const file = (files.file as formidable.File[])[0];
-      const filePath: string = file.filepath;
-
-      try {
-        const auth = new google.auth.GoogleAuth({
-          keyFile: './service-account.json',
-          scopes: ['https://www.googleapis.com/auth/drive.file'],
-        });
-
-        const drive = google.drive({ version: 'v3', auth });
-
-        const response = await drive.files.create({
-          requestBody: {
-            name: file.originalFilename as string,
-            mimeType: file.mimetype as string,
-          },
-          media: {
-            mimeType: file.mimetype as string,
-            body: fs.createReadStream(filePath),
-          },
-          fields: 'id',
-        });
-
-        res.status(200).json({ fileId: response.data.id });
-      } catch (e) {
-        console.error('Upload error:', e);
-        res.status(500).json({ error: 'Upload failed' });
-      }
+export async function POST(request: NextRequest) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file uploaded' },
+        { status: 400 }
+      );
     }
-  );
+
+    
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+        
+    // Set up Google Drive API
+    const credentials = JSON.parse(
+      Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_BASE64!, 'base64').toString('utf-8')
+    );
+    
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/drive.file'],
+    });
+    
+
+    const drive = google.drive({ version: 'v3', auth });
+
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(buffer);
+
+    // Upload file to Google Drive
+    const response = await drive.files.create({
+      requestBody: {
+        name: file.name,
+        mimeType: file.type,
+      },
+      media: {
+        mimeType: file.type,
+        body: bufferStream,
+      },
+      fields: 'id',
+    });
+
+    // Make file public
+    await drive.permissions.create({
+      fileId: response.data.id ?? '',
+      requestBody: {
+        role: 'reader',
+        type: 'anyone',
+      },
+    });
+
+    const viewUrl = `https://drive.google.com/uc?id=${response.data.id}`;
+    const previewUrl = `https://drive.google.com/file/d/${response.data.id}/view`;
+
+    return NextResponse.json({ fileId: response.data.id, url: viewUrl, previewUrl });
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    return NextResponse.json(
+      { error: 'Upload failed', details: (error as Error).message },
+      { status: 500 }
+    );
+  }
 }

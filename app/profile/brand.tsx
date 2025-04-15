@@ -81,9 +81,11 @@ const Brand = () => {
   //#region Internal Hook
   const handleFileUpload = async (file: File, key: string) => {
     debugger;
+    const formData = new FormData();
+    formData.append('file', file);
     const res = await fetch('/api/uploadToDrive', {
       method: 'POST',
-      body: file,
+      body: formData,
     });
 
     const data = await res.json();
