@@ -19,15 +19,10 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
         
     // Set up Google Drive API
-    const credentials = JSON.parse(
-      Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_BASE64!, 'base64').toString('utf-8')
-    );
-    
     const auth = new google.auth.GoogleAuth({
-      credentials,
+      keyFile: './service-account.json',
       scopes: ['https://www.googleapis.com/auth/drive.file'],
     });
-    
 
     const drive = google.drive({ version: 'v3', auth });
 
