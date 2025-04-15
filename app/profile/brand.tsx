@@ -94,19 +94,17 @@ const Brand = () => {
 
   return (
     <>
-      <div>
-        <FormComponent<BrandDto>
-          formList={formList}
-          control={control}
-          errors={errors}
-          submitButtonText='Sign up'
-          handleSubmit={formHandleSubmit}
-          submit={onSubmit}
-          isSubmitting={addBrandLoading}
-          gridSize={2}
-          handleFile={handleFileUpload}
-        />
-      </div>
+      <FormComponent<BrandDto>
+        formList={formList}
+        control={control}
+        errors={errors}
+        submitButtonText='Sign up'
+        handleSubmit={formHandleSubmit}
+        submit={onSubmit}
+        isSubmitting={addBrandLoading}
+        gridSize={2}
+        handleFile={handleFileUpload}
+      />
     </>
   );
 };

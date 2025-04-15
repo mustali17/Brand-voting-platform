@@ -25,7 +25,6 @@ interface FormProps<T extends FieldValues> {
   submitBtnDisabled?: boolean;
   isSubmitting?: boolean;
   gridSize?: number;
-  colSpanSize?: number;
   handleFile?: (file: File, key: string) => void;
 }
 
@@ -38,17 +37,16 @@ const FormComponent = <T extends FieldValues>({
   submit,
   submitBtnDisabled,
   isSubmitting,
-  colSpanSize = 1,
-  gridSize = 1,
+  gridSize,
   handleFile,
 }: FormProps<T>) => {
   const validation = useValidation();
   return (
-    <div className={`grid grid-cols-${gridSize}`}>
+    <div className={`grid grid-cols-${gridSize || 1} gap-4`}>
       {formList.map((item) => (
         <div
           key={item.key}
-          className={`p-4 py-2 rounded col-span-${colSpanSize} ${
+          className={`p-4 py-2 rounded ${
             item.type === 'checkbox' ? 'flex items-center space-x-2' : ''
           }`}
         >

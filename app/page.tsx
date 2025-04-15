@@ -1,5 +1,6 @@
-import Image from "next/image";
-import Link from "next/link";
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
 import {
   Home,
   Search,
@@ -12,9 +13,11 @@ import {
   MoreHorizontal,
   ThumbsUp,
   ThumbsDown,
-} from "lucide-react";
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+  const route = useRouter();
   return (
     <div className='flex h-screen bg-white'>
       {/* Left Sidebar */}
@@ -102,13 +105,13 @@ export default function HomePage() {
           <div className='border-b border-gray-300 py-4 px-4'>
             <div className='flex space-x-4 overflow-x-auto pb-2'>
               {[
-                { name: "zaincontra...", img: "/images/post.jpg" },
-                { name: "hakimkap...", img: "/images/story.jpg" },
-                { name: "hisukriti", img: "/images/story.jpg" },
-                { name: "bhuvan.ba...", img: "/images/story.jpg" },
-                { name: "mipalkarof...", img: "/images/story.jpg" },
-                { name: "naughtyw...", img: "/images/story.jpg" },
-                { name: "thehungry...", img: "/images/story.jpg" },
+                { name: 'zaincontra...', img: '/images/post.jpg' },
+                { name: 'hakimkap...', img: '/images/story.jpg' },
+                { name: 'hisukriti', img: '/images/story.jpg' },
+                { name: 'bhuvan.ba...', img: '/images/story.jpg' },
+                { name: 'mipalkarof...', img: '/images/story.jpg' },
+                { name: 'naughtyw...', img: '/images/story.jpg' },
+                { name: 'thehungry...', img: '/images/story.jpg' },
               ].map((story, i) => (
                 <div key={i} className='flex flex-col items-center'>
                   <Image
@@ -212,7 +215,10 @@ export default function HomePage() {
 
       {/* Right Sidebar - Suggestions */}
       <div className='w-80 border-l border-gray-300 p-4 hidden lg:block'>
-        <div className='flex items-center mb-6'>
+        <div
+          className='flex items-center mb-6 cursor-pointer'
+          onClick={() => route.push('/profile')}
+        >
           <Image
             src='/images/post.jpg'
             alt='Profile'
@@ -232,11 +238,11 @@ export default function HomePage() {
         </div>
 
         {[
-          { name: "tasneem28", followedBy: "mubaranapur", time: "16" },
-          { name: "jamilazuzerbhai", followedBy: "burhan72002", time: "5" },
-          { name: "taher_8_", followedBy: "m_o_h_a_m_m_e_d", time: "" },
-          { name: "kayda_husain", followedBy: "shubham_pathak_", time: "" },
-          { name: "ali_k_hasam", followedBy: "chuna.huzefa", time: "12" },
+          { name: 'tasneem28', followedBy: 'mubaranapur', time: '16' },
+          { name: 'jamilazuzerbhai', followedBy: 'burhan72002', time: '5' },
+          { name: 'taher_8_', followedBy: 'm_o_h_a_m_m_e_d', time: '' },
+          { name: 'kayda_husain', followedBy: 'shubham_pathak_', time: '' },
+          { name: 'ali_k_hasam', followedBy: 'chuna.huzefa', time: '12' },
         ].map((suggestion, i) => (
           <div key={i} className='flex items-center mb-3'>
             <Image
@@ -249,7 +255,7 @@ export default function HomePage() {
             <div className='flex-1'>
               <div className='font-semibold text-sm'>{suggestion.name}</div>
               <div className='text-gray-500 text-xs'>
-                Followed by {suggestion.followedBy}{" "}
+                Followed by {suggestion.followedBy}{' '}
                 {suggestion.time && `+ ${suggestion.time}`}
               </div>
             </div>
