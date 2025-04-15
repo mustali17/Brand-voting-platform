@@ -1,5 +1,5 @@
-import { InputFormType } from "@/utils/models/common.model";
-import { ErrorMessage } from "@hookform/error-message";
+import { InputFormType } from '@/utils/models/common.model';
+import { ErrorMessage } from '@hookform/error-message';
 import {
   Control,
   Controller,
@@ -7,13 +7,13 @@ import {
   FieldValues,
   Path,
   UseFormHandleSubmit,
-} from "react-hook-form";
-import { Button } from "./button";
-import { Input } from "./input";
-import CustomSelect from "./react-select";
-import InputLabel from "./input-label";
-import { Checkbox } from "./checkbox";
-import { useValidation } from "@/lib/hook/useValidation";
+} from 'react-hook-form';
+import { Button } from './button';
+import { Input } from './input';
+import CustomSelect from './react-select';
+import InputLabel from './input-label';
+import { Checkbox } from './checkbox';
+import { useValidation } from '@/lib/hook/useValidation';
 
 interface FormProps<T extends FieldValues> {
   formList: InputFormType[];
@@ -24,6 +24,9 @@ interface FormProps<T extends FieldValues> {
   submit: (data: T) => void;
   submitBtnDisabled?: boolean;
   isSubmitting?: boolean;
+  gridSize?: number;
+  colSpanSize?: number;
+  handleFile?: (file: File, key: string) => void;
 }
 
 const FormComponent = <T extends FieldValues>({
@@ -35,46 +38,62 @@ const FormComponent = <T extends FieldValues>({
   submit,
   submitBtnDisabled,
   isSubmitting,
+  colSpanSize = 1,
+  gridSize = 1,
+  handleFile,
 }: FormProps<T>) => {
-  const validaton = useValidation();
+  const validation = useValidation();
   return (
-    <div className='grid grid-cols-1'>
+    <div className={`grid grid-cols-${gridSize}`}>
       {formList.map((item) => (
         <div
           key={item.key}
-          className={`p-4 py-2 rounded ${
-            item.type === "checkbox" ? "flex items-center space-x-2" : ""
+          className={`p-4 py-2 rounded col-span-${colSpanSize} ${
+            item.type === 'checkbox' ? 'flex items-center space-x-2' : ''
           }`}
         >
-          {item.label && item.type !== "checkbox" && (
+          {item.label && item.type !== 'checkbox' && (
             <InputLabel
               label={item.label}
-              htmlFor={item.key?.toString() || ""}
+              htmlFor={item.key?.toString() || ''}
             />
           )}
           <Controller
             name={item.name as Path<T>}
             control={control}
             defaultValue={undefined}
-            rules={validaton[item.validation as keyof typeof validaton]}
+            rules={validation[item.validation as keyof typeof validation]}
             render={({ field }) => {
-              return item.type === "select" ? (
+              return item.type === 'select' ? (
                 <CustomSelect {...field} options={[]} />
-              ) : item.type === "checkbox" ? (
+              ) : item.type === 'checkbox' ? (
                 <Checkbox {...field} onCheckedChange={field.onChange} />
               ) : (
                 <Input
                   {...field}
                   type={item.type}
                   placeholder={item.placeholder}
+                  onChange={(e) => {
+                    if (item.type === 'file') {
+                      if (e.target.files?.[0]) {
+                        handleFile &&
+                          handleFile(
+                            e.target.files[0],
+                            item.key?.toString() || ''
+                          );
+                      }
+                    } else {
+                      field.onChange(e.target.value);
+                    }
+                  }}
                 />
               );
             }}
           />
-          {item.type === "checkbox" && item.label && (
+          {item.type === 'checkbox' && item.label && (
             <InputLabel
               label={item.label}
-              htmlFor={item.key?.toString() || ""}
+              htmlFor={item.key?.toString() || ''}
             />
           )}
           <ErrorMessage
