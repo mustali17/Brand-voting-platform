@@ -29,10 +29,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Invalid category" }, { status: 400 });
       }
 
-      const isValidSub = existingCategory.subcategories.includes(subcategory);
+      const isValidSub = subcategory.every(sub =>
+        existingCategory.subcategories.includes(sub)
+      );
+      
       if (!isValidSub) {
-        return NextResponse.json({ error: "Invalid subcategory" }, { status: 400 });
-      }
+        return NextResponse.json({ error: "One or more invalid subcategories" }, { status: 400 });
+      }      
 
       const brand = await Brand.findById(brandId);
       if (!brand) {

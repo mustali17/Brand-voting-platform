@@ -37,11 +37,11 @@ export const VerifyBrandSchema = z.object({
 
 export const AddProductSchema = z.object({
   brandId: z.string(),
-  name: z.string().min(1),
+  name: z.string(),
   imageUrl: z.string().url(),
-  description: z.string(),
+  description: z.string().optional(),
   category: z.string(),
-  subcategory: z.string(),
+  subcategory: z.array(z.string()).min(1),
 });
 
 export const FollowBrandSchema = z.object({
