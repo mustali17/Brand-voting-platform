@@ -44,13 +44,13 @@ const NextLoginPage = () => {
     const res = await signIn('credentials', {
       redirect: false,
       email,
-      password: hashedPassword,
+      password,
     });
 
     if (res?.error) {
       setError('Invalid email or password');
       toast.error('Invalid email or password');
-      if (res?.url) router.replace('/dashboard');
+      if (res?.url) router.replace('/');
     } else {
       setError('');
       toast.success('Successful login');

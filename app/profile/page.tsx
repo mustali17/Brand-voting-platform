@@ -1,9 +1,8 @@
 'use client';
-import { BrandDto } from '@/utils/models/brand.model';
 import { useSession } from 'next-auth/react';
-import React, { useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useCallback, useState } from 'react';
 import Brand from './brand';
+import Products from './products';
 
 interface State {}
 const initialState: State = {};
@@ -25,12 +24,13 @@ const UserProfile = () => {
   //#endregion
 
   return (
-    <>
-      <div>
+    <div className=''>
+      <div className='max-w-2xl p-4'>
         <h1>Welcome {session?.user?.name}</h1>
         <Brand />
+        <Products />
       </div>
-    </>
+    </div>
   );
 };
 

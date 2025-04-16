@@ -1,3 +1,4 @@
+'use client';
 import { InputFormType } from '@/utils/models/common.model';
 import { ErrorMessage } from '@hookform/error-message';
 import {
@@ -14,6 +15,7 @@ import CustomSelect from './react-select';
 import InputLabel from './input-label';
 import { Checkbox } from './checkbox';
 import { useValidation } from '@/lib/hook/useValidation';
+import { FileInput } from './FileInput';
 
 interface FormProps<T extends FieldValues> {
   formList: InputFormType[];
@@ -42,7 +44,7 @@ const FormComponent = <T extends FieldValues>({
 }: FormProps<T>) => {
   const validation = useValidation();
   return (
-    <div className={`grid grid-cols-${gridSize || 1} gap-4`}>
+    <div className={`grid grid-cols-${gridSize || 1}`}>
       {formList.map((item) => (
         <div
           key={item.key}
@@ -63,27 +65,42 @@ const FormComponent = <T extends FieldValues>({
             rules={validation[item.validation as keyof typeof validation]}
             render={({ field }) => {
               return item.type === 'select' ? (
-                <CustomSelect {...field} options={[]} />
+                <CustomSelect
+                  {...field}
+                  options={item.selectInputList || []}
+                  isMulti={item.isMulti}
+                  onChange={(e) => {
+                    if (e) {
+                      if (item.isMulti && Array.isArray(e)) {
+                        field.onChange(e.map((item: any) => item.value));
+                      } else if (!Array.isArray(e)) {
+                        field.onChange(e.value);
+                      } else {
+                        field.onChange(e);
+                      }
+                    }
+                  }}
+                />
               ) : item.type === 'checkbox' ? (
                 <Checkbox {...field} onCheckedChange={field.onChange} />
+              ) : item.type === 'file' ? (
+                <FileInput
+                  id={item.key?.toString() || ''}
+                  name={item.key?.toString() || ''}
+                  label={item.label}
+                  accept='image/*'
+                  maxSize={10}
+                  onChange={(e) => {
+                    if (e) {
+                      handleFile && handleFile(e, item.key?.toString() || '');
+                    }
+                  }}
+                />
               ) : (
                 <Input
                   {...field}
                   type={item.type}
                   placeholder={item.placeholder}
-                  onChange={(e) => {
-                    if (item.type === 'file') {
-                      if (e.target.files?.[0]) {
-                        handleFile &&
-                          handleFile(
-                            e.target.files[0],
-                            item.key?.toString() || ''
-                          );
-                      }
-                    } else {
-                      field.onChange(e.target.value);
-                    }
-                  }}
                 />
               );
             }}
