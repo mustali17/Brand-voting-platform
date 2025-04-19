@@ -1,4 +1,5 @@
 import User from "@/models/User";
+import Brand from "@/models/Brand";
 import connect from "@/utils/db";
 import bcrypt from "bcryptjs";
 import { NextResponse, NextRequest } from "next/server";
@@ -24,6 +25,14 @@ export const GET = async (
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+     // Fetch all brands the user owns
+     const ownedBrands = await Brand.find({ ownerId: id });
+
+     return NextResponse.json({
+       ...user.toObject(),
+       ownedBrands,
+     });
 
     return NextResponse.json(user);
   } catch (err: any) {

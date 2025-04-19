@@ -1,4 +1,5 @@
 import { Heart, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
+import Image from 'next/image';
 import React from 'react';
 
 const images = [
@@ -27,7 +28,7 @@ const Post = () => {
           key={index}
           className='relative group aspect-[3/4] overflow-hidden'
         >
-          <img
+          <Image
             src={image.src}
             alt={`image-${index}`}
             className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'

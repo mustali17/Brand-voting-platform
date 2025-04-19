@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Upload, X, FileIcon, ImageIcon } from 'lucide-react';
 import InputLabel from './input-label';
+import Image from 'next/image';
 
 interface FileInputProps {
   id: string;
@@ -154,7 +155,7 @@ export function FileInput({
           <div className='flex items-center gap-4'>
             {preview ? (
               <div className='relative w-16 h-16 overflow-hidden rounded-md'>
-                <img
+                <Image
                   src={preview || '/placeholder.svg'}
                   alt='File preview'
                   className='object-cover w-full h-full'
