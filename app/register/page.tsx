@@ -107,6 +107,7 @@ const RegisterPage = () => {
     } else {
       clearErrors("agree");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("password"), watch("confirmPassword"), watch("agree")]);
   //#endregion
 

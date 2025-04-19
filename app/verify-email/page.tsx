@@ -127,7 +127,7 @@ export default function MobileVerification() {
               />
 
               <div className='text-center text-gray-500 text-sm'>
-                Didn't receive code?{' '}
+                Didn&apos;t receive code?{' '}
                 <button
                   onClick={handleResend}
                   disabled={isResending}
