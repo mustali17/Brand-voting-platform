@@ -1,33 +1,33 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { baseQuery } from '../api/baseQuery';
-import { UserDto } from '@/utils/models/user.model';
-import { SEND_OTP, USER, VERIFY_OTP } from '../api/apiEndPoints';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseQuery } from "../api/baseQuery";
+import { UserDto } from "@/utils/models/user.model";
+import { SEND_OTP, USER, VERIFY_OTP } from "../api/apiEndPoints";
 
 export const userApi = createApi({
-  reducerPath: 'userApi',
+  reducerPath: "userApi",
   baseQuery,
-  tagTypes: ['User', 'otp'],
+  tagTypes: ["User", "otp"],
   endpoints: (builder) => ({
     // READ: Get all users
     getUsers: builder.query<UserDto[], void>({
       query: () => USER,
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
 
     // READ: Get single user
-    getUserById: builder.query<UserDto, number>({
+    getUserById: builder.query<UserDto, string>({
       query: (id) => `${USER}/${id}`,
-      providesTags: (result, error, id) => [{ type: 'User', id }],
+      providesTags: (result, error, id) => [{ type: "User", id }],
     }),
 
     // CREATE: Add a new user
     createUser: builder.mutation<UserDto, Partial<UserDto>>({
       query: (newUser) => ({
         url: USER,
-        method: 'POST',
+        method: "POST",
         body: newUser,
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
 
     // UPDATE: Update a user
@@ -37,19 +37,19 @@ export const userApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `${USER}/${id}`,
-        method: 'PUT',
+        method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
+      invalidatesTags: (result, error, { id }) => [{ type: "User", id }],
     }),
 
     // DELETE: Delete a user
     deleteUser: builder.mutation<{ success: boolean }, number>({
       query: (id) => ({
         url: `${USER}/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'User', id }],
+      invalidatesTags: (result, error, id) => [{ type: "User", id }],
     }),
 
     // Verify Otp
@@ -63,10 +63,10 @@ export const userApi = createApi({
     >({
       query: (newUser) => ({
         url: USER + VERIFY_OTP,
-        method: 'POST',
+        method: "POST",
         body: newUser,
       }),
-      invalidatesTags: ['otp'],
+      invalidatesTags: ["otp"],
     }),
 
     // Send Otp
@@ -80,10 +80,10 @@ export const userApi = createApi({
     >({
       query: (newUser) => ({
         url: USER + SEND_OTP,
-        method: 'POST',
+        method: "POST",
         body: newUser,
       }),
-      invalidatesTags: ['otp'],
+      invalidatesTags: ["otp"],
     }),
   }),
 });
@@ -96,4 +96,5 @@ export const {
   useDeleteUserMutation,
   useSendOtpMutation,
   useVerifyOtpMutation,
+  useLazyGetUserByIdQuery,
 } = userApi;

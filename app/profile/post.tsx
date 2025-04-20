@@ -1,20 +1,20 @@
-import { Heart, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
-import Image from 'next/image';
-import React from 'react';
+import { Heart, MessageCircle, ThumbsDown, ThumbsUp } from "lucide-react";
+import Image from "next/image";
+import React from "react";
 
 const images = [
   {
-    src: 'images/post.jpg',
+    src: "/images/post.jpg",
     likes: 92,
     comments: 0,
   },
   {
-    src: 'images/post.jpg',
+    src: "/images/post.jpg",
     likes: 150,
     comments: 4,
   },
   {
-    src: 'images/post.jpg',
+    src: "/images/post.jpg",
     likes: 230,
     comments: 12,
   },
@@ -31,6 +31,8 @@ const Post = () => {
           <Image
             src={image.src}
             alt={`image-${index}`}
+            width={300}
+            height={400}
             className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
           />
           <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-6 text-white text-lg font-semibold'>

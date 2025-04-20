@@ -1,61 +1,33 @@
-import { userApi } from "@/lib/services/user.service";
+// src/redux/slices/userSlice.ts
+import { UserDto } from "@/utils/models/user.model";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
-  id: number | null;
-  name: string;
-  email: string;
-  isAuthenticated: boolean;
+  user: UserDto | null;
 }
 
 const initialState: UserState = {
-  id: null,
-  name: "",
-  email: "",
-  isAuthenticated: false,
+  user: null,
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (
-      state,
-      action: PayloadAction<{
-        id: number;
-        name: string;
-        email: string;
-        token: string;
-      }>
-    ) => {
-      const { id, name, email, token } = action.payload;
-      state.id = id;
-      state.name = name;
-      state.email = email;
-      state.isAuthenticated = true;
+    setUser: (state, action: PayloadAction<UserDto>) => {
+      state.user = action.payload;
     },
-    clearUser: (state) => {
-      state.id = null;
-      state.name = "";
-      state.email = "";
-      state.isAuthenticated = false;
+    logout: (state) => {
+      state.user = null;
     },
-  },
-  extraReducers: (builder) => {
-    builder.addMatcher(
-      userApi.endpoints.getUserById.matchFulfilled,
-      (state, { payload }) => {
-        // Assuming login API returns: { id, name, email, token }
-        const { id, name, email } = payload;
-        state.id = id;
-        state.name = name;
-        state.email = email;
-        state.isAuthenticated = true;
+    updateUser: (state, action: PayloadAction<Partial<UserDto>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
       }
-    );
+    },
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, logout, updateUser } = userSlice.actions;
 
 export default userSlice.reducer;

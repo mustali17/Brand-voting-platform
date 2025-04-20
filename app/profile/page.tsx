@@ -1,13 +1,13 @@
-'use client';
-import { useSession } from 'next-auth/react';
-import { useCallback, useState } from 'react';
-import Brand from './brand';
-import Products from './products';
-import { Camera, LinkIcon, Settings } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import Post from './post';
-import { Button } from '@/components/ui/button';
+"use client";
+import { Button } from "@/components/ui/button";
+import { LinkIcon, Settings } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useState } from "react";
+import Brand from "./brand";
+import Post from "./post";
+import Products from "./products";
 
 interface State {}
 const initialState: State = {};
@@ -73,7 +73,7 @@ const UserProfile = () => {
               <div className='text-sm space-y-1'>
                 <div>محمد ♥</div>
                 <div>
-                  Time changes everything{' '}
+                  Time changes everything{" "}
                   <span className='text-amber-400'>🔥</span>
                 </div>
                 <div className='flex items-center gap-1'>
