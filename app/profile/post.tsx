@@ -18,6 +18,51 @@ const images = [
     likes: 230,
     comments: 12,
   },
+  {
+    src: "/images/post.jpg",
+    likes: 92,
+    comments: 0,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 150,
+    comments: 4,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 230,
+    comments: 12,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 92,
+    comments: 0,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 150,
+    comments: 4,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 230,
+    comments: 12,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 92,
+    comments: 0,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 150,
+    comments: 4,
+  },
+  {
+    src: "/images/post.jpg",
+    likes: 230,
+    comments: 12,
+  },
 ];
 
 const Post = () => {

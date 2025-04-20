@@ -20,9 +20,9 @@ const NextLoginPage = () => {
 
   useEffect(() => {
     if (sessionStatus === "authenticated") {
-      router.replace("/dashboard");
+      getUserDataById();
     }
-  }, [sessionStatus, router]);
+  }, [sessionStatus, router, session]);
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -34,7 +34,6 @@ const NextLoginPage = () => {
     const email = e.target[0].value;
     const password = e.target[1].value;
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
     if (!isValidEmail(email)) {
       setError("Email is invalid");
       toast.error("Email is invalid");
@@ -52,7 +51,7 @@ const NextLoginPage = () => {
       email,
       password,
     });
-
+    debugger;
     if (res?.error) {
       setError("Invalid email or password");
       toast.error("Invalid email or password");
@@ -60,16 +59,16 @@ const NextLoginPage = () => {
     } else {
       setError("");
       toast.success("Successful login");
-      await getUserDataById();
     }
   };
 
   //#region Internal Function
   const getUserDataById = async () => {
+    debugger;
     if (session?.user?.id) {
       const userData = await fetchUserDataById(session?.user?.id).unwrap();
       userData && dispatch(setUser(userData));
-      console.log("userData", userData);
+      router.replace("/");
     }
   };
   //#endregion
