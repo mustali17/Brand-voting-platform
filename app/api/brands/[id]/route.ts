@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import connect from "@/utils/db";
 import Brand from "@/models/Brand";
 import Product from "@/models/Product";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/utils/authOptions";
+
 
 export const GET = async (
   req: NextRequest,
@@ -31,5 +34,61 @@ export const GET = async (
     });
   } catch (err: any) {
     return NextResponse.json({ error: "Server error", message: err.message }, { status: 500 });
+  }
+};
+
+
+export const PUT = async (
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) => {
+
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json({ error: "Invalid brand ID" }, { status: 400 });
+  }
+
+  try {
+    await connect();
+    const updates = await req.json();
+
+    const brand = await Brand.findById(id);
+
+    if (!brand) {
+      return NextResponse.json({ error: "Brand not found" }, { status: 404 });
+    }
+
+    if (brand.ownerId.toString() !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden: You do not own this brand" }, { status: 403 });
+    }
+
+    const allowedFields = ["name", "logoUrl", "website", "description", "isVerified"];
+    const updatePayload: Record<string, any> = {};
+
+    allowedFields.forEach(field => {
+      if (updates[field] !== undefined) {
+        updatePayload[field] = updates[field];
+      }
+    });
+
+    const updatedBrand = await Brand.findByIdAndUpdate(id, updatePayload, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedBrand) {
+      return NextResponse.json({ error: "Brand not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, brand: updatedBrand });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };
