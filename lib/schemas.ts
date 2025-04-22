@@ -40,7 +40,7 @@ export const AddProductSchema = z.object({
   name: z.string(),
   imageUrl: z.string().url(),
   description: z.string().optional(),
-  category: z.string(),
+  categoryId: z.string(),
   subcategory: z.array(z.string()).min(1),
 });
 

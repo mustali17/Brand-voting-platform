@@ -7,13 +7,57 @@ import Category from "@/models/Category";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 
+
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) => {
+  const { id } = params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
+  }
+
+  try {
+    await connect();
+
+    // Fetch the product by ID
+    const product = await Product.findById(id).lean() as { categoryId?: string; brandId?: string } | null;
+
+    if (!product || !product.categoryId || !product.brandId) {
+      return NextResponse.json({ error: "Product data is incomplete or invalid" }, { status: 400 });
+    }
+
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    // Fetch the category details (populate categoryId)
+    const category = await Category.findById(product.categoryId);
+
+    // Fetch the brand details
+    const brand = await Brand.findById(product.brandId);
+
+    return NextResponse.json({
+      success: true,
+      product: {
+        ...product,
+        category,
+        brand: brand ? brand.name : null, // Only return brand name for simplicity
+      },
+    });
+  } catch (error: any) {
+    console.error("[PRODUCT_FETCH_ERROR]", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+};
+
+
 export const PUT = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
-
-    const session = await getServerSession(authOptions);
-
+  const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -28,7 +72,6 @@ export const PUT = async (
     await connect();
     const updates = await req.json();
 
-    // Fetch existing product for fallback category if needed
     const existingProduct = await Product.findById(id);
     if (!existingProduct) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -37,33 +80,39 @@ export const PUT = async (
     // Check brand ownership
     const brand = await Brand.findById(existingProduct.brandId);
     if (!brand || brand.ownerId.toString() !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden: You do not own this product" }, { status: 403 });
-    }
-
-    // Determine the category to use for validation
-    const categoryToCheck = updates.category || existingProduct.category;
-
-    const existingCategory = await Category.findOne({ name: categoryToCheck });
-    if (!existingCategory) {
-      return NextResponse.json({ error: "Invalid category" }, { status: 400 });
-    }
-
-    // Validate subcategory if provided
-    if (updates.subcategory) {
-      const isValidSub = updates.subcategory.every((sub: string) =>
-        existingCategory.subcategories.includes(sub)
+      return NextResponse.json(
+        { error: "Forbidden: You do not own this product" },
+        { status: 403 }
       );
+    }
 
-      if (!isValidSub) {
-        return NextResponse.json(
-          { error: "One or more subcategories are invalid" },
-          { status: 400 }
+    let categoryIdToUse = existingProduct.categoryId;
+
+    // If category name is being updated
+    if (updates.category) {
+      const foundCategory = await Category.findOne({ name: updates.category });
+      if (!foundCategory) {
+        return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+      }
+      categoryIdToUse = foundCategory._id;
+
+      // If subcategories are also provided, validate them
+      if (updates.subcategory) {
+        const isValidSub = updates.subcategory.every((sub: string) =>
+          foundCategory.subcategories.includes(sub)
         );
+
+        if (!isValidSub) {
+          return NextResponse.json(
+            { error: "One or more subcategories are invalid" },
+            { status: 400 }
+          );
+        }
       }
     }
 
     // Only update allowed fields
-    const allowedFields = ["name", "imageUrl", "description", "category", "subcategory"];
+    const allowedFields = ["name", "imageUrl", "description", "subcategory"];
     const updatePayload: Record<string, any> = {};
 
     allowedFields.forEach((field) => {
@@ -72,6 +121,9 @@ export const PUT = async (
       }
     });
 
+    // Always set updated categoryId if provided
+    updatePayload.categoryId = categoryIdToUse;
+
     const updatedProduct = await Product.findByIdAndUpdate(id, updatePayload, {
       new: true,
       runValidators: true,
@@ -79,6 +131,7 @@ export const PUT = async (
 
     return NextResponse.json({ success: true, product: updatedProduct });
   } catch (error: any) {
+    console.error("[PRODUCT_UPDATE_ERROR]", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };
