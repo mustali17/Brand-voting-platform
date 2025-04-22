@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
-import Products from "./brands/[id]/productForm";
 
 interface State {}
 const initialState: State = {};
@@ -113,10 +112,6 @@ const UserProfile = () => {
             </div>
           </>
         )}
-      </div>
-      <div className='max-w-2xl w-full p-4'>
-        {/* <Brand /> */}
-        <Products />
       </div>
     </div>
   );
