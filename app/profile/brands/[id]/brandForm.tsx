@@ -4,6 +4,7 @@ import { useCreateBrandMutation } from "@/lib/services/brand.service";
 
 import { BrandDto, BrandFormDto } from "@/utils/models/brand.model";
 import { FileUploadDto, InputFormType } from "@/utils/models/common.model";
+import { ArrowLeft } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -46,7 +47,13 @@ const initialState: State = {
   isImageUploading: false,
 };
 
-const BrandForm = ({ brandData }: { brandData: BrandDto }) => {
+const BrandForm = ({
+  brandData,
+  callBack,
+}: {
+  brandData?: BrandDto;
+  callBack: () => void;
+}) => {
   //#region External Hooks
   const {
     control,
@@ -111,20 +118,33 @@ const BrandForm = ({ brandData }: { brandData: BrandDto }) => {
   };
   const onSubmit = async (data: BrandFormDto) => {
     console.log("Form Data:", data);
-    if (data) {
-      const res = await addBrand(data).unwrap();
-      if (res) toast.success("Brand created successfully!");
+    if (brandData) {
+      const updatedData = {
+        ...data,
+        name: data.name,
+        logoUrl: data.logoUrl,
+        website: data.website,
+        description: data.description,
+      };
+      // update call
     } else {
-      toast.error("Brand creation failed!");
+      if (data) {
+        const res = await addBrand(data).unwrap();
+        if (res) toast.success("Brand created successfully!");
+      } else {
+        toast.error("Brand creation failed!");
+      }
     }
   };
   //#endregion
 
   return (
-    <div className='shadow-lg rounded w-full'>
-      <h2 className='mt-6 text-center text-2xl leading-9 tracking-tight text-gray-900'>
-        Register Your Brand
-      </h2>
+    <div className='rounded w-full md:col-span-3'>
+      <div className='flex items-center'>
+        <ArrowLeft onClick={callBack} className='cursor-pointer' />
+        <h2 className='m-auto'>{brandData ? "Edit Brand" : "Add New Brand"}</h2>
+      </div>
+
       <FormComponent<BrandFormDto>
         formList={formList}
         control={control}

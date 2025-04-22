@@ -95,6 +95,7 @@ const FormComponent = <T extends FieldValues>({
                       handleFile && handleFile(e, item.key?.toString() || "");
                     }
                   }}
+                  {...(field.value && { previewUrl: field.value })}
                 />
               ) : (
                 <Input

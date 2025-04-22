@@ -16,6 +16,7 @@ import userReducer from "@/lib/features/user/userSlice";
 import { userApi } from "./services/user.service";
 import { brandApi } from "./services/brand.service";
 import { productApi } from "./services/product.service";
+import { categoryApi } from "./services/category.service";
 
 // Combine all reducers
 const rootReducer = combineReducers({
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
   [brandApi.reducerPath]: brandApi.reducer,
   [productApi.reducerPath]: productApi.reducer,
+  [categoryApi.reducerPath]: categoryApi.reducer,
 });
 
 // Configure persist (only persisting user slice)
@@ -42,7 +44,12 @@ export const store = configureStore({
         // Required for redux-persist to avoid warnings
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(userApi.middleware, brandApi.middleware, productApi.middleware),
+    }).concat(
+      userApi.middleware,
+      brandApi.middleware,
+      productApi.middleware,
+      categoryApi.middleware
+    ),
 });
 
 setupListeners(store.dispatch);

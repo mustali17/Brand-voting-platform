@@ -9,13 +9,16 @@ import Image from "next/image";
 import Link from "next/link";
 import Post from "../../post";
 import { useCallback, useEffect, useState } from "react";
-import BrandForm from "./form";
+import BrandForm from "./brandForm";
+import ProductForm from "./productForm";
 
 interface State {
   isEdit: boolean;
+  isAddProduct: boolean;
 }
 const initialState: State = {
   isEdit: false,
+  isAddProduct: false,
 };
 export default function Brand({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -41,7 +44,15 @@ export default function Brand({ params }: { params: { id: string } }) {
   return (
     <Card className='max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 ma-h-72 overflow-hidden'>
       {brandScreenStates.isEdit ? (
-        <BrandForm brandData={brand.brand} />
+        <BrandForm
+          callBack={() => updateState({ isEdit: false })}
+          brandData={brand.brand}
+        />
+      ) : brandScreenStates.isAddProduct ? (
+        <ProductForm
+          callBack={() => updateState({ isAddProduct: false })}
+          brandId={brand.brand._id}
+        />
       ) : (
         <>
           <CardHeader className='flex flex-col items-center space-y-4 md:col-span-1'>
@@ -76,6 +87,11 @@ export default function Brand({ params }: { params: { id: string } }) {
               className='w-full'
               title='Edit'
               onClick={() => updateState({ isEdit: true })}
+            />
+            <Button
+              className='w-full'
+              title='Add Product'
+              onClick={() => updateState({ isAddProduct: true })}
             />
           </CardHeader>
 
