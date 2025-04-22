@@ -3,9 +3,12 @@ import {
   useGetCategoriesQuery,
   useLazyGetCategoriesQuery,
 } from "@/lib/services/category.service";
-import { useCreateProductMutation } from "@/lib/services/product.service";
+import {
+  useCreateProductMutation,
+  useUpdateProductMutation,
+} from "@/lib/services/product.service";
 import { FileUploadDto, InputFormType } from "@/utils/models/common.model";
-import { ProductDto } from "@/utils/models/product.model";
+import { ProductDto, ProductFormDto } from "@/utils/models/product.model";
 import { ArrowLeft } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -76,9 +79,11 @@ const initialState: State = {
 const ProductForm = ({
   callBack,
   brandId,
+  modifyProduct,
 }: {
   callBack: () => void;
   brandId: string;
+  modifyProduct: ProductDto;
 }) => {
   //#region External Hooks
   const {
@@ -87,26 +92,31 @@ const ProductForm = ({
     setError,
     watch,
     setValue,
-    clearErrors,
+    reset,
     formState: { errors, isValid },
-  } = useForm<ProductDto>({
+  } = useForm<ProductFormDto>({
     defaultValues: {
       name: "",
       brandId: "",
       category: "",
       description: "",
       imageUrl: "",
-      subcategory: "",
+      subcategory: [],
     },
     mode: "onSubmit",
   });
+  console.log("Product Form: ", modifyProduct);
 
   const [
     addProduct,
     { isLoading: addProductLoading, isError: addProductError },
   ] = useCreateProductMutation();
 
-  const [getCategory] = useLazyGetCategoriesQuery();
+  const [
+    updateProduct,
+    { isLoading: updateProductLoading, isError: updateProductError },
+  ] = useUpdateProductMutation();
+
   //#endregion
   //#region Internal Hooks
   const [productScreenStates, setProductScreenStates] = useState(initialState);
@@ -117,8 +127,17 @@ const ProductForm = ({
     []
   );
 
-  useEffect(() => {}, []);
-  //#endregion
+  useEffect(() => {
+    if (modifyProduct) {
+      reset({
+        name: modifyProduct.name,
+        imageUrl: modifyProduct.imageUrl,
+        category: modifyProduct.category,
+        subcategory: modifyProduct.subcategory,
+        description: modifyProduct.description,
+      });
+    }
+  }, [modifyProduct]); //#endregion
   //#region Internal Function
   const handleFileUpload = async (file: File, key: string) => {
     updateState({ isImageUploading: true });
@@ -132,20 +151,37 @@ const ProductForm = ({
 
     const data: FileUploadDto = await res.json();
     if (data.fileId) {
-      setValue(key as keyof ProductDto, data.url);
+      setValue(key as keyof ProductFormDto, data.url);
       updateState({ isImageUploading: false });
     }
     console.log("Uploaded File ID:", data);
   };
 
-  const onSubmit = async (data: ProductDto) => {
-    console.log("Product Data: ", data);
+  const onSubmit = async (data: ProductFormDto) => {
     data.brandId = brandId;
-    const res = await addProduct(data).unwrap();
-    console.log("Product Created: ", res);
-    if (res) {
-      toast.success("Product Created Successfully!");
+    if (modifyProduct) {
+      const updatedData = {
+        ...modifyProduct,
+        ...data,
+      };
+      const res = await updateProduct({
+        id: modifyProduct._id,
+        data: updatedData,
+      }).unwrap();
+      if (res) {
+        toast.success("Product updated successfully!");
+      } else {
+        toast.error("Product creation failed!");
+      }
+    } else {
+      const res = await addProduct(data).unwrap();
+      if (res) {
+        toast.success("Product Created Successfully!");
+      }
     }
+    setTimeout(() => {
+      callBack();
+    }, 500);
   };
   //#endregion
   return (
@@ -155,7 +191,7 @@ const ProductForm = ({
         <h2 className='m-auto'>{"Add Product"}</h2>
       </div>
 
-      <FormComponent<ProductDto>
+      <FormComponent<ProductFormDto>
         formList={formList}
         control={control}
         errors={errors}
@@ -165,7 +201,11 @@ const ProductForm = ({
         isSubmitting={addProductLoading}
         handleFile={handleFileUpload}
         gridSize={1}
-        submitBtnDisabled={productScreenStates.isImageUploading}
+        submitBtnDisabled={
+          addProductLoading ||
+          updateProductLoading ||
+          productScreenStates.isImageUploading
+        }
       />
     </div>
   );

@@ -1,4 +1,8 @@
-import { BrandDetailsDto, BrandFormDto } from "@/utils/models/brand.model";
+import {
+  BrandDetailsDto,
+  BrandDto,
+  BrandFormDto,
+} from "@/utils/models/brand.model";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { BRANDS, REGISTER } from "../api/apiEndPoints";
 import { baseQuery } from "../api/baseQuery";
@@ -31,9 +35,9 @@ export const brandApi = createApi({
     }),
 
     // UPDATE: Update a user
-    updateUser: builder.mutation<
-      BrandFormDto,
-      { id: number; data: Partial<BrandFormDto> }
+    updateBrand: builder.mutation<
+      BrandDto,
+      { id: string; data: Partial<BrandDto> }
     >({
       query: ({ id, data }) => ({
         url: `${BRANDS}/${id}`,
@@ -59,6 +63,6 @@ export const {
   useGetBrandByIdQuery,
   useLazyGetBrandByIdQuery,
   useCreateBrandMutation,
-  useUpdateUserMutation,
+  useUpdateBrandMutation,
   useDeleteUserMutation,
 } = brandApi;

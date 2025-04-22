@@ -7,18 +7,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import Post from "../../post";
+import Post from "../../products";
 import { useCallback, useEffect, useState } from "react";
 import BrandForm from "./brandForm";
 import ProductForm from "./productForm";
+import Products from "../../products";
+import { ProductDto } from "@/utils/models/product.model";
 
 interface State {
   isEdit: boolean;
   isAddProduct: boolean;
+  modifyProduct:ProductDto
 }
 const initialState: State = {
   isEdit: false,
   isAddProduct: false,
+  modifyProduct:{} as ProductDto
 };
 export default function Brand({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -52,6 +56,7 @@ export default function Brand({ params }: { params: { id: string } }) {
         <ProductForm
           callBack={() => updateState({ isAddProduct: false })}
           brandId={brand.brand._id}
+          modifyProduct={brandScreenStates.modifyProduct}
         />
       ) : (
         <>
@@ -131,7 +136,7 @@ export default function Brand({ params }: { params: { id: string } }) {
                 </TabsContent>
 
                 <TabsContent value='posts' className='pt-4'>
-                  <Post />
+                  <Products products={brand.products} updateProduct={(product)=> {updateState({isAddProduct:true,modifyProduct:product})}} />
                 </TabsContent>
               </div>
             </Tabs>

@@ -15,14 +15,11 @@ const NextLoginPage = () => {
   const [error, setError] = useState("");
   const { data: session, status: sessionStatus } = useSession();
 
-  const [fetchUserDataById] = useLazyGetUserByIdQuery();
-  const dispatch = useDispatch();
-
   useEffect(() => {
     if (sessionStatus === "authenticated") {
-      getUserDataById();
+      router.replace("/");
     }
-  }, [sessionStatus, router, session]);
+  }, [sessionStatus, router]);
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -51,7 +48,6 @@ const NextLoginPage = () => {
       email,
       password,
     });
-    debugger;
     if (res?.error) {
       setError("Invalid email or password");
       toast.error("Invalid email or password");
@@ -61,17 +57,6 @@ const NextLoginPage = () => {
       toast.success("Successful login");
     }
   };
-
-  //#region Internal Function
-  const getUserDataById = async () => {
-    debugger;
-    if (session?.user?.id) {
-      const userData = await fetchUserDataById(session?.user?.id).unwrap();
-      userData && dispatch(setUser(userData));
-      router.replace("/");
-    }
-  };
-  //#endregion
 
   if (sessionStatus === "loading") {
     return <h1>Loading...</h1>;

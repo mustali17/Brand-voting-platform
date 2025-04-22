@@ -1,55 +1,55 @@
-import { ProductDto } from '@/utils/models/product.model';
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { BRANDS, CREATE, PRODUCTS, REGISTER } from '../api/apiEndPoints';
-import { baseQuery } from '../api/baseQuery';
+import { ProductDto, ProductFormDto } from "@/utils/models/product.model";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { BRANDS, CREATE, PRODUCTS, REGISTER } from "../api/apiEndPoints";
+import { baseQuery } from "../api/baseQuery";
 
 export const productApi = createApi({
-  reducerPath: 'productApi',
+  reducerPath: "productApi",
   baseQuery,
-  tagTypes: ['Product'],
+  tagTypes: ["Product"],
   endpoints: (builder) => ({
     // READ: Get all users
-    getUsers: builder.query<ProductDto[], void>({
+    getUsers: builder.query<ProductFormDto[], void>({
       query: () => BRANDS,
-      providesTags: ['Product'],
+      providesTags: ["Product"],
     }),
 
     // READ: Get single user
-    getUserById: builder.query<ProductDto, number>({
+    getUserById: builder.query<ProductFormDto, number>({
       query: (id) => `${BRANDS}/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Product', id }],
+      providesTags: (result, error, id) => [{ type: "Product", id }],
     }),
 
     // CREATE: Add a new brand
-    createProduct: builder.mutation<ProductDto, Partial<ProductDto>>({
+    createProduct: builder.mutation<ProductFormDto, Partial<ProductFormDto>>({
       query: (newUser) => ({
         url: PRODUCTS + CREATE,
-        method: 'POST',
+        method: "POST",
         body: newUser,
       }),
-      invalidatesTags: ['Product'],
+      invalidatesTags: ["Product"],
     }),
 
     // UPDATE: Update a user
-    updateUser: builder.mutation<
+    updateProduct: builder.mutation<
       ProductDto,
-      { id: number; data: Partial<ProductDto> }
+      { id: string; data: Partial<ProductDto> }
     >({
       query: ({ id, data }) => ({
-        url: `${BRANDS}/${id}`,
-        method: 'PUT',
+        url: `${PRODUCTS}/${id}`,
+        method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Product', id }],
+      invalidatesTags: (result, error, { id }) => [{ type: "Product", id }],
     }),
 
     // DELETE: Delete a user
     deleteUser: builder.mutation<{ success: boolean }, number>({
       query: (id) => ({
         url: `${BRANDS}/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Product', id }],
+      invalidatesTags: (result, error, id) => [{ type: "Product", id }],
     }),
   }),
 });
@@ -58,6 +58,6 @@ export const {
   useGetUsersQuery,
   useGetUserByIdQuery,
   useCreateProductMutation,
-  useUpdateUserMutation,
+  useUpdateProductMutation,
   useDeleteUserMutation,
 } = productApi;

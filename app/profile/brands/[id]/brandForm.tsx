@@ -1,6 +1,9 @@
 "use client";
 import FormComponent from "@/components/ui/FormComponent";
-import { useCreateBrandMutation } from "@/lib/services/brand.service";
+import {
+  useCreateBrandMutation,
+  useUpdateBrandMutation,
+} from "@/lib/services/brand.service";
 
 import { BrandDto, BrandFormDto } from "@/utils/models/brand.model";
 import { FileUploadDto, InputFormType } from "@/utils/models/common.model";
@@ -75,6 +78,10 @@ const BrandForm = ({
 
   const [addBrand, { isLoading: addBrandLoading, isError: addBrandError }] =
     useCreateBrandMutation();
+  const [
+    updateBrand,
+    { isLoading: updateBrandLoading, isError: updateBrandError },
+  ] = useUpdateBrandMutation();
   //#endregion
 
   //#region Internal Hooks
@@ -120,13 +127,22 @@ const BrandForm = ({
     console.log("Form Data:", data);
     if (brandData) {
       const updatedData = {
-        ...data,
+        ...brandData,
         name: data.name,
         logoUrl: data.logoUrl,
         website: data.website,
         description: data.description,
       };
-      // update call
+
+      const res = await updateBrand({
+        id: brandData._id,
+        data: updatedData,
+      }).unwrap();
+      if (res) {
+        toast.success("Brand updated successfully!");
+      } else {
+        toast.error("Brand creation failed!");
+      }
     } else {
       if (data) {
         const res = await addBrand(data).unwrap();
@@ -135,6 +151,9 @@ const BrandForm = ({
         toast.error("Brand creation failed!");
       }
     }
+    setTimeout(() => {
+      callBack();
+    }, 500);
   };
   //#endregion
 
@@ -156,7 +175,9 @@ const BrandForm = ({
         handleFile={handleFileUpload}
         gridSize={1}
         submitBtnDisabled={
-          addBrandLoading || brandScreenStates.isImageUploading
+          addBrandLoading ||
+          updateBrandLoading ||
+          brandScreenStates.isImageUploading
         }
       />
     </div>
