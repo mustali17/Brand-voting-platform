@@ -28,6 +28,7 @@ import connect from "@/utils/db";
 import Product from "@/models/Product";
 import Brand from "@/models/Brand";
 import Category from "@/models/Category";
+import Vote from "@/models/Vote";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 
@@ -37,6 +38,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const userId = session.user.id;
   const { searchParams } = new URL(req.url);
   const search = searchParams.get("search") || "";
   const page = parseInt(searchParams.get("page") || "1");
@@ -75,13 +77,23 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .populate("brandId", "name logoUrl")
       .populate("categoryId", "name")
-      .lean();
+      .lean() as Array<{ _id: string; [key: string]: any }>;
 
     const total = await Product.countDocuments(filter);
 
+    // Determine hasVoted for each product
+    const productIds = products.map((p) => p._id);
+    const votes = await Vote.find({ userId, productId: { $in: productIds } }).select("productId").lean();
+    const votedProductIds = new Set(votes.map(v => v.productId.toString()));
+
+    const productsWithVotes = products.map(product => ({
+      ...product,
+      hasVoted: votedProductIds.has((product._id as string).toString())
+    }));
+
     return NextResponse.json({
       success: true,
-      products,
+      products:productsWithVotes,
       pagination: {
         total,
         page,
