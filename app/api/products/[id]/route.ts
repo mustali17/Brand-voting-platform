@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import mongoose from "mongoose";
-import connect from "@/utils/db";
-import Product from "@/models/Product";
 import Brand from "@/models/Brand";
 import Category from "@/models/Category";
-import { getServerSession } from "next-auth";
+import Product from "@/models/Product";
+import Vote from "@/models/Vote";
 import { authOptions } from "@/utils/authOptions";
+import connect from "@/utils/db";
+import mongoose from "mongoose";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 
 export const GET = async (
@@ -21,29 +22,36 @@ export const GET = async (
   try {
     await connect();
 
-    // Fetch the product by ID
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    // Fetch the product
     const product = await Product.findById(id).lean() as { categoryId?: string; brandId?: string } | null;
 
     if (!product || !product.categoryId || !product.brandId) {
       return NextResponse.json({ error: "Product data is incomplete or invalid" }, { status: 400 });
-    }
+    }  
 
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    // Fetch the category details (populate categoryId)
+    // Fetch related category and brand names
     const category = await Category.findById(product.categoryId);
 
     // Fetch the brand details
     const brand = await Brand.findById(product.brandId);
+
+    // Check if the user has voted
+    let hasVoted = false;
+    if (userId) {
+      const vote = await Vote.findOne({ userId, productId: id });
+      hasVoted = !!vote;
+    }
 
     return NextResponse.json({
       success: true,
       product: {
         ...product,
         category,
-        brand: brand ? brand.name : null, // Only return brand name for simplicity
+        brand: brand ? brand.name : null,
+        hasVoted,
       },
     });
   } catch (error: any) {
