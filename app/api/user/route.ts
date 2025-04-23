@@ -9,9 +9,13 @@ export const POST = async (request: NextRequest) => {
   const body = await request.json();
   const parsed = RegisterUserSchema.safeParse(body);
 
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
-  }
+    if (!parsed.success) {
+      const errors = parsed.error.errors.map(err => ({
+        path: err.path.join("."),
+        message: err.message
+      }));
+      return NextResponse.json({ error: "Invalid input", details: errors }, { status: 400 });
+    }
 
   await connect();
   const { name, email, password, provider = 'credentials' } = parsed.data;
