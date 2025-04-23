@@ -56,7 +56,11 @@ const UserProfile = () => {
 
   return (
     <div className='flex flex-col items-center'>
-      <div className='flex flex-col min-h-screen max-w-7xl w-full text-black'>
+      <div
+        className={`flex flex-col min-h-screen ${
+          userProfileScreenStates.isCreatBrand ? "max-w-xl" : "max-w-7xl"
+        } w-full text-black`}
+      >
         {userProfileScreenStates.isCreatBrand ? (
           <BrandForm callBack={() => updateState({ isCreatBrand: false })} />
         ) : (
@@ -117,35 +121,25 @@ const UserProfile = () => {
                   </div>
                 </div>
 
-                <div className='flex-1 flex flex-col items-center justify-center py-16'>
-                  <div className='flex flex-col items-start justify-center gap-4'>
-                    {user?.ownedBrands.map((brand) => (
-                      <Link
-                        key={brand._id}
-                        href={`/profile/brands/${brand._id}`}
-                        className='flex items-center gap-2'
-                      >
-                        <Image
-                          src={brand.logoUrl}
-                          alt='Brand logo'
-                          width={50}
-                          height={50}
-                          className='rounded-full w-12 h-12 object-cover'
-                        />
-                        <span className='text-sm font-semibold'>
-                          {brand.name}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                  {/* <div className='flex items-center justify-center gap-2 mt-4'>
-                <Link
-                  href={`/profile/brands`}
-                  className='text-sm font-semibold text-gray-500'
-                >
-                  See all brands
-                </Link>
-              </div> */}
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 py-16'>
+                  {user?.ownedBrands.map((brand) => (
+                    <Link
+                      key={brand._id}
+                      href={`/profile/brands/${brand._id}`}
+                      className='flex flex-col items-center gap-2'
+                    >
+                      <Image
+                        src={brand.logoUrl}
+                        alt='Brand logo'
+                        width={100}
+                        height={100}
+                        className='rounded-full w-24 h-24 object-cover'
+                      />
+                      <span className='text-sm font-semibold text-center'>
+                        {brand.name}
+                      </span>
+                    </Link>
+                  ))}
                 </div>
               </>
             )}

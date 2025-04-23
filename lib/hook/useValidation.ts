@@ -15,6 +15,7 @@ export interface ValidationTypeProps {
   zipValidation: Object;
   onlyNumberValidation: Object;
   maxSecondsAndMinutesValidation: Object;
+  websiteUrlValidation: Object;
 }
 export const useValidation = (): ValidationTypeProps => ({
   nullValidation: {
@@ -56,6 +57,14 @@ export const useValidation = (): ValidationTypeProps => ({
     pattern: {
       value: /^[0-9]*$/,
       message: "This field accept number only",
+    },
+  },
+
+  websiteUrlValidation: {
+    required: "This field is required",
+    pattern: {
+      value: /^(https?:\/\/)([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/,
+      message: "Please enter a valid URL",
     },
   },
   onlyNumberValidation: {

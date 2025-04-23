@@ -38,7 +38,7 @@ const formList: InputFormType[] = [
     key: "website",
     label: "Website",
     type: "text",
-    validation: "nullValidation",
+    validation: "websiteUrlValidation",
   },
 ];
 
@@ -73,7 +73,7 @@ const BrandForm = ({
       website: "",
       description: "",
     },
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
   const [addBrand, { isLoading: addBrandLoading, isError: addBrandError }] =
@@ -158,7 +158,7 @@ const BrandForm = ({
   //#endregion
 
   return (
-    <div className='rounded w-full md:col-span-3'>
+    <div className='rounded w-full md:col-span-3 mt-5'>
       <div className='flex items-center'>
         <ArrowLeft onClick={callBack} className='cursor-pointer' />
         <h2 className='m-auto'>{brandData ? "Edit Brand" : "Add New Brand"}</h2>

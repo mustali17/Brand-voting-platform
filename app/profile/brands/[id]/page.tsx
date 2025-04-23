@@ -4,7 +4,7 @@ import { useGetBrandByIdQuery } from "@/lib/services/brand.service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Post from "../../products";
@@ -13,20 +13,22 @@ import BrandForm from "./brandForm";
 import ProductForm from "./productForm";
 import Products from "../../products";
 import { ProductDto } from "@/utils/models/product.model";
+import { useRouter } from "next/navigation";
 
 interface State {
   isEdit: boolean;
   isAddProduct: boolean;
-  modifyProduct:ProductDto
+  modifyProduct: ProductDto;
 }
 const initialState: State = {
   isEdit: false,
   isAddProduct: false,
-  modifyProduct:{} as ProductDto
+  modifyProduct: {} as ProductDto,
 };
 export default function Brand({ params }: { params: { id: string } }) {
   const { id } = params;
   const { data: brand, isLoading, error } = useGetBrandByIdQuery(id);
+  const router = useRouter();
 
   //#region Internal Hooks
   const [brandScreenStates, setBrandScreenStates] = useState(initialState);
@@ -46,7 +48,13 @@ export default function Brand({ params }: { params: { id: string } }) {
   //#endregion
 
   return (
-    <Card className='max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 ma-h-72 overflow-hidden'>
+    <Card
+      className={`${
+        brandScreenStates.isEdit || brandScreenStates.isAddProduct
+          ? "max-w-2xl"
+          : "max-w-5xl"
+      } mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 ma-h-72 overflow-hidden relative`}
+    >
       {brandScreenStates.isEdit ? (
         <BrandForm
           callBack={() => updateState({ isEdit: false })}
@@ -60,6 +68,9 @@ export default function Brand({ params }: { params: { id: string } }) {
         />
       ) : (
         <>
+          <div className='absolute top-4 left-4 cursor-pointer'>
+            <ArrowLeft onClick={() => router.push("/profile")} />
+          </div>
           <CardHeader className='flex flex-col items-center space-y-4 md:col-span-1'>
             <div className='h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center'>
               {/* Placeholder for brand logo */}
@@ -136,7 +147,15 @@ export default function Brand({ params }: { params: { id: string } }) {
                 </TabsContent>
 
                 <TabsContent value='posts' className='pt-4'>
-                  <Products products={brand.products} updateProduct={(product)=> {updateState({isAddProduct:true,modifyProduct:product})}} />
+                  <Products
+                    products={brand.products}
+                    updateProduct={(product) => {
+                      updateState({
+                        isAddProduct: true,
+                        modifyProduct: product,
+                      });
+                    }}
+                  />
                 </TabsContent>
               </div>
             </Tabs>
