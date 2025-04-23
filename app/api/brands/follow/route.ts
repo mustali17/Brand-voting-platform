@@ -17,7 +17,11 @@ export async function POST(req: NextRequest) {
     const parsed = FollowBrandSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+      const errors = parsed.error.errors.map(err => ({
+        path: err.path.join("."),
+        message: err.message
+      }));
+      return NextResponse.json({ error: "Invalid input", details: errors }, { status: 400 });
     }
 
     const { brandId } = parsed.data;
@@ -57,9 +61,13 @@ export async function DELETE(req: NextRequest) {
       const body = await req.json();
       const parsed = FollowBrandSchema.safeParse(body);
   
-      if (!parsed.success) {
-        return NextResponse.json({ error: "Invalid input" }, { status: 400 });
-      }
+    if (!parsed.success) {
+      const errors = parsed.error.errors.map(err => ({
+        path: err.path.join("."),
+        message: err.message
+      }));
+      return NextResponse.json({ error: "Invalid input", details: errors }, { status: 400 });
+    }
   
       const { brandId } = parsed.data;
       await connect();

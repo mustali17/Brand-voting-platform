@@ -18,7 +18,11 @@ export async function POST(req: NextRequest) {
     const parsed = RegisterBrandSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+      const errors = parsed.error.errors.map(err => ({
+        path: err.path.join("."),
+        message: err.message
+      }));
+      return NextResponse.json({ error: "Invalid input", details: errors }, { status: 400 });
     }
 
     await connect();
