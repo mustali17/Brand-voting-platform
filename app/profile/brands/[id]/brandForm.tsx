@@ -1,44 +1,44 @@
-"use client";
-import FormComponent from "@/components/ui/FormComponent";
+'use client';
+import FormComponent from '@/components/ui/FormComponent';
 import {
   useCreateBrandMutation,
   useUpdateBrandMutation,
-} from "@/lib/services/brand.service";
+} from '@/lib/services/brand.service';
 
-import { BrandDto, BrandFormDto } from "@/utils/models/brand.model";
-import { FileUploadDto, InputFormType } from "@/utils/models/common.model";
-import { ArrowLeft } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { BrandDto, BrandFormDto } from '@/utils/models/brand.model';
+import { FileUploadDto, InputFormType } from '@/utils/models/common.model';
+import { ArrowLeft } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 const formList: InputFormType[] = [
   {
-    name: "name",
-    key: "name",
-    label: "Full Name",
-    type: "text",
-    validation: "nullValidation",
+    name: 'name',
+    key: 'name',
+    label: 'Full Name',
+    type: 'text',
+    validation: 'nullValidation',
   },
   {
-    name: "description",
-    key: "description",
-    label: "Description",
-    type: "textarea",
-    validation: "nullValidation",
+    name: 'description',
+    key: 'description',
+    label: 'Description',
+    type: 'textarea',
+    validation: 'nullValidation',
   },
   {
-    name: "logoUrl",
-    key: "logoUrl",
-    label: "Logo",
-    type: "file",
+    name: 'logoUrl',
+    key: 'logoUrl',
+    label: 'Logo',
+    type: 'file',
   },
   {
-    name: "website",
-    key: "website",
-    label: "Website",
-    type: "text",
-    validation: "websiteUrlValidation",
+    name: 'website',
+    key: 'website',
+    label: 'Website',
+    type: 'text',
+    validation: 'websiteUrlValidation',
   },
 ];
 
@@ -68,12 +68,12 @@ const BrandForm = ({
     formState: { errors, isValid },
   } = useForm<BrandFormDto>({
     defaultValues: {
-      name: "",
-      logoUrl: "",
-      website: "",
-      description: "",
+      name: '',
+      logoUrl: '',
+      website: '',
+      description: '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const [addBrand, { isLoading: addBrandLoading, isError: addBrandError }] =
@@ -94,16 +94,22 @@ const BrandForm = ({
   );
 
   useEffect(() => {
-    if (brandData) {
+    if (brandData && Object.keys(brandData).length) {
       reset({
         name: brandData.name,
         logoUrl: brandData.logoUrl,
         website: brandData.website,
         description: brandData.description,
       });
+    } else {
+      reset({
+        name: '',
+        logoUrl: '',
+        website: '',
+        description: '',
+      });
     }
   }, [brandData]);
-  console.log("Brand Data:", brandData);
   //#endregion
 
   //#region Internal Hook
@@ -111,9 +117,9 @@ const BrandForm = ({
     updateState({ isImageUploading: true });
 
     const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/uploadToDrive", {
-      method: "POST",
+    formData.append('file', file);
+    const res = await fetch('/api/uploadToDrive', {
+      method: 'POST',
       body: formData,
     });
 
@@ -124,7 +130,6 @@ const BrandForm = ({
     }
   };
   const onSubmit = async (data: BrandFormDto) => {
-    console.log("Form Data:", data);
     if (brandData) {
       const updatedData = {
         ...brandData,
@@ -139,16 +144,16 @@ const BrandForm = ({
         data: updatedData,
       }).unwrap();
       if (res) {
-        toast.success("Brand updated successfully!");
+        toast.success('Brand updated successfully!');
       } else {
-        toast.error("Brand creation failed!");
+        toast.error('Brand creation failed!');
       }
     } else {
       if (data) {
         const res = await addBrand(data).unwrap();
-        if (res) toast.success("Brand created successfully!");
+        if (res) toast.success('Brand created successfully!');
       } else {
-        toast.error("Brand creation failed!");
+        toast.error('Brand creation failed!');
       }
     }
     setTimeout(() => {
@@ -161,7 +166,7 @@ const BrandForm = ({
     <div className='rounded w-full md:col-span-3 mt-5'>
       <div className='flex items-center'>
         <ArrowLeft onClick={callBack} className='cursor-pointer' />
-        <h2 className='m-auto'>{brandData ? "Edit Brand" : "Add New Brand"}</h2>
+        <h2 className='m-auto'>{brandData ? 'Edit Brand' : 'Add New Brand'}</h2>
       </div>
 
       <FormComponent<BrandFormDto>

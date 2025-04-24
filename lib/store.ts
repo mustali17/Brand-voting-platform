@@ -1,5 +1,5 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query';
 import {
   persistStore,
   persistReducer,
@@ -9,29 +9,29 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage";
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
-import userReducer from "@/lib/features/user/userSlice";
-import { userApi } from "./services/user.service";
-import { brandApi } from "./services/brand.service";
-import { productApi } from "./services/product.service";
-import { categoryApi } from "./services/category.service";
+import userReducer from '@/lib/features/user/userSlice';
+import { userApi } from './services/user.service';
+import { brandApi } from './services/brand.service';
+import { productApi } from './services/product.service';
+import { categoryApi } from './services/category.service';
+import { api } from './services/api.service';
 
 // Combine all reducers
 const rootReducer = combineReducers({
   user: userReducer,
   [userApi.reducerPath]: userApi.reducer,
-  [brandApi.reducerPath]: brandApi.reducer,
-  [productApi.reducerPath]: productApi.reducer,
+  [api.reducerPath]: api.reducer,
   [categoryApi.reducerPath]: categoryApi.reducer,
 });
 
 // Configure persist (only persisting user slice)
 const persistConfig = {
-  key: "root",
+  key: 'root',
   storage,
-  whitelist: ["user"], // only persist the user slice
+  whitelist: ['user'], // only persist the user slice
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

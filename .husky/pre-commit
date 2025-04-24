@@ -5,7 +5,7 @@ echo 'Running Git Hooks'
 
 # Build
 echo '🔨 Running build...'
-pnpm build || (
+npm run build || (
     echo "\n⛔️ Build failed. Please fix the issues and try committing again. ⛔️";
     exit 1;
 )
@@ -14,3 +14,4 @@ echo '✅ Build successful'
 
 # If everything is good, proceed with lint-staged and commit
 echo '⌛️ committing...'
+npm run lint-staged

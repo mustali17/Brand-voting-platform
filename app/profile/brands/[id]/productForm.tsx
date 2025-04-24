@@ -1,68 +1,68 @@
-import FormComponent from "@/components/ui/FormComponent";
+import FormComponent from '@/components/ui/FormComponent';
 import {
   useGetCategoriesQuery,
   useLazyGetCategoriesQuery,
-} from "@/lib/services/category.service";
+} from '@/lib/services/category.service';
 import {
   useCreateProductMutation,
   useUpdateProductMutation,
-} from "@/lib/services/product.service";
-import { FileUploadDto, InputFormType } from "@/utils/models/common.model";
-import { ProductDto, ProductFormDto } from "@/utils/models/product.model";
-import { ArrowLeft } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+} from '@/lib/services/product.service';
+import { FileUploadDto, InputFormType } from '@/utils/models/common.model';
+import { ProductDto, ProductFormDto } from '@/utils/models/product.model';
+import { ArrowLeft } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 const formList: InputFormType[] = [
   {
-    name: "name",
-    key: "name",
-    label: "Full Name",
-    type: "text",
-    validation: "nullValidation",
+    name: 'name',
+    key: 'name',
+    label: 'Full Name',
+    type: 'text',
+    validation: 'nullValidation',
   },
   {
-    name: "description",
-    key: "description",
-    label: "Description",
-    type: "textarea",
-    validation: "nullValidation",
+    name: 'description',
+    key: 'description',
+    label: 'Description',
+    type: 'textarea',
+    validation: 'nullValidation',
   },
   {
-    name: "imageUrl",
-    key: "imageUrl",
-    label: "Image",
-    type: "file",
+    name: 'imageUrl',
+    key: 'imageUrl',
+    label: 'Image',
+    type: 'file',
   },
   {
-    name: "category",
-    key: "category",
-    label: "Category",
-    type: "select",
-    validation: "nullValidation",
+    name: 'category',
+    key: 'category',
+    label: 'Category',
+    type: 'select',
+    validation: 'nullValidation',
     selectInputList: [
       {
-        label: "Fashion",
-        value: "Fashion",
+        label: 'Fashion',
+        value: 'Fashion',
       },
     ],
   },
   {
-    name: "subcategory",
-    key: "subcategory",
-    label: "Sub Category",
-    type: "select",
-    validation: "nullValidation",
+    name: 'subcategory',
+    key: 'subcategory',
+    label: 'Sub Category',
+    type: 'select',
+    validation: 'nullValidation',
     isMulti: true,
     selectInputList: [
       {
-        label: "shoes",
-        value: "shoes",
+        label: 'shoes',
+        value: 'shoes',
       },
       {
-        label: "shirt",
-        value: "shirt",
+        label: 'shirt',
+        value: 'shirt',
       },
     ],
   },
@@ -96,16 +96,16 @@ const ProductForm = ({
     formState: { errors, isValid },
   } = useForm<ProductFormDto>({
     defaultValues: {
-      name: "",
-      brandId: "",
-      category: "",
-      description: "",
-      imageUrl: "",
+      name: '',
+      brandId: '',
+      category: '',
+      description: '',
+      imageUrl: '',
       subcategory: [],
     },
-    mode: "onSubmit",
+    mode: 'onSubmit',
   });
-  console.log("Product Form: ", modifyProduct);
+  console.log('Product Form: ', modifyProduct);
 
   const [
     addProduct,
@@ -128,13 +128,21 @@ const ProductForm = ({
   );
 
   useEffect(() => {
-    if (modifyProduct) {
+    if (Object.keys(modifyProduct).length) {
       reset({
         name: modifyProduct.name,
         imageUrl: modifyProduct.imageUrl,
         category: modifyProduct.category,
         subcategory: modifyProduct.subcategory,
         description: modifyProduct.description,
+      });
+    } else {
+      reset({
+        name: '',
+        imageUrl: '',
+        category: '',
+        subcategory: [],
+        description: '',
       });
     }
   }, [modifyProduct]); //#endregion
@@ -143,9 +151,9 @@ const ProductForm = ({
     updateState({ isImageUploading: true });
 
     const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/uploadToDrive", {
-      method: "POST",
+    formData.append('file', file);
+    const res = await fetch('/api/uploadToDrive', {
+      method: 'POST',
       body: formData,
     });
 
@@ -154,12 +162,12 @@ const ProductForm = ({
       setValue(key as keyof ProductFormDto, data.url);
       updateState({ isImageUploading: false });
     }
-    console.log("Uploaded File ID:", data);
+    console.log('Uploaded File ID:', data);
   };
 
   const onSubmit = async (data: ProductFormDto) => {
     data.brandId = brandId;
-    if (modifyProduct) {
+    if (Object.keys(modifyProduct).length) {
       const updatedData = {
         ...modifyProduct,
         ...data,
@@ -169,14 +177,14 @@ const ProductForm = ({
         data: updatedData,
       }).unwrap();
       if (res) {
-        toast.success("Product updated successfully!");
+        toast.success('Product updated successfully!');
       } else {
-        toast.error("Product creation failed!");
+        toast.error('Product creation failed!');
       }
     } else {
       const res = await addProduct(data).unwrap();
       if (res) {
-        toast.success("Product Created Successfully!");
+        toast.success('Product Created Successfully!');
       }
     }
     setTimeout(() => {
@@ -188,7 +196,9 @@ const ProductForm = ({
     <div className='rounded w-full md:col-span-3'>
       <div className='flex items-center'>
         <ArrowLeft onClick={callBack} className='cursor-pointer' />
-        <h2 className='m-auto'>{"Add Product"}</h2>
+        <h2 className='m-auto'>
+          {modifyProduct ? 'Edit Product' : 'Add Product'}
+        </h2>
       </div>
 
       <FormComponent<ProductFormDto>

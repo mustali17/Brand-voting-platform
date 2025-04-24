@@ -2,36 +2,29 @@ import {
   BrandDetailsDto,
   BrandDto,
   BrandFormDto,
-} from "@/utils/models/brand.model";
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { BRANDS, REGISTER } from "../api/apiEndPoints";
-import { baseQuery } from "../api/baseQuery";
+} from '@/utils/models/brand.model';
+import { BRANDS, REGISTER } from '../api/apiEndPoints';
+import { api } from './api.service';
 
-export const brandApi = createApi({
-  reducerPath: "brandApi",
-  baseQuery,
-  tagTypes: ["Brand"],
+export const brandApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // READ: Get all users
-    getUsers: builder.query<BrandFormDto[], void>({
-      query: () => BRANDS,
-      providesTags: ["Brand"],
-    }),
-
     // READ: Get single user
     getBrandById: builder.query<BrandDetailsDto, string>({
       query: (id) => `${BRANDS}/${id}`,
-      providesTags: (result, error, id) => [{ type: "Brand", id }],
+      providesTags: (result, error, id) => [
+        { type: 'Brand', id },
+        { type: 'Product' },
+      ],
     }),
 
     // CREATE: Add a new brand
     createBrand: builder.mutation<BrandFormDto, Partial<BrandFormDto>>({
       query: (newUser) => ({
         url: BRANDS + REGISTER,
-        method: "POST",
+        method: 'POST',
         body: newUser,
       }),
-      invalidatesTags: ["Brand"],
+      invalidatesTags: ['Brand'],
     }),
 
     // UPDATE: Update a user
@@ -41,28 +34,17 @@ export const brandApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `${BRANDS}/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Brand", id }],
-    }),
-
-    // DELETE: Delete a user
-    deleteUser: builder.mutation<{ success: boolean }, number>({
-      query: (id) => ({
-        url: `${BRANDS}/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: (result, error, id) => [{ type: "Brand", id }],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Brand', id }],
     }),
   }),
 });
 
 export const {
-  useGetUsersQuery,
   useGetBrandByIdQuery,
   useLazyGetBrandByIdQuery,
   useCreateBrandMutation,
   useUpdateBrandMutation,
-  useDeleteUserMutation,
 } = brandApi;

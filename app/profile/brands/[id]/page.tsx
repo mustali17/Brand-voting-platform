@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useGetBrandByIdQuery } from "@/lib/services/brand.service";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ExternalLink } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import Post from "../../products";
-import { useCallback, useEffect, useState } from "react";
-import BrandForm from "./brandForm";
-import ProductForm from "./productForm";
-import Products from "../../products";
-import { ProductDto } from "@/utils/models/product.model";
-import { useRouter } from "next/navigation";
+import { useGetBrandByIdQuery } from '@/lib/services/brand.service';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import Post from '../../products';
+import { useCallback, useEffect, useState } from 'react';
+import BrandForm from './brandForm';
+import ProductForm from './productForm';
+import Products from '../../products';
+import { ProductDto } from '@/utils/models/product.model';
+import { useRouter } from 'next/navigation';
 
 interface State {
   isEdit: boolean;
@@ -51,8 +51,8 @@ export default function Brand({ params }: { params: { id: string } }) {
     <Card
       className={`${
         brandScreenStates.isEdit || brandScreenStates.isAddProduct
-          ? "max-w-2xl"
-          : "max-w-5xl"
+          ? 'max-w-2xl'
+          : 'max-w-5xl'
       } mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 ma-h-72 overflow-hidden relative`}
     >
       {brandScreenStates.isEdit ? (
@@ -62,14 +62,19 @@ export default function Brand({ params }: { params: { id: string } }) {
         />
       ) : brandScreenStates.isAddProduct ? (
         <ProductForm
-          callBack={() => updateState({ isAddProduct: false })}
+          callBack={() => {
+            updateState({
+              isAddProduct: false,
+              modifyProduct: {} as ProductDto,
+            });
+          }}
           brandId={brand.brand._id}
           modifyProduct={brandScreenStates.modifyProduct}
         />
       ) : (
         <>
           <div className='absolute top-4 left-4 cursor-pointer'>
-            <ArrowLeft onClick={() => router.push("/profile")} />
+            <ArrowLeft onClick={() => router.push('/profile')} />
           </div>
           <CardHeader className='flex flex-col items-center space-y-4 md:col-span-1'>
             <div className='h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center'>
@@ -93,8 +98,7 @@ export default function Brand({ params }: { params: { id: string } }) {
                 <p className='text-sm text-muted-foreground'>Followers</p>
               </div>
               <div>
-                {/* <p className='font-semibold'>{brand.brand.posts}</p> */}
-                <p className='font-semibold'>{0}</p>
+                <p className='font-semibold'>{brand.products.length}</p>
                 <p className='text-sm text-muted-foreground'>Posts</p>
               </div>
             </div>
@@ -128,7 +132,7 @@ export default function Brand({ params }: { params: { id: string } }) {
 
                   <div className='space-y-2'>
                     <p className='text-sm'>
-                      <span className='font-semibold'>Joined:</span>{" "}
+                      <span className='font-semibold'>Joined:</span>{' '}
                       {/* {brand.brand.joinedDate} */}0
                     </p>
 
@@ -139,7 +143,7 @@ export default function Brand({ params }: { params: { id: string } }) {
                         className='text-sm text-primary flex items-center gap-1 hover:underline'
                         target='_blank'
                       >
-                        {brand?.brand?.website?.replace("https://", "")}
+                        {brand?.brand?.website?.replace('https://', '')}
                         <ExternalLink className='h-3 w-3' />
                       </Link>
                     </div>
