@@ -20,17 +20,28 @@ export const GET = async (
       return NextResponse.json({ error: "Invalid brand ID" }, { status: 400 });
     }
 
-    const brand = await Brand.findById(id);
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    interface BrandWithFollowers {
+      followers?: mongoose.Types.ObjectId[];
+      [key: string]: any;
+    }
+
+    const brand = await Brand.findById(id).lean() as BrandWithFollowers;
 
     if (!brand) {
       return NextResponse.json({ error: "Brand not found" }, { status: 404 });
     }
 
-    const products = await Product.find({ brandId: id }).sort({ createdAt: -1 });
+    const products = await Product.find({ brandId: id }).sort({ createdAt: -1 }).lean();
+
+    const isFollowing = userId ? brand.followers?.some((f: any) => f.toString() === userId) : false;
 
     return NextResponse.json({
       brand,
-      products
+      products,
+      isFollowing,
     });
   } catch (err: any) {
     return NextResponse.json({ error: "Server error", message: err.message }, { status: 500 });

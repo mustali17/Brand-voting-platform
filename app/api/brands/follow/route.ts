@@ -44,6 +44,9 @@ export async function POST(req: NextRequest) {
     user.following.push(brandId);
     await user.save();
 
+    brand.followers.push(user._id);
+    await brand.save();
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
@@ -83,6 +86,13 @@ export async function DELETE(req: NextRequest) {
   
       user.following = user.following.filter((id: string) => id.toString() !== brandId);
       await user.save();
+
+      // Remove user from brand followers
+      const brand = await Brand.findById(brandId);
+      if (brand) {
+        brand.followers = brand.followers.filter((id: string) => id.toString() !== user._id.toString());
+        await brand.save();
+      }
   
       return NextResponse.json({ success: true });
     } catch (error) {
