@@ -1,16 +1,16 @@
-'use client';
-import { Button } from '@/components/ui/button';
-import { RootState } from '@/lib/store';
-import { LinkIcon, Settings } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import BrandForm from './brands/[id]/brandForm';
-import { useLazyGetUserByIdQuery } from '@/lib/services/user.service';
-import { setUser } from '@/lib/features/user/userSlice';
-import { useRouter } from 'next/navigation';
+"use client";
+import { Button } from "@/components/ui/button";
+import { RootState } from "@/lib/store";
+import { LinkIcon, Settings } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import BrandForm from "./brands/[id]/brandForm";
+import { useLazyGetUserByIdQuery } from "@/lib/services/user.service";
+import { setUser } from "@/lib/features/user/userSlice";
+import { useRouter } from "next/navigation";
 
 interface State {
   isCreateBrand: boolean;
@@ -58,7 +58,7 @@ const UserProfile = () => {
     <div className='flex flex-col items-center'>
       <div
         className={`flex flex-col min-h-screen ${
-          userProfileScreenStates.isCreateBrand ? 'max-w-xl' : 'max-w-7xl'
+          userProfileScreenStates.isCreateBrand ? "max-w-xl" : "max-w-7xl"
         } w-full text-black`}
       >
         {userProfileScreenStates.isCreateBrand ? (
@@ -71,43 +71,41 @@ const UserProfile = () => {
         ) : (
           <>
             {/* Profile Header */}
-            <div className='flex items-center  justify-center px-4 py-6 gap-4'>
+            <div className='flex flex-col sm:flex-row items-center justify-center px-4 py-6 gap-4'>
               <div>
                 <Image
                   src='/images/post.jpg'
                   alt='Profile picture'
                   width={150}
                   height={150}
-                  className='rounded-full w-48 h-48 mr-4 object-cover'
+                  className='rounded-full w-32 h-32 sm:w-48 sm:h-48 object-cover'
                 />
               </div>
               <div className='flex-1'>
                 <div className='flex flex-col gap-4'>
-                  <div className='flex items-center justify-between'>
-                    <h1 className='text-xl font-normal'>{user?.name}</h1>
+                  <div className='flex flex-col sm:flex-row items-center sm:justify-between gap-4 sm:gap-0'>
+                    <h1 className='text-lg sm:text-xl font-normal text-center sm:text-left'>
+                      {user?.name}
+                    </h1>
                     <div className='flex gap-2'>
                       <Button
                         title='Create Brand'
                         onClick={() => updateState({ isCreateBrand: true })}
                       />
                       <Button title='Edit profile' />
-
-                      <button className='p-1'>
-                        <Settings className='w-6 h-6' />
-                      </button>
                     </div>
                   </div>
 
                   {/* Stats */}
-                  <div className='flex gap-6 text-sm'>
+                  <div className='flex justify-center sm:justify-start gap-6 text-sm'>
                     <div>
                       <span className='font-semibold'>
                         {user?.following || 0}
-                      </span>{' '}
+                      </span>{" "}
                       followers
                     </div>
                   </div>
-                  <div>
+                  <div className='text-center sm:text-left'>
                     <p className='text-sm text-gray-500'>
                       Joined on {user?.createdAt}
                     </p>
@@ -126,7 +124,7 @@ const UserProfile = () => {
                   </div>
                 </div>
 
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 py-16'>
+                <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6 py-16'>
                   {user?.ownedBrands.map((brand) => (
                     <Link
                       key={brand._id}
