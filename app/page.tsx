@@ -13,6 +13,9 @@ import {
   MoreHorizontal,
   ThumbsUp,
   ThumbsDown,
+  UserCircle2Icon,
+  LogOut,
+  Bell,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -35,62 +38,32 @@ export default function HomePage() {
               href='#'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
-              <Search className='mr-3 h-5 w-5' />
-              Search
-            </Link>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
               <Compass className='mr-3 h-5 w-5' />
               Explore
             </Link>
+
             <Link
               href='#'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
-              <Film className='mr-3 h-5 w-5' />
-              Reels
-            </Link>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <MessageCircle className='mr-3 h-5 w-5' />
-              <div className='flex items-center'>
-                Messages
-                <span className='ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center'>
-                  8
-                </span>
-              </div>
-            </Link>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <Heart className='mr-3 h-5 w-5' />
+              <Bell className='mr-3 h-5 w-5' />
               Notifications
             </Link>
+
             <Link
               href='#'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
-              <PlusSquare className='mr-3 h-5 w-5' />
-              Create
+              <UserCircle2Icon className='mr-3 h-5 w-5' />
+              Profile
             </Link>
+
             <Link
               href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
+              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100 text-red-400'
             >
-              <Hash className='mr-3 h-5 w-5' />
-              Generate HashTags
-            </Link>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <Hash className='mr-3 h-5 w-5' />
-              Hashtags Metrics
+              <LogOut className='mr-3 h-5 w-5 ' />
+              Logout
             </Link>
           </div>
         </nav>
@@ -200,14 +173,14 @@ export default function HomePage() {
             <button className='p-2'>
               <Compass className='h-6 w-6' />
             </button>
-            <button className='p-2'>
-              <Film className='h-6 w-6' />
-            </button>
             <button className='p-2 relative'>
-              <MessageCircle className='h-6 w-6' />
+              <Bell className='h-6 w-6' />
               <span className='absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center'>
                 8
               </span>
+            </button>
+            <button className='p-2'>
+              <UserCircle2Icon className='h-6 w-6' />
             </button>
           </div>
         </div>

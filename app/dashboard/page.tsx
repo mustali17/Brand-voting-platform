@@ -1,17 +1,19 @@
-import React from "react";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/utils/authOptions";
+import React from 'react';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/utils/authOptions';
+import InfiniteScroll from '@/components/InfiniteScroll';
 
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect("/");
+    redirect('/');
   }
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-5xl max-[500px]:text-2xl">Dashboard</h1>
-    </div>
+    <main className='min-h-screen p-6 bg-gray-100'>
+      <h1 className='text-2xl font-bold mb-4'>Infinite Scroll Demo</h1>
+      <InfiniteScroll />
+    </main>
   );
 };
 
