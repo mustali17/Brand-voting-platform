@@ -53,7 +53,7 @@ export function FileInput({
           const next = prev + Math.floor(Math.random() * 5 + 2); // slower progress
           return next >= 100 ? 99 : next;
         });
-      }, 200); // slower interval
+      }, 400); // slower interval
     }
     return () => clearInterval(interval);
   }, [isUploading, progress]);
