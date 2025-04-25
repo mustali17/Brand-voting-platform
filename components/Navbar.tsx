@@ -1,21 +1,21 @@
-"use client";
-import React from "react";
-import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
 
-import { useState } from "react";
-import { Dialog } from "@headlessui/react";
-import { FaBars } from "react-icons/fa";
-import { FaXmark } from "react-icons/fa6";
-import Image from "next/image";
+import { useState } from 'react';
+import { Dialog } from '@headlessui/react';
+import { FaBars } from 'react-icons/fa';
+import { FaXmark } from 'react-icons/fa6';
+import Image from 'next/image';
 
 const Navbar = () => {
   const { data: session }: any = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Dashboard", href: "/dashboard" },
+    { name: 'Home', href: '/' },
+    { name: 'Dashboard', href: '/dashboard' },
   ];
 
   return (
@@ -59,8 +59,6 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <span className='ml-10 text-sm'>{session.user?.email}</span>
-
                 <button
                   onClick={() => {
                     signOut();
