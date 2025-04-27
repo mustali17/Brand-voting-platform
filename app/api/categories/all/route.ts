@@ -6,7 +6,7 @@ export async function GET() {
   try {
     await connect();
 
-    const categories = await Category.find({}, { _id: 1, name: 1, categoryImageURL: 1, subcategories: 1 });
+    const categories = await Category.find({});
 
     return NextResponse.json(categories);
   } catch (error) {
