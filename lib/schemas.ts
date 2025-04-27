@@ -52,3 +52,8 @@ export const CastVoteSchema = z.object({
   userId: z.string(),
   productId: z.string(),
 });
+
+export const CreateCategorySchema = z.object({
+  name: z.string().min(1),
+  categoryImageURL: z.string().url(),
+});
