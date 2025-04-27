@@ -27,6 +27,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connect from "@/utils/db";
 import Product from "@/models/Product";
 import Brand from "@/models/Brand";
+import User from "@/models/User";
 import Category from "@/models/Category";
 import Vote from "@/models/Vote";
 import { getServerSession } from "next-auth";
@@ -48,7 +49,13 @@ export async function GET(req: NextRequest) {
   try {
     await connect();
 
+    let products: any[] = [];
+    let total = 0;
+
     const filter: any = {};
+
+    const user = await User.findById(userId).select("following").lean() as { following?: string[] } | null;
+    const followingBrandIds = user?.following?.map((id: string) => id.toString()) || [];
 
     if (search) {
       const regex = new RegExp(search, "i");
@@ -69,31 +76,49 @@ export async function GET(req: NextRequest) {
           { subcategory: regex }
         ];
       }
+       products = await Product.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("brandId", "name logoUrl")
+        .populate("categoryId", "name")
+        .lean() as Array<{ _id: string; [key: string]: any }>;
+  
+       total = await Product.countDocuments(filter);
+    }else {
+      const priorityProducts = await Product.find({ brandId: { $in: followingBrandIds } })
+        .sort({ createdAt: -1 })
+        .populate("brandId", "name logoUrl")
+        .populate("categoryId", "name")
+        .lean();
+
+      const otherProducts = await Product.find({ brandId: { $nin: followingBrandIds } })
+        .sort({ createdAt: -1 })
+        .populate("brandId", "name logoUrl")
+        .populate("categoryId", "name")
+        .lean();
+
+      const combinedProducts = [...priorityProducts, ...otherProducts];
+
+      total = combinedProducts.length;
+      products = combinedProducts.slice(skip, skip + limit);
     }
 
-    const products = await Product.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate("brandId", "name logoUrl")
-      .populate("categoryId", "name")
-      .lean() as Array<{ _id: string; [key: string]: any }>;
-
-    const total = await Product.countDocuments(filter);
 
     // Determine hasVoted for each product
     const productIds = products.map((p) => p._id);
     const votes = await Vote.find({ userId, productId: { $in: productIds } }).select("productId").lean();
     const votedProductIds = new Set(votes.map(v => v.productId.toString()));
 
-    const productsWithVotes = products.map(product => ({
+    const productsWithVotesAndFollowing = products.map((product) => ({
       ...product,
-      hasVoted: votedProductIds.has((product._id as string).toString())
+      hasVoted: votedProductIds.has(product._id.toString()),
+      isFollowing: followingBrandIds.includes(product.brandId?._id?.toString() || ""),
     }));
 
     return NextResponse.json({
       success: true,
-      products:productsWithVotes,
+      products:productsWithVotesAndFollowing,
       pagination: {
         total,
         page,
