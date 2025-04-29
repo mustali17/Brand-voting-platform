@@ -1,5 +1,9 @@
-import { ProductDto, ProductFormDto } from '@/utils/models/product.model';
-import { BRANDS, CREATE, PRODUCTS } from '../api/apiEndPoints';
+import {
+  ProductDto,
+  ProductFormDto,
+  ProductListDto,
+} from '@/utils/models/product.model';
+import { BRANDS, CREATE, LIST, PRODUCTS } from '../api/apiEndPoints';
 import { api } from './api.service';
 
 export const productApi = api.injectEndpoints({
@@ -29,8 +33,17 @@ export const productApi = api.injectEndpoints({
         { type: 'Brand' },
       ],
     }),
+
+    // Product List
+    getProductList: builder.query<ProductListDto, { page: number }>({
+      query: ({ page }) => PRODUCTS + LIST + `?page=${page}`,
+      providesTags: ['Product'],
+    }),
   }),
 });
 
-export const { useCreateProductMutation, useUpdateProductMutation } =
-  productApi;
+export const {
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useLazyGetProductListQuery,
+} = productApi;
