@@ -1,24 +1,29 @@
-'use client';
+"use client";
 
-import { useLazyGetProductListQuery } from '@/lib/services/product.service';
-import { Product } from '@/utils/models/product.model';
-import { MoreHorizontal, ThumbsUp } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import {
+  useLazyGetProductListQuery,
+  useUnvoteAProductMutation,
+  useVoteAProductMutation,
+} from "@/lib/services/product.service";
+import { Product } from "@/utils/models/product.model";
+import { MoreHorizontal, ThumbsUp } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 export default function InfiniteScroll() {
+  //#region External Hooks
+  const [fetchProductList, { isLoading, isError }] =
+    useLazyGetProductListQuery();
+  const [voteAProduct] = useVoteAProductMutation();
+  const [unVoteAProduct] = useUnvoteAProductMutation();
+  //#endregion
+
+  //#region Internal Function
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
   const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const observerRef = useRef<HTMLDivElement | null>(null);
-  const [fetchProductList, { isLoading, isError }] =
-    useLazyGetProductListQuery();
-
-  const fetchData = async (page: number) => {
-    const products = await fetchProductList({ page }).unwrap();
-    setItems((prev) => [...prev, ...products.products]);
-    setHasMore(products.pagination.pages > page);
-  };
 
   useEffect(() => {
     fetchData(page);
@@ -40,6 +45,44 @@ export default function InfiniteScroll() {
       if (observerRef.current) observer.unobserve(observerRef.current);
     };
   }, [hasMore]);
+  //#endregion
+
+  //#region Internal Function
+  const fetchData = async (page: number) => {
+    const products = await fetchProductList({ page }).unwrap();
+    setItems((prev) => [...prev, ...products.products]);
+    setHasMore(products.pagination.pages > page);
+  };
+
+  const handleVote = async (
+    productId: string,
+    addOrRemove: "add" | "remove"
+  ) => {
+    const updatedItems = items.map((item) =>
+      item._id === productId
+        ? {
+            ...item,
+            hasVoted: !item.hasVoted,
+            votes: addOrRemove === "add" ? item.votes + 1 : item.votes - 1,
+          }
+        : item
+    );
+    setItems(updatedItems);
+    if (addOrRemove === "remove") {
+      try {
+        const response = await unVoteAProduct({ productId }).unwrap();
+      } catch (error) {
+        console.error("Error voting for product:", error);
+      }
+    } else {
+      try {
+        const response = await voteAProduct({ productId }).unwrap();
+      } catch (error) {
+        console.error("Error voting for product:", error);
+      }
+    }
+  };
+  //#endregion
 
   return (
     <div className='p-4 max-w-xl mx-auto'>
@@ -49,7 +92,7 @@ export default function InfiniteScroll() {
           <div className='flex items-center p-3'>
             <div className='flex items-center'>
               <Image
-                src={item.brandId.logoUrl || '/images/post.jpg'}
+                src={item.brandId.logoUrl || "/images/post.jpg"}
                 alt='Profile'
                 width={56}
                 height={56}
@@ -85,7 +128,7 @@ export default function InfiniteScroll() {
           <div>
             <Image
               alt='Post'
-              src={item.imageUrl || '/images/post.jpg'}
+              src={item.imageUrl || "/images/post.jpg"}
               width={500}
               height={150}
               className='w-full object-cover rounded-lg h-[400px]'
@@ -93,7 +136,19 @@ export default function InfiniteScroll() {
           </div>
           {/* reaction */}
           <div className='flex justify-center mt-2  items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
-            <ThumbsUp className='w-4 h-4 cursor-pointer hover:text-blue-500' />
+            {item.hasVoted ? (
+              <ThumbsUp
+                fill='black'
+                className='w-4 h-4 cursor-pointer'
+                onClick={() => handleVote(item._id, "remove")}
+              />
+            ) : (
+              <ThumbsUp
+                className='w-4 h-4 cursor-pointer hover:text-black-500'
+                onClick={() => handleVote(item._id, "add")}
+              />
+            )}
+
             <span className='text-sm font-medium'>{item.votes}</span>
           </div>
         </div>
