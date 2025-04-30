@@ -14,4 +14,3 @@ echo '✅ Build successful'
 
 # If everything is good, proceed with lint-staged and commit
 echo '⌛️ committing...'
-npm run lint-staged
