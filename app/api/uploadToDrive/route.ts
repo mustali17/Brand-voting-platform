@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     const serviceAccount = JSON.parse(
       Buffer.from(base64, "base64").toString("utf8")
     );
-    console.log("🚀 ~ POST ~ serviceAccount:", serviceAccount)
 
     // Set up Google Drive API
     const auth = new google.auth.GoogleAuth({
