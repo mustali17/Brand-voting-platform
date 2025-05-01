@@ -2,7 +2,7 @@ import {
   ProductDto,
   ProductFormDto,
   ProductListDto,
-} from "@/utils/models/product.model";
+} from '@/utils/models/product.model';
 import {
   BRANDS,
   CREATE,
@@ -10,8 +10,8 @@ import {
   PRODUCTS,
   UNVOTE,
   VOTE,
-} from "../api/apiEndPoints";
-import { api } from "./api.service";
+} from '../api/apiEndPoints';
+import { api } from './api.service';
 
 export const productApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,10 +19,10 @@ export const productApi = api.injectEndpoints({
     createProduct: builder.mutation<ProductFormDto, Partial<ProductFormDto>>({
       query: (newUser) => ({
         url: PRODUCTS + CREATE,
-        method: "POST",
+        method: 'POST',
         body: newUser,
       }),
-      invalidatesTags: ["Product", "Brand"],
+      invalidatesTags: ['Product', 'Brand'],
     }),
 
     // UPDATE: Update a user
@@ -32,19 +32,25 @@ export const productApi = api.injectEndpoints({
     >({
       query: ({ id, data }) => ({
         url: `${PRODUCTS}/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "Product", id },
-        { type: "Brand" },
+        { type: 'Product', id },
+        { type: 'Brand' },
       ],
     }),
 
     // Product List
-    getProductList: builder.query<ProductListDto, { page: number }>({
-      query: ({ page }) => PRODUCTS + LIST + `?page=${page}`,
-      providesTags: ["Product"],
+    getProductList: builder.query<
+      ProductListDto,
+      { page: number; search?: string }
+    >({
+      query: ({ page, search }) =>
+        PRODUCTS +
+        LIST +
+        (search ? `?page=${1}&limit=${100}&search=${search}` : `?page=${page}`),
+      providesTags: ['Product'],
     }),
 
     voteAProduct: builder.mutation<
@@ -56,7 +62,7 @@ export const productApi = api.injectEndpoints({
     >({
       query: ({ productId }) => ({
         url: PRODUCTS + VOTE,
-        method: "POST",
+        method: 'POST',
         body: { productId },
       }),
       invalidatesTags: [],
@@ -70,7 +76,7 @@ export const productApi = api.injectEndpoints({
     >({
       query: ({ productId }) => ({
         url: PRODUCTS + UNVOTE,
-        method: "POST",
+        method: 'POST',
         body: { productId },
       }),
       invalidatesTags: [],

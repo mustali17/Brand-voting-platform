@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
 import {
   useLazyGetProductListQuery,
   useUnvoteAProductMutation,
   useVoteAProductMutation,
-} from "@/lib/services/product.service";
-import { Product } from "@/utils/models/product.model";
-import { MoreHorizontal, ThumbsUp } from "lucide-react";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+} from '@/lib/services/product.service';
+import { Product } from '@/utils/models/product.model';
+import { MoreHorizontal, ThumbsUp } from 'lucide-react';
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 export default function InfiniteScroll() {
   //#region External Hooks
@@ -16,18 +17,19 @@ export default function InfiniteScroll() {
     useLazyGetProductListQuery();
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
   //#endregion
 
-  //#region Internal Function
-  const observerRef = useRef<HTMLDivElement | null>(null);
-
+  //#region Internal Hooks
   const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    fetchData(page);
-  }, [page]);
+    fetchData(page, query);
+  }, [page, query]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,51 +50,55 @@ export default function InfiniteScroll() {
   //#endregion
 
   //#region Internal Function
-  const fetchData = async (page: number) => {
-    const products = await fetchProductList({ page }).unwrap();
-    setItems((prev) => [...prev, ...products.products]);
+  const fetchData = async (page: number, search?: string) => {
+    const products = await fetchProductList({ page, search }).unwrap();
+    if (search) {
+      setItems(products.products);
+    } else {
+      setItems((prev) => [...prev, ...products.products]);
+    }
     setHasMore(products.pagination.pages > page);
   };
-
   const handleVote = async (
     productId: string,
-    addOrRemove: "add" | "remove"
+    addOrRemove: 'add' | 'remove'
   ) => {
     const updatedItems = items.map((item) =>
       item._id === productId
         ? {
             ...item,
             hasVoted: !item.hasVoted,
-            votes: addOrRemove === "add" ? item.votes + 1 : item.votes - 1,
+            votes: addOrRemove === 'add' ? item.votes + 1 : item.votes - 1,
           }
         : item
     );
     setItems(updatedItems);
-    if (addOrRemove === "remove") {
+    if (addOrRemove === 'remove') {
       try {
         const response = await unVoteAProduct({ productId }).unwrap();
       } catch (error) {
-        console.error("Error voting for product:", error);
+        console.error('Error voting for product:', error);
       }
     } else {
       try {
         const response = await voteAProduct({ productId }).unwrap();
       } catch (error) {
-        console.error("Error voting for product:", error);
+        console.error('Error voting for product:', error);
       }
     }
   };
   //#endregion
+  //#endregion
 
   return (
     <div className='p-4 max-w-xl mx-auto'>
-      {items.map((item) => (
-        <div className='border-b border-gray-300 pb-4' key={item._id}>
+      {items.map((item, index) => (
+        <div className='border-b border-gray-300 pb-4' key={index}>
           {/* Post Header */}
           <div className='flex items-center p-3'>
             <div className='flex items-center'>
               <Image
-                src={item.brandId.logoUrl || "/images/post.jpg"}
+                src={item.brandId.logoUrl || '/images/post.jpg'}
                 alt='Profile'
                 width={56}
                 height={56}
@@ -128,7 +134,7 @@ export default function InfiniteScroll() {
           <div>
             <Image
               alt='Post'
-              src={item.imageUrl || "/images/post.jpg"}
+              src={item.imageUrl || '/images/post.jpg'}
               width={500}
               height={150}
               className='w-full object-cover rounded-lg h-[400px]'
@@ -140,12 +146,12 @@ export default function InfiniteScroll() {
               <ThumbsUp
                 fill='black'
                 className='w-4 h-4 cursor-pointer'
-                onClick={() => handleVote(item._id, "remove")}
+                onClick={() => handleVote(item._id, 'remove')}
               />
             ) : (
               <ThumbsUp
                 className='w-4 h-4 cursor-pointer hover:text-black-500'
-                onClick={() => handleVote(item._id, "add")}
+                onClick={() => handleVote(item._id, 'add')}
               />
             )}
 

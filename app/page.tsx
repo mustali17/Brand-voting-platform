@@ -1,5 +1,6 @@
 'use client';
 import InfiniteScroll from '@/components/InfiniteScroll';
+import SearchOverlay from '@/components/searchOverkay';
 import {
   Bell,
   Compass,
@@ -7,6 +8,7 @@ import {
   LogOut,
   MoreHorizontal,
   Search,
+  SearchIcon,
   ThumbsDown,
   ThumbsUp,
   UserCircle2Icon,
@@ -14,11 +16,20 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function HomePage() {
   const route = useRouter();
+
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   return (
     <div className='flex h-screen bg-white'>
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
+
       {/* Left Sidebar */}
       <div className='w-60 border-r border-gray-300 hidden md:flex flex-col'>
         <nav className='flex-1'>
@@ -41,13 +52,22 @@ export default function HomePage() {
             <Link
               href='#'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
+              onClick={() => setIsSearchOpen(true)}
+            >
+              <SearchIcon className='mr-3 h-5 w-5' />
+              Search
+            </Link>
+
+            <Link
+              href='#'
+              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
               <Bell className='mr-3 h-5 w-5' />
               Notifications
             </Link>
 
             <Link
-              href='#'
+              href='/profile'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
               <UserCircle2Icon className='mr-3 h-5 w-5' />
@@ -113,7 +133,10 @@ export default function HomePage() {
               <Home className='h-6 w-6' />
             </button>
             <button className='p-2'>
-              <Search className='h-6 w-6' />
+              <Search
+                className='h-6 w-6'
+                onClick={() => setIsSearchOpen(true)}
+              />
             </button>
             <button className='p-2'>
               <Compass className='h-6 w-6' />
@@ -124,7 +147,7 @@ export default function HomePage() {
                 8
               </span>
             </button>
-            <button className='p-2'>
+            <button className='p-2' onClick={() => route.push('/profile')}>
               <UserCircle2Icon className='h-6 w-6' />
             </button>
           </div>
