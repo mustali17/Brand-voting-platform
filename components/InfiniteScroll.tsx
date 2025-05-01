@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
 import {
   useLazyGetProductListQuery,
   useUnvoteAProductMutation,
   useVoteAProductMutation,
-} from '@/lib/services/product.service';
-import { Product } from '@/utils/models/product.model';
-import { MoreHorizontal, ThumbsUp } from 'lucide-react';
-import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+} from "@/lib/services/product.service";
+import type { Product } from "@/utils/models/product.model";
+import { MoreHorizontal, ThumbsUp } from "lucide-react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export default function InfiniteScroll() {
   //#region External Hooks
@@ -18,13 +18,16 @@ export default function InfiniteScroll() {
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const query = searchParams.get("q") || "";
   //#endregion
 
   //#region Internal Hooks
   const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [animatingItems, setAnimatingItems] = useState<Record<string, boolean>>(
+    {}
+  );
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -59,35 +62,46 @@ export default function InfiniteScroll() {
     }
     setHasMore(products.pagination.pages > page);
   };
+
   const handleVote = async (
     productId: string,
-    addOrRemove: 'add' | 'remove'
+    addOrRemove: "add" | "remove"
   ) => {
+    // Start animation if adding a vote
+    if (addOrRemove === "add") {
+      setAnimatingItems((prev) => ({ ...prev, [productId]: true }));
+
+      // Reset animation state after animation completes
+      setTimeout(() => {
+        setAnimatingItems((prev) => ({ ...prev, [productId]: false }));
+      }, 500); // Match this with the CSS animation duration
+    }
+
     const updatedItems = items.map((item) =>
       item._id === productId
         ? {
             ...item,
             hasVoted: !item.hasVoted,
-            votes: addOrRemove === 'add' ? item.votes + 1 : item.votes - 1,
+            votes: addOrRemove === "add" ? item.votes + 1 : item.votes - 1,
           }
         : item
     );
     setItems(updatedItems);
-    if (addOrRemove === 'remove') {
+
+    if (addOrRemove === "remove") {
       try {
         const response = await unVoteAProduct({ productId }).unwrap();
       } catch (error) {
-        console.error('Error voting for product:', error);
+        console.error("Error voting for product:", error);
       }
     } else {
       try {
         const response = await voteAProduct({ productId }).unwrap();
       } catch (error) {
-        console.error('Error voting for product:', error);
+        console.error("Error voting for product:", error);
       }
     }
   };
-  //#endregion
   //#endregion
 
   return (
@@ -98,7 +112,7 @@ export default function InfiniteScroll() {
           <div className='flex items-center p-3'>
             <div className='flex items-center'>
               <Image
-                src={item.brandId.logoUrl || '/images/post.jpg'}
+                src={item.brandId.logoUrl || "/images/post.jpg"}
                 alt='Profile'
                 width={56}
                 height={56}
@@ -134,28 +148,36 @@ export default function InfiniteScroll() {
           <div>
             <Image
               alt='Post'
-              src={item.imageUrl || '/images/post.jpg'}
+              src={item.imageUrl || "/images/post.jpg"}
               width={500}
               height={150}
               className='w-full object-cover rounded-lg h-[400px]'
             />
           </div>
           {/* reaction */}
-          <div className='flex justify-center mt-2  items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
-            {item.hasVoted ? (
-              <ThumbsUp
-                fill='black'
-                className='w-4 h-4 cursor-pointer'
-                onClick={() => handleVote(item._id, 'remove')}
-              />
-            ) : (
-              <ThumbsUp
-                className='w-4 h-4 cursor-pointer hover:text-black-500'
-                onClick={() => handleVote(item._id, 'add')}
-              />
-            )}
+          <div className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
+            <div
+              className={`like-button-container ${animatingItems[item._id] ? "animate-like" : ""}`}
+            >
+              {item.hasVoted ? (
+                <ThumbsUp
+                  fill='black'
+                  className={`w-4 h-4 cursor-pointer transition-transform duration-300 ${animatingItems[item._id] ? "scale-150" : ""}`}
+                  onClick={() => handleVote(item._id, "remove")}
+                />
+              ) : (
+                <ThumbsUp
+                  className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-transform duration-300 ${animatingItems[item._id] ? "scale-150" : ""}`}
+                  onClick={() => handleVote(item._id, "add")}
+                />
+              )}
+            </div>
 
-            <span className='text-sm font-medium'>{item.votes}</span>
+            <span
+              className={`text-sm font-medium transition-all duration-300 ${animatingItems[item._id] ? "scale-110 font-bold" : ""}`}
+            >
+              {item.votes}
+            </span>
           </div>
         </div>
       ))}

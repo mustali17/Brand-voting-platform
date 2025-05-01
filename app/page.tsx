@@ -1,7 +1,7 @@
-'use client';
-import { CategoriesSlider } from '@/components/categoriesSlider';
-import InfiniteScroll from '@/components/InfiniteScroll';
-import SearchOverlay from '@/components/searchOverkay';
+"use client";
+import { CategoriesSlider } from "@/components/categoriesSlider";
+import InfiniteScroll from "@/components/InfiniteScroll";
+import SearchOverlay from "@/components/searchOverkay";
 import {
   Bell,
   Compass,
@@ -13,23 +13,23 @@ import {
   ThumbsDown,
   ThumbsUp,
   UserCircle2Icon,
-} from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+} from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const categories = [
-  { name: 'zaincontra...', img: '/images/post.jpg' },
-  { name: 'hakimkap...', img: '/images/story.jpg' },
-  { name: 'hisukriti', img: '/images/story.jpg' },
-  { name: 'bhuvan.ba...', img: '/images/story.jpg' },
-  { name: 'mipalkarof...', img: '/images/story.jpg' },
-  { name: 'mipalkarof...', img: '/images/story.jpg' },
-  { name: 'mipalkarof...', img: '/images/story.jpg' },
-  { name: 'naughtyw...', img: '/images/story.jpg' },
-  { name: 'thehungry...', img: '/images/story.jpg' },
+  { name: "zaincontra...", img: "/images/post.jpg" },
+  { name: "hakimkap...", img: "/images/story.jpg" },
+  { name: "hisukriti", img: "/images/story.jpg" },
+  { name: "bhuvan.ba...", img: "/images/story.jpg" },
+  { name: "mipalkarof...", img: "/images/story.jpg" },
+  { name: "mipalkarof...", img: "/images/story.jpg" },
+  { name: "mipalkarof...", img: "/images/story.jpg" },
+  { name: "naughtyw...", img: "/images/story.jpg" },
+  { name: "thehungry...", img: "/images/story.jpg" },
 ];
 
 export default function HomePage() {
@@ -37,8 +37,8 @@ export default function HomePage() {
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
-    if (sessionStatus === 'unauthenticated') {
-      route.replace('/login');
+    if (sessionStatus === "unauthenticated") {
+      route.replace("/login");
     }
   }, [sessionStatus]);
 
@@ -147,7 +147,7 @@ export default function HomePage() {
                 8
               </span>
             </button>
-            <button className='p-2' onClick={() => route.push('/profile')}>
+            <button className='p-2' onClick={() => route.push("/profile")}>
               <UserCircle2Icon className='h-6 w-6' />
             </button>
           </div>
@@ -158,7 +158,7 @@ export default function HomePage() {
       <div className='w-80 border-l border-gray-300 p-4 hidden lg:block'>
         <div
           className='flex items-center mb-6 cursor-pointer'
-          onClick={() => route.push('/profile')}
+          onClick={() => route.push("/profile")}
         >
           <Image
             src='/images/post.jpg'
@@ -179,11 +179,11 @@ export default function HomePage() {
         </div>
 
         {[
-          { name: 'tasneem28', followedBy: 'mubaranapur', time: '16' },
-          { name: 'jamilazuzerbhai', followedBy: 'burhan72002', time: '5' },
-          { name: 'taher_8_', followedBy: 'm_o_h_a_m_m_e_d', time: '' },
-          { name: 'kayda_husain', followedBy: 'shubham_pathak_', time: '' },
-          { name: 'ali_k_hasam', followedBy: 'chuna.huzefa', time: '12' },
+          { name: "tasneem28", followedBy: "mubaranapur", time: "16" },
+          { name: "jamilazuzerbhai", followedBy: "burhan72002", time: "5" },
+          { name: "taher_8_", followedBy: "m_o_h_a_m_m_e_d", time: "" },
+          { name: "kayda_husain", followedBy: "shubham_pathak_", time: "" },
+          { name: "ali_k_hasam", followedBy: "chuna.huzefa", time: "12" },
         ].map((suggestion, i) => (
           <div key={i} className='flex items-center mb-3'>
             <Image
@@ -196,7 +196,7 @@ export default function HomePage() {
             <div className='flex-1'>
               <div className='font-semibold text-sm'>{suggestion.name}</div>
               <div className='text-gray-500 text-xs'>
-                Followed by {suggestion.followedBy}{' '}
+                Followed by {suggestion.followedBy}{" "}
                 {suggestion.time && `+ ${suggestion.time}`}
               </div>
             </div>
