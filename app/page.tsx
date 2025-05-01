@@ -1,4 +1,5 @@
 'use client';
+import { CategoriesSlider } from '@/components/categoriesSlider';
 import InfiniteScroll from '@/components/InfiniteScroll';
 import SearchOverlay from '@/components/searchOverkay';
 import {
@@ -13,18 +14,38 @@ import {
   ThumbsUp,
   UserCircle2Icon,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const categories = [
+  { name: 'zaincontra...', img: '/images/post.jpg' },
+  { name: 'hakimkap...', img: '/images/story.jpg' },
+  { name: 'hisukriti', img: '/images/story.jpg' },
+  { name: 'bhuvan.ba...', img: '/images/story.jpg' },
+  { name: 'mipalkarof...', img: '/images/story.jpg' },
+  { name: 'mipalkarof...', img: '/images/story.jpg' },
+  { name: 'mipalkarof...', img: '/images/story.jpg' },
+  { name: 'naughtyw...', img: '/images/story.jpg' },
+  { name: 'thehungry...', img: '/images/story.jpg' },
+];
 
 export default function HomePage() {
   const route = useRouter();
+  const { data: session, status: sessionStatus } = useSession();
+
+  useEffect(() => {
+    if (sessionStatus === 'unauthenticated') {
+      route.replace('/login');
+    }
+  }, [sessionStatus]);
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <div className='flex h-screen bg-white'>
+    <div className='flex h-screen bg-white pt-2'>
       <SearchOverlay
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
@@ -34,6 +55,12 @@ export default function HomePage() {
       <div className='w-60 border-r border-gray-300 hidden md:flex flex-col'>
         <nav className='flex-1'>
           <div className='space-y-1 px-3'>
+            <Link
+              href='#'
+              className='flex items-center px-3 py-3 text-xl my-4 italic font-medium rounded-md hover:bg-gray-100'
+            >
+              Brand Voting
+            </Link>
             <Link
               href='#'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
@@ -90,34 +117,7 @@ export default function HomePage() {
         {/* Mobile Header */}
 
         <div className='flex-1 overflow-y-auto'>
-          {/* Stories */}
-          <div className='border-b border-gray-300 py-4 px-4'>
-            <div className='flex space-x-4 overflow-x-auto pb-2'>
-              {[
-                { name: 'zaincontra...', img: '/images/post.jpg' },
-                { name: 'hakimkap...', img: '/images/story.jpg' },
-                { name: 'hisukriti', img: '/images/story.jpg' },
-                { name: 'bhuvan.ba...', img: '/images/story.jpg' },
-                { name: 'mipalkarof...', img: '/images/story.jpg' },
-                { name: 'naughtyw...', img: '/images/story.jpg' },
-                { name: 'thehungry...', img: '/images/story.jpg' },
-              ].map((story, i) => (
-                <div key={i} className='flex flex-col items-center'>
-                  <Image
-                    src='/images/post.jpg'
-                    alt='Profile'
-                    width={56}
-                    height={56}
-                    className='rounded-full w-14 h-14 mr-4'
-                  />
-
-                  <span className='text-xs mt-1 truncate w-16 text-center'>
-                    {story.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <CategoriesSlider Categories={categories} />
 
           {/* Feed */}
           <div className='max-w-xl mx-auto w-full'>

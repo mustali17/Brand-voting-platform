@@ -91,7 +91,7 @@ export default function InfiniteScroll() {
   //#endregion
 
   return (
-    <div className='p-4 max-w-xl mx-auto'>
+    <div className='max-w-xl mx-auto'>
       {items.map((item, index) => (
         <div className='border-b border-gray-300 pb-4' key={index}>
           {/* Post Header */}
