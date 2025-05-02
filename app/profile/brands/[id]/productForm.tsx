@@ -7,6 +7,7 @@ import {
   useCreateProductMutation,
   useUpdateProductMutation,
 } from '@/lib/services/product.service';
+import { CategoryDetailsDto } from '@/utils/models/category.model';
 import { FileUploadDto, InputFormType } from '@/utils/models/common.model';
 import { ProductDto, ProductFormDto } from '@/utils/models/product.model';
 import { ArrowLeft } from 'lucide-react';
@@ -57,11 +58,13 @@ const formList: InputFormType[] = [
 interface State {
   isImageUploading: boolean;
   formList: InputFormType[];
+  allCategories: CategoryDetailsDto[];
 }
 
 const initialState: State = {
   isImageUploading: false,
   formList: formList,
+  allCategories: [] as CategoryDetailsDto[],
 };
 
 const ProductForm = ({
@@ -135,24 +138,24 @@ const ProductForm = ({
         description: '',
       });
     }
-  }, [modifyProduct]); //#endregion
+  }, [modifyProduct]);
+
+  useEffect(() => {
+    setValue('subcategory', []);
+    handleCategoryChange(watch('categoryId'));
+  }, [watch('categoryId')]);
+  //#endregion
+
   //#region Internal Function
   const getCategoriesList = async () => {
     const res = await getCategories().unwrap();
     if (res) {
+      updateState({ allCategories: res });
       const categoryList = res.map((category) => {
         return {
           label: category.name,
           value: category._id,
         };
-      });
-      const subCategoryList = res.map((category) => {
-        return category.subcategories.map((subcategory) => {
-          return {
-            label: subcategory,
-            value: subcategory,
-          };
-        });
       });
       updateState({
         formList: formList.map((form) => {
@@ -160,11 +163,6 @@ const ProductForm = ({
             return {
               ...form,
               selectInputList: categoryList,
-            };
-          } else if (form.key === 'subcategory') {
-            return {
-              ...form,
-              selectInputList: subCategoryList.flat(),
             };
           }
           return form;
@@ -175,6 +173,34 @@ const ProductForm = ({
       toast.error('Failed to fetch categories!');
     }
   };
+
+  const handleCategoryChange = async (value: string) => {
+    if (productScreenStates.allCategories.length) {
+      const selectedCategory = productScreenStates.allCategories.find(
+        (category) => category._id === value
+      )?.subcategories;
+      if (selectedCategory) {
+        const subcategoryList = selectedCategory.map((subcategory) => {
+          return {
+            label: subcategory,
+            value: subcategory,
+          };
+        });
+        updateState({
+          formList: productScreenStates.formList.map((form) => {
+            if (form.key === 'subcategory') {
+              return {
+                ...form,
+                selectInputList: subcategoryList,
+              };
+            }
+            return form;
+          }),
+        });
+      }
+    }
+  };
+
   const handleFileUpload = async (file: File, key: string) => {
     updateState({ isImageUploading: true });
 

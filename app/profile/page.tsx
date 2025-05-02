@@ -1,16 +1,16 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { RootState } from "@/lib/store";
-import { LinkIcon, Settings } from "lucide-react";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import BrandForm from "./brands/[id]/brandForm";
-import { useLazyGetUserByIdQuery } from "@/lib/services/user.service";
-import { setUser } from "@/lib/features/user/userSlice";
-import { useRouter } from "next/navigation";
+'use client';
+import { Button } from '@/components/ui/button';
+import { RootState } from '@/lib/store';
+import { LinkIcon, Settings } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import BrandForm from './brands/[id]/brandForm';
+import { useLazyGetUserByIdQuery } from '@/lib/services/user.service';
+import { setUser } from '@/lib/features/user/userSlice';
+import { useRouter } from 'next/navigation';
 
 interface State {
   isCreateBrand: boolean;
@@ -55,10 +55,10 @@ const UserProfile = () => {
   //#endregion
 
   return (
-    <div className='flex flex-col items-center'>
+    <div className='flex flex-col items-center w-full'>
       <div
         className={`flex flex-col min-h-screen ${
-          userProfileScreenStates.isCreateBrand ? "max-w-xl" : "max-w-7xl"
+          userProfileScreenStates.isCreateBrand ? 'max-w-xl' : 'max-w-7xl'
         } w-full text-black`}
       >
         {userProfileScreenStates.isCreateBrand ? (
@@ -101,7 +101,7 @@ const UserProfile = () => {
                     <div>
                       <span className='font-semibold'>
                         {user?.following || 0}
-                      </span>{" "}
+                      </span>{' '}
                       followers
                     </div>
                   </div>

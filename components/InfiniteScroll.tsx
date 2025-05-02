@@ -198,30 +198,28 @@ export default function InfiniteScroll() {
                   />
                 </div>
               )}
-
-              <div className='absolute bottom-0 left-0 right-0 backdrop-blur-md text-black-500 p-3 text-sm'>
-                <div className='w-full'>
-                  <p
-                    className={`text-sm transition-all duration-300 ${
-                      !isExpanded ? 'line-clamp-2' : ''
-                    }`}
+            </div>
+            <div className='bg-white/70 text-gray-500 p-3 text-sm'>
+              <div className='w-full'>
+                <p
+                  className={`text-sm transition-all duration-300 ${
+                    !isExpanded ? 'line-clamp-2' : ''
+                  }`}
+                >
+                  {item.description}
+                  {item.description}
+                  {item.description}
+                </p>
+                {item.description.length > 100 && (
+                  <button
+                    className='text-xs mt-1 text-blue-500 underline'
+                    onClick={() => toggleDescription(item._id)}
                   >
-                    {item.description}
-                    {item.description}
-                    {item.description}
-                  </p>
-                  {item.description.length > 100 && (
-                    <button
-                      className='text-xs mt-1 text-blue-500 underline'
-                      onClick={() => toggleDescription(item._id)}
-                    >
-                      {isExpanded ? 'See less' : 'See more'}
-                    </button>
-                  )}
-                </div>
+                    {isExpanded ? 'See less' : 'See more'}
+                  </button>
+                )}
               </div>
             </div>
-
             <div className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
               <div
                 className={`like-button-container ${
