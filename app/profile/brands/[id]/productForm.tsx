@@ -36,17 +36,12 @@ const formList: InputFormType[] = [
     type: 'file',
   },
   {
-    name: 'category',
-    key: 'category',
+    name: 'categoryId',
+    key: 'categoryId',
     label: 'Category',
     type: 'select',
     validation: 'nullValidation',
-    selectInputList: [
-      {
-        label: 'Fashion',
-        value: 'Fashion',
-      },
-    ],
+    selectInputList: [],
   },
   {
     name: 'subcategory',
@@ -55,25 +50,18 @@ const formList: InputFormType[] = [
     type: 'select',
     validation: 'nullValidation',
     isMulti: true,
-    selectInputList: [
-      {
-        label: 'shoes',
-        value: 'shoes',
-      },
-      {
-        label: 'shirt',
-        value: 'shirt',
-      },
-    ],
+    selectInputList: [],
   },
 ];
 
 interface State {
   isImageUploading: boolean;
+  formList: InputFormType[];
 }
 
 const initialState: State = {
   isImageUploading: false,
+  formList: formList,
 };
 
 const ProductForm = ({
@@ -98,7 +86,7 @@ const ProductForm = ({
     defaultValues: {
       name: '',
       brandId: '',
-      category: '',
+      categoryId: '',
       description: '',
       imageUrl: '',
       subcategory: [],
@@ -117,6 +105,7 @@ const ProductForm = ({
     { isLoading: updateProductLoading, isError: updateProductError },
   ] = useUpdateProductMutation();
 
+  const [getCategories] = useLazyGetCategoriesQuery();
   //#endregion
   //#region Internal Hooks
   const [productScreenStates, setProductScreenStates] = useState(initialState);
@@ -128,11 +117,12 @@ const ProductForm = ({
   );
 
   useEffect(() => {
+    getCategoriesList();
     if (Object.keys(modifyProduct).length) {
       reset({
         name: modifyProduct.name,
         imageUrl: modifyProduct.imageUrl,
-        category: modifyProduct.category,
+        categoryId: modifyProduct.categoryId,
         subcategory: modifyProduct.subcategory,
         description: modifyProduct.description,
       });
@@ -140,13 +130,51 @@ const ProductForm = ({
       reset({
         name: '',
         imageUrl: '',
-        category: '',
+        categoryId: '',
         subcategory: [],
         description: '',
       });
     }
   }, [modifyProduct]); //#endregion
   //#region Internal Function
+  const getCategoriesList = async () => {
+    const res = await getCategories().unwrap();
+    if (res) {
+      const categoryList = res.map((category) => {
+        return {
+          label: category.name,
+          value: category._id,
+        };
+      });
+      const subCategoryList = res.map((category) => {
+        return category.subcategories.map((subcategory) => {
+          return {
+            label: subcategory,
+            value: subcategory,
+          };
+        });
+      });
+      updateState({
+        formList: formList.map((form) => {
+          if (form.key === 'categoryId') {
+            return {
+              ...form,
+              selectInputList: categoryList,
+            };
+          } else if (form.key === 'subcategory') {
+            return {
+              ...form,
+              selectInputList: subCategoryList.flat(),
+            };
+          }
+          return form;
+        }),
+      });
+      console.log('Categories: ', res);
+    } else {
+      toast.error('Failed to fetch categories!');
+    }
+  };
   const handleFileUpload = async (file: File, key: string) => {
     updateState({ isImageUploading: true });
 
@@ -202,7 +230,7 @@ const ProductForm = ({
       </div>
 
       <FormComponent<ProductFormDto>
-        formList={formList}
+        formList={productScreenStates.formList}
         control={control}
         errors={errors}
         submitButtonText='Save Changes'
