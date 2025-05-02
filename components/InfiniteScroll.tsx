@@ -1,15 +1,17 @@
-"use client";
+'use client';
+
+import type React from 'react';
 
 import {
   useLazyGetProductListQuery,
   useUnvoteAProductMutation,
   useVoteAProductMutation,
-} from "@/lib/services/product.service";
-import type { Product } from "@/utils/models/product.model";
-import { MoreHorizontal, ThumbsUp } from "lucide-react";
-import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+} from '@/lib/services/product.service';
+import type { Product } from '@/utils/models/product.model';
+import { MoreHorizontal, ThumbsUp } from 'lucide-react';
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 export default function InfiniteScroll() {
   //#region External Hooks
@@ -18,7 +20,7 @@ export default function InfiniteScroll() {
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
   const searchParams = useSearchParams();
-  const query = searchParams.get("q") || "";
+  const query = searchParams.get('q') || '';
   //#endregion
 
   //#region Internal Hooks
@@ -28,7 +30,21 @@ export default function InfiniteScroll() {
   const [animatingItems, setAnimatingItems] = useState<Record<string, boolean>>(
     {}
   );
+  const [likeAnimationPosition, setLikeAnimationPosition] = useState<
+    Record<string, { x: number; y: number }>
+  >({});
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const lastTapTimeRef = useRef<Record<string, number>>({});
+  const prevQueryRef = useRef(query);
+
+  // Reset items when query changes
+  useEffect(() => {
+    if (prevQueryRef.current !== query) {
+      setItems([]);
+      setPage(1);
+      prevQueryRef.current = query;
+    }
+  }, [query]);
 
   useEffect(() => {
     fetchData(page, query);
@@ -55,7 +71,7 @@ export default function InfiniteScroll() {
   //#region Internal Function
   const fetchData = async (page: number, search?: string) => {
     const products = await fetchProductList({ page, search }).unwrap();
-    if (search) {
+    if (search || page === 1) {
       setItems(products.products);
     } else {
       setItems((prev) => [...prev, ...products.products]);
@@ -65,16 +81,16 @@ export default function InfiniteScroll() {
 
   const handleVote = async (
     productId: string,
-    addOrRemove: "add" | "remove"
+    addOrRemove: 'add' | 'remove'
   ) => {
     // Start animation if adding a vote
-    if (addOrRemove === "add") {
+    if (addOrRemove === 'add') {
       setAnimatingItems((prev) => ({ ...prev, [productId]: true }));
 
       // Reset animation state after animation completes
       setTimeout(() => {
         setAnimatingItems((prev) => ({ ...prev, [productId]: false }));
-      }, 500); // Match this with the CSS animation duration
+      }, 800); // Match this with the CSS animation duration
     }
 
     const updatedItems = items.map((item) =>
@@ -82,24 +98,61 @@ export default function InfiniteScroll() {
         ? {
             ...item,
             hasVoted: !item.hasVoted,
-            votes: addOrRemove === "add" ? item.votes + 1 : item.votes - 1,
+            votes: addOrRemove === 'add' ? item.votes + 1 : item.votes - 1,
           }
         : item
     );
     setItems(updatedItems);
 
-    if (addOrRemove === "remove") {
+    if (addOrRemove === 'remove') {
       try {
-        const response = await unVoteAProduct({ productId }).unwrap();
+        await unVoteAProduct({ productId }).unwrap();
       } catch (error) {
-        console.error("Error voting for product:", error);
+        console.error('Error unvoting for product:', error);
       }
     } else {
       try {
-        const response = await voteAProduct({ productId }).unwrap();
+        await voteAProduct({ productId }).unwrap();
       } catch (error) {
-        console.error("Error voting for product:", error);
+        console.error('Error voting for product:', error);
       }
+    }
+  };
+
+  const handleDoubleTap = (event: React.MouseEvent, productId: string) => {
+    const now = Date.now();
+    const lastTap = lastTapTimeRef.current[productId] || 0;
+    const doubleTapDelay = 300; // ms
+
+    // Set the position for the like animation
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    if (now - lastTap < doubleTapDelay) {
+      // Double tap detected
+      if (!items.find((item) => item._id === productId)?.hasVoted) {
+        // Show animation at tap position
+        setLikeAnimationPosition((prev) => ({
+          ...prev,
+          [productId]: { x, y },
+        }));
+
+        // Trigger like
+        handleVote(productId, 'add');
+      }
+      // Reset last tap time
+      lastTapTimeRef.current[productId] = 0;
+    } else {
+      // First tap
+      lastTapTimeRef.current[productId] = now;
+
+      // Clear first tap after delay
+      setTimeout(() => {
+        if (lastTapTimeRef.current[productId] === now) {
+          lastTapTimeRef.current[productId] = 0;
+        }
+      }, doubleTapDelay);
     }
   };
   //#endregion
@@ -107,12 +160,12 @@ export default function InfiniteScroll() {
   return (
     <div className='max-w-xl mx-auto'>
       {items.map((item, index) => (
-        <div className='border-b border-gray-300 pb-4' key={index}>
+        <div className='border-b border-gray-300 pb-4' key={item._id}>
           {/* Post Header */}
           <div className='flex items-center p-3'>
             <div className='flex items-center'>
               <Image
-                src={item.brandId.logoUrl || "/images/post.jpg"}
+                src={item.brandId.logoUrl || '/images/post.jpg'}
                 alt='Profile'
                 width={56}
                 height={56}
@@ -137,7 +190,7 @@ export default function InfiniteScroll() {
                     />
                   </svg>
                 </span>
-                <span className='text-gray-500 text-sm ml-2'>• 1h</span>
+                <span className='text-gray-500 text-sm ml-2'>• {item._id}</span>
               </div>
             </div>
             <button className='ml-auto'>
@@ -145,36 +198,56 @@ export default function InfiniteScroll() {
             </button>
           </div>
 
-          <div>
+          <div className='relative'>
             <Image
               alt='Post'
-              src={item.imageUrl || "/images/post.jpg"}
+              src={item.imageUrl || '/images/post.jpg'}
               width={500}
               height={150}
-              className='w-full object-cover rounded-lg h-[400px]'
+              className='w-full object-cover rounded-lg h-[400px] cursor-pointer'
+              onClick={(e) => handleDoubleTap(e, item._id)}
             />
+
+            {/* Double tap heart animation */}
+            {likeAnimationPosition[item._id] && (
+              <div
+                className='absolute pointer-events-none heart-animation'
+                style={{
+                  left: `${likeAnimationPosition[item._id].x}px`,
+                  top: `${likeAnimationPosition[item._id].y}px`,
+                }}
+              >
+                <ThumbsUp
+                  fill='white'
+                  stroke='black'
+                  className='w-24 h-24 opacity-0'
+                />
+              </div>
+            )}
           </div>
+
           {/* reaction */}
           <div className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
             <div
-              className={`like-button-container ${animatingItems[item._id] ? "animate-like" : ""}`}
+              className={`like-button-container ${animatingItems[item._id] ? 'animate-like' : ''}`}
             >
               {item.hasVoted ? (
                 <ThumbsUp
-                  fill='black'
-                  className={`w-4 h-4 cursor-pointer transition-transform duration-300 ${animatingItems[item._id] ? "scale-150" : ""}`}
-                  onClick={() => handleVote(item._id, "remove")}
+                  fill='#000'
+                  stroke='#777'
+                  className={`w-4 h-4 cursor-pointer transition-all duration-300 ${animatingItems[item._id] ? 'linkedin-like-animation' : ''}`}
+                  onClick={() => handleVote(item._id, 'remove')}
                 />
               ) : (
                 <ThumbsUp
-                  className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-transform duration-300 ${animatingItems[item._id] ? "scale-150" : ""}`}
-                  onClick={() => handleVote(item._id, "add")}
+                  className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-all duration-300 ${animatingItems[item._id] ? 'linkedin-like-animation' : ''}`}
+                  onClick={() => handleVote(item._id, 'add')}
                 />
               )}
             </div>
 
             <span
-              className={`text-sm font-medium transition-all duration-300 ${animatingItems[item._id] ? "scale-110 font-bold" : ""}`}
+              className={`text-sm font-medium transition-all duration-300 ${animatingItems[item._id] ? 'scale-110 font-bold' : ''}`}
             >
               {item.votes}
             </span>
@@ -190,6 +263,62 @@ export default function InfiniteScroll() {
           Loading...
         </div>
       )}
+
+      <style jsx global>{`
+        .linkedin-like-animation {
+          animation: linkedinLike 0.8s ease-in-out;
+        }
+
+        @keyframes linkedinLike {
+          0% {
+            transform: scale(1);
+          }
+          25% {
+            transform: scale(1.5);
+          }
+          50% {
+            transform: scale(0.8);
+          }
+          75% {
+            transform: scale(1.2);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+
+        .heart-animation {
+          animation: heartBeat 1s ease-in-out forwards;
+          transform-origin: center;
+        }
+
+        @keyframes heartBeat {
+          0% {
+            transform: scale(0);
+            opacity: 0;
+          }
+          15% {
+            transform: scale(1.3);
+            opacity: 1;
+          }
+          30% {
+            transform: scale(0.9);
+            opacity: 1;
+          }
+          45% {
+            transform: scale(1.2);
+            opacity: 1;
+          }
+          60% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1.5);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 }
