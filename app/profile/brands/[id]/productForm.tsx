@@ -7,6 +7,7 @@ import {
   useCreateProductMutation,
   useUpdateProductMutation,
 } from '@/lib/services/product.service';
+import { CategoryDetailsDto } from '@/utils/models/category.model';
 import { FileUploadDto, InputFormType } from '@/utils/models/common.model';
 import { ProductDto, ProductFormDto } from '@/utils/models/product.model';
 import { ArrowLeft } from 'lucide-react';
@@ -36,17 +37,12 @@ const formList: InputFormType[] = [
     type: 'file',
   },
   {
-    name: 'category',
-    key: 'category',
+    name: 'categoryId',
+    key: 'categoryId',
     label: 'Category',
     type: 'select',
     validation: 'nullValidation',
-    selectInputList: [
-      {
-        label: 'Fashion',
-        value: 'Fashion',
-      },
-    ],
+    selectInputList: [],
   },
   {
     name: 'subcategory',
@@ -55,25 +51,20 @@ const formList: InputFormType[] = [
     type: 'select',
     validation: 'nullValidation',
     isMulti: true,
-    selectInputList: [
-      {
-        label: 'shoes',
-        value: 'shoes',
-      },
-      {
-        label: 'shirt',
-        value: 'shirt',
-      },
-    ],
+    selectInputList: [],
   },
 ];
 
 interface State {
   isImageUploading: boolean;
+  formList: InputFormType[];
+  allCategories: CategoryDetailsDto[];
 }
 
 const initialState: State = {
   isImageUploading: false,
+  formList: formList,
+  allCategories: [] as CategoryDetailsDto[],
 };
 
 const ProductForm = ({
@@ -98,7 +89,7 @@ const ProductForm = ({
     defaultValues: {
       name: '',
       brandId: '',
-      category: '',
+      categoryId: '',
       description: '',
       imageUrl: '',
       subcategory: [],
@@ -117,6 +108,7 @@ const ProductForm = ({
     { isLoading: updateProductLoading, isError: updateProductError },
   ] = useUpdateProductMutation();
 
+  const [getCategories] = useLazyGetCategoriesQuery();
   //#endregion
   //#region Internal Hooks
   const [productScreenStates, setProductScreenStates] = useState(initialState);
@@ -128,11 +120,12 @@ const ProductForm = ({
   );
 
   useEffect(() => {
+    getCategoriesList();
     if (Object.keys(modifyProduct).length) {
       reset({
         name: modifyProduct.name,
         imageUrl: modifyProduct.imageUrl,
-        category: modifyProduct.category,
+        categoryId: modifyProduct.categoryId,
         subcategory: modifyProduct.subcategory,
         description: modifyProduct.description,
       });
@@ -140,13 +133,74 @@ const ProductForm = ({
       reset({
         name: '',
         imageUrl: '',
-        category: '',
+        categoryId: '',
         subcategory: [],
         description: '',
       });
     }
-  }, [modifyProduct]); //#endregion
+  }, [modifyProduct]);
+
+  useEffect(() => {
+    setValue('subcategory', []);
+    handleCategoryChange(watch('categoryId'));
+  }, [watch('categoryId')]);
+  //#endregion
+
   //#region Internal Function
+  const getCategoriesList = async () => {
+    const res = await getCategories().unwrap();
+    if (res) {
+      updateState({ allCategories: res });
+      const categoryList = res.map((category) => {
+        return {
+          label: category.name,
+          value: category._id,
+        };
+      });
+      updateState({
+        formList: formList.map((form) => {
+          if (form.key === 'categoryId') {
+            return {
+              ...form,
+              selectInputList: categoryList,
+            };
+          }
+          return form;
+        }),
+      });
+      console.log('Categories: ', res);
+    } else {
+      toast.error('Failed to fetch categories!');
+    }
+  };
+
+  const handleCategoryChange = async (value: string) => {
+    if (productScreenStates.allCategories.length) {
+      const selectedCategory = productScreenStates.allCategories.find(
+        (category) => category._id === value
+      )?.subcategories;
+      if (selectedCategory) {
+        const subcategoryList = selectedCategory.map((subcategory) => {
+          return {
+            label: subcategory,
+            value: subcategory,
+          };
+        });
+        updateState({
+          formList: productScreenStates.formList.map((form) => {
+            if (form.key === 'subcategory') {
+              return {
+                ...form,
+                selectInputList: subcategoryList,
+              };
+            }
+            return form;
+          }),
+        });
+      }
+    }
+  };
+
   const handleFileUpload = async (file: File, key: string) => {
     updateState({ isImageUploading: true });
 
@@ -202,7 +256,7 @@ const ProductForm = ({
       </div>
 
       <FormComponent<ProductFormDto>
-        formList={formList}
+        formList={productScreenStates.formList}
         control={control}
         errors={errors}
         submitButtonText='Save Changes'

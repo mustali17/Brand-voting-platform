@@ -51,9 +51,9 @@ export default function Brand({ params }: { params: { id: string } }) {
     <Card
       className={`${
         brandScreenStates.isEdit || brandScreenStates.isAddProduct
-          ? 'max-w-2xl'
-          : 'max-w-5xl'
-      } mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 ma-h-72 overflow-hidden relative`}
+          ? 'w-3xl'
+          : 'w-full'
+      } mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 min-h-screen overflow-hidden relative shadow-none outline-0 border-0`}
     >
       {brandScreenStates.isEdit ? (
         <BrandForm

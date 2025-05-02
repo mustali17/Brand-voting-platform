@@ -1,7 +1,6 @@
 'use client';
 
 import type React from 'react';
-
 import {
   useLazyGetProductListQuery,
   useUnvoteAProductMutation,
@@ -14,16 +13,13 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function InfiniteScroll() {
-  //#region External Hooks
   const [fetchProductList, { isLoading, isError }] =
     useLazyGetProductListQuery();
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
-  //#endregion
 
-  //#region Internal Hooks
   const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -33,11 +29,13 @@ export default function InfiniteScroll() {
   const [likeAnimationPosition, setLikeAnimationPosition] = useState<
     Record<string, { x: number; y: number }>
   >({});
+  const [expandedDescriptions, setExpandedDescriptions] = useState<
+    Record<string, boolean>
+  >({});
   const observerRef = useRef<HTMLDivElement | null>(null);
   const lastTapTimeRef = useRef<Record<string, number>>({});
   const prevQueryRef = useRef(query);
 
-  // Reset items when query changes
   useEffect(() => {
     if (prevQueryRef.current !== query) {
       setItems([]);
@@ -66,9 +64,7 @@ export default function InfiniteScroll() {
       if (observerRef.current) observer.unobserve(observerRef.current);
     };
   }, [hasMore]);
-  //#endregion
 
-  //#region Internal Function
   const fetchData = async (page: number, search?: string) => {
     const products = await fetchProductList({ page, search }).unwrap();
     if (search || page === 1) {
@@ -83,14 +79,11 @@ export default function InfiniteScroll() {
     productId: string,
     addOrRemove: 'add' | 'remove'
   ) => {
-    // Start animation if adding a vote
     if (addOrRemove === 'add') {
       setAnimatingItems((prev) => ({ ...prev, [productId]: true }));
-
-      // Reset animation state after animation completes
       setTimeout(() => {
         setAnimatingItems((prev) => ({ ...prev, [productId]: false }));
-      }, 800); // Match this with the CSS animation duration
+      }, 800);
     }
 
     const updatedItems = items.map((item) =>
@@ -104,50 +97,38 @@ export default function InfiniteScroll() {
     );
     setItems(updatedItems);
 
-    if (addOrRemove === 'remove') {
-      try {
-        await unVoteAProduct({ productId }).unwrap();
-      } catch (error) {
-        console.error('Error unvoting for product:', error);
-      }
-    } else {
-      try {
-        await voteAProduct({ productId }).unwrap();
-      } catch (error) {
-        console.error('Error voting for product:', error);
-      }
+    try {
+      addOrRemove === 'add'
+        ? await voteAProduct({ productId }).unwrap()
+        : await unVoteAProduct({ productId }).unwrap();
+    } catch (error) {
+      console.error(
+        `Error ${addOrRemove === 'add' ? 'voting' : 'unvoting'}:`,
+        error
+      );
     }
   };
 
   const handleDoubleTap = (event: React.MouseEvent, productId: string) => {
     const now = Date.now();
     const lastTap = lastTapTimeRef.current[productId] || 0;
-    const doubleTapDelay = 300; // ms
+    const doubleTapDelay = 300;
 
-    // Set the position for the like animation
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
     if (now - lastTap < doubleTapDelay) {
-      // Double tap detected
       if (!items.find((item) => item._id === productId)?.hasVoted) {
-        // Show animation at tap position
         setLikeAnimationPosition((prev) => ({
           ...prev,
           [productId]: { x, y },
         }));
-
-        // Trigger like
         handleVote(productId, 'add');
       }
-      // Reset last tap time
       lastTapTimeRef.current[productId] = 0;
     } else {
-      // First tap
       lastTapTimeRef.current[productId] = now;
-
-      // Clear first tap after delay
       setTimeout(() => {
         if (lastTapTimeRef.current[productId] === now) {
           lastTapTimeRef.current[productId] = 0;
@@ -155,105 +136,125 @@ export default function InfiniteScroll() {
       }, doubleTapDelay);
     }
   };
-  //#endregion
+
+  const toggleDescription = (productId: string) => {
+    setExpandedDescriptions((prev) => ({
+      ...prev,
+      [productId]: !prev[productId],
+    }));
+  };
 
   return (
     <div className='max-w-xl mx-auto'>
-      {items.map((item, index) => (
-        <div className='border-b border-gray-300 pb-4' key={item._id}>
-          {/* Post Header */}
-          <div className='flex items-center p-3'>
-            <div className='flex items-center'>
-              <Image
-                src={item.brandId.logoUrl || '/images/post.jpg'}
-                alt='Profile'
-                width={56}
-                height={56}
-                className='rounded-full w-8 h-8 mr-4'
-              />
+      {items.map((item) => {
+        const isExpanded = expandedDescriptions[item._id];
 
+        return (
+          <div className='border-b border-gray-300 pb-4' key={item._id}>
+            <div className='flex items-center p-3'>
               <div className='flex items-center'>
-                <span className='font-semibold text-sm'>
-                  {item.brandId.name}
-                </span>
-                <span className='text-blue-500 ml-1'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    viewBox='0 0 24 24'
-                    fill='currentColor'
-                    className='w-3 h-3'
-                  >
-                    <path
-                      fillRule='evenodd'
-                      d='M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z'
-                      clipRule='evenodd'
-                    />
-                  </svg>
-                </span>
-                <span className='text-gray-500 text-sm ml-2'>• {item._id}</span>
+                <Image
+                  src={item.brandId.logoUrl || '/images/post.jpg'}
+                  alt='Profile'
+                  width={56}
+                  height={56}
+                  className='rounded-full w-8 h-8 mr-4'
+                />
+                <div className='flex flex-col'>
+                  <div className='flex items-center'>
+                    <span className='font-semibold text-sm'>{item.name}</span>
+                  </div>
+                  <div className='text-xs text-gray-500'>
+                    {item.categoryId.name} • {item.subcategory.join(', ')}
+                  </div>
+                </div>
               </div>
+              <button className='ml-auto'>
+                <MoreHorizontal className='h-5 w-5 text-gray-500' />
+              </button>
             </div>
-            <button className='ml-auto'>
-              <MoreHorizontal className='h-5 w-5 text-gray-500' />
-            </button>
-          </div>
 
-          <div className='relative'>
-            <Image
-              alt='Post'
-              src={item.imageUrl || '/images/post.jpg'}
-              width={500}
-              height={150}
-              className='w-full object-cover rounded-lg h-[400px] cursor-pointer'
-              onClick={(e) => handleDoubleTap(e, item._id)}
-            />
-
-            {/* Double tap heart animation */}
-            {likeAnimationPosition[item._id] && (
-              <div
-                className='absolute pointer-events-none heart-animation'
-                style={{
-                  left: `${likeAnimationPosition[item._id].x}px`,
-                  top: `${likeAnimationPosition[item._id].y}px`,
-                }}
-              >
-                <ThumbsUp
-                  fill='white'
-                  stroke='black'
-                  className='w-24 h-24 opacity-0'
-                />
-              </div>
-            )}
-          </div>
-
-          {/* reaction */}
-          <div className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
-            <div
-              className={`like-button-container ${animatingItems[item._id] ? 'animate-like' : ''}`}
-            >
-              {item.hasVoted ? (
-                <ThumbsUp
-                  fill='#000'
-                  stroke='#777'
-                  className={`w-4 h-4 cursor-pointer transition-all duration-300 ${animatingItems[item._id] ? 'linkedin-like-animation' : ''}`}
-                  onClick={() => handleVote(item._id, 'remove')}
-                />
-              ) : (
-                <ThumbsUp
-                  className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-all duration-300 ${animatingItems[item._id] ? 'linkedin-like-animation' : ''}`}
-                  onClick={() => handleVote(item._id, 'add')}
-                />
+            <div className='relative group rounded-lg overflow-hidden'>
+              <Image
+                alt='Post'
+                src={item.imageUrl || '/images/post.jpg'}
+                width={500}
+                height={400}
+                className='w-full object-cover h-[400px] cursor-pointer'
+                onClick={(e) => handleDoubleTap(e, item._id)}
+              />
+              {likeAnimationPosition[item._id] && (
+                <div
+                  className='absolute pointer-events-none heart-animation'
+                  style={{
+                    left: `${likeAnimationPosition[item._id].x}px`,
+                    top: `${likeAnimationPosition[item._id].y}px`,
+                  }}
+                >
+                  <ThumbsUp
+                    fill='white'
+                    stroke='black'
+                    className='w-24 h-24 opacity-0'
+                  />
+                </div>
               )}
             </div>
-
-            <span
-              className={`text-sm font-medium transition-all duration-300 ${animatingItems[item._id] ? 'scale-110 font-bold' : ''}`}
-            >
-              {item.votes}
-            </span>
+            <div className='bg-white/70 text-gray-500 p-3 text-sm'>
+              <div className='w-full'>
+                <p
+                  className={`text-sm transition-all duration-300 ${
+                    !isExpanded ? 'line-clamp-2' : ''
+                  }`}
+                >
+                  {item.description}
+                  {item.description}
+                  {item.description}
+                </p>
+                {item.description.length > 100 && (
+                  <button
+                    className='text-xs mt-1 text-blue-500 underline'
+                    onClick={() => toggleDescription(item._id)}
+                  >
+                    {isExpanded ? 'See less' : 'See more'}
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
+              <div
+                className={`like-button-container ${
+                  animatingItems[item._id] ? 'animate-like' : ''
+                }`}
+              >
+                {item.hasVoted ? (
+                  <ThumbsUp
+                    fill='#000'
+                    stroke='#777'
+                    className={`w-4 h-4 cursor-pointer transition-all duration-300 ${
+                      animatingItems[item._id] ? 'linkedin-like-animation' : ''
+                    }`}
+                    onClick={() => handleVote(item._id, 'remove')}
+                  />
+                ) : (
+                  <ThumbsUp
+                    className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-all duration-300 ${
+                      animatingItems[item._id] ? 'linkedin-like-animation' : ''
+                    }`}
+                    onClick={() => handleVote(item._id, 'add')}
+                  />
+                )}
+              </div>
+              <span
+                className={`text-sm font-medium transition-all duration-300 ${
+                  animatingItems[item._id] ? 'scale-110 font-bold' : ''
+                }`}
+              >
+                {item.votes}
+              </span>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {hasMore && (
         <div
@@ -268,7 +269,6 @@ export default function InfiniteScroll() {
         .linkedin-like-animation {
           animation: linkedinLike 0.8s ease-in-out;
         }
-
         @keyframes linkedinLike {
           0% {
             transform: scale(1);
@@ -286,12 +286,10 @@ export default function InfiniteScroll() {
             transform: scale(1);
           }
         }
-
         .heart-animation {
           animation: heartBeat 1s ease-in-out forwards;
           transform-origin: center;
         }
-
         @keyframes heartBeat {
           0% {
             transform: scale(0);
@@ -317,6 +315,12 @@ export default function InfiniteScroll() {
             transform: scale(1.5);
             opacity: 0;
           }
+        }
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </div>

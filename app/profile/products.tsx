@@ -1,7 +1,7 @@
-import { ProductDto } from "@/utils/models/product.model";
-import { Heart, MessageCircle, ThumbsDown, ThumbsUp } from "lucide-react";
-import Image from "next/image";
-import React from "react";
+import { ProductDto } from '@/utils/models/product.model';
+import { Heart, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
 
 const Products = ({
   products,
@@ -17,13 +17,13 @@ const Products = ({
           {products.map((image, index) => (
             <div
               key={index}
-              className='relative group aspect-[3/4] overflow-hidden'
+              className='relative group aspect-[3/4] overflow-hidden shadow-lg rounded-md'
               onClick={() => {
                 updateProduct(image);
               }}
             >
               <Image
-                src={image.imageUrl || "images/post.jpg"}
+                src={image.imageUrl || 'images/post.jpg'}
                 alt={`image-${index}`}
                 width={300}
                 height={400}

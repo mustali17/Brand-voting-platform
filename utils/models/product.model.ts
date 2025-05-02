@@ -3,7 +3,7 @@ export interface ProductFormDto {
   name: string;
   imageUrl: string;
   description: string;
-  category: string;
+  categoryId: string;
   subcategory: string[];
 }
 
@@ -12,7 +12,7 @@ export interface ProductDto {
   brandId: string;
   name: string;
   imageUrl: string;
-  category: string;
+  categoryId: string;
   subcategory: string[];
   description: string;
   votes: number;

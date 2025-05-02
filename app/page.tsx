@@ -1,7 +1,7 @@
-"use client";
-import { CategoriesSlider } from "@/components/categoriesSlider";
-import InfiniteScroll from "@/components/InfiniteScroll";
-import SearchOverlay from "@/components/searchOverkay";
+'use client';
+import { CategoriesSlider } from '@/components/categoriesSlider';
+import InfiniteScroll from '@/components/InfiniteScroll';
+import SearchOverlay from '@/components/searchOverkay';
 import {
   Bell,
   Compass,
@@ -13,23 +13,23 @@ import {
   ThumbsDown,
   ThumbsUp,
   UserCircle2Icon,
-} from "lucide-react";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+} from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const categories = [
-  { name: "zaincontra...", img: "/images/post.jpg" },
-  { name: "hakimkap...", img: "/images/story.jpg" },
-  { name: "hisukriti", img: "/images/story.jpg" },
-  { name: "bhuvan.ba...", img: "/images/story.jpg" },
-  { name: "mipalkarof...", img: "/images/story.jpg" },
-  { name: "mipalkarof...", img: "/images/story.jpg" },
-  { name: "mipalkarof...", img: "/images/story.jpg" },
-  { name: "naughtyw...", img: "/images/story.jpg" },
-  { name: "thehungry...", img: "/images/story.jpg" },
+  { name: 'zaincontra...', img: '/images/post.jpg' },
+  { name: 'hakimkap...', img: '/images/story.jpg' },
+  { name: 'hisukriti', img: '/images/story.jpg' },
+  { name: 'bhuvan.ba...', img: '/images/story.jpg' },
+  { name: 'mipalkarof...', img: '/images/story.jpg' },
+  { name: 'mipalkarof...', img: '/images/story.jpg' },
+  { name: 'mipalkarof...', img: '/images/story.jpg' },
+  { name: 'naughtyw...', img: '/images/story.jpg' },
+  { name: 'thehungry...', img: '/images/story.jpg' },
 ];
 
 export default function HomePage() {
@@ -37,81 +37,13 @@ export default function HomePage() {
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
-    if (sessionStatus === "unauthenticated") {
-      route.replace("/login");
+    if (sessionStatus === 'unauthenticated') {
+      route.replace('/login');
     }
   }, [sessionStatus]);
 
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   return (
-    <div className='flex h-screen bg-white pt-2'>
-      <SearchOverlay
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-      />
-
-      {/* Left Sidebar */}
-      <div className='w-60 border-r border-gray-300 hidden md:flex flex-col'>
-        <nav className='flex-1'>
-          <div className='space-y-1 px-3'>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-xl my-4 italic font-medium rounded-md hover:bg-gray-100'
-            >
-              Brand Voting
-            </Link>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <Home className='mr-3 h-5 w-5' />
-              Home
-            </Link>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <Compass className='mr-3 h-5 w-5' />
-              Explore
-            </Link>
-
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <SearchIcon className='mr-3 h-5 w-5' />
-              Search
-            </Link>
-
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <Bell className='mr-3 h-5 w-5' />
-              Notifications
-            </Link>
-
-            <Link
-              href='/profile'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <UserCircle2Icon className='mr-3 h-5 w-5' />
-              Profile
-            </Link>
-
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100 text-red-400'
-            >
-              <LogOut className='mr-3 h-5 w-5 ' />
-              Logout
-            </Link>
-          </div>
-        </nav>
-      </div>
-
+    <div className='flex h-screen bg-white pt-2 w-full'>
       {/* Main Content */}
       <div className='flex-1 flex flex-col overflow-hidden'>
         {/* Mobile Header */}
@@ -125,40 +57,13 @@ export default function HomePage() {
             <InfiniteScroll />
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        <div className='md:hidden border-t border-gray-300 py-2 bg-white fixed bottom-0 left-0 right-0'>
-          <div className='flex justify-around'>
-            <button className='p-2'>
-              <Home className='h-6 w-6' />
-            </button>
-            <button className='p-2'>
-              <Search
-                className='h-6 w-6'
-                onClick={() => setIsSearchOpen(true)}
-              />
-            </button>
-            <button className='p-2'>
-              <Compass className='h-6 w-6' />
-            </button>
-            <button className='p-2 relative'>
-              <Bell className='h-6 w-6' />
-              <span className='absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center'>
-                8
-              </span>
-            </button>
-            <button className='p-2' onClick={() => route.push("/profile")}>
-              <UserCircle2Icon className='h-6 w-6' />
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Right Sidebar - Suggestions */}
-      <div className='w-80 border-l border-gray-300 p-4 hidden lg:block'>
+      <div className='w-22 border-l border-gray-300 p-4 hidden lg:block'>
         <div
           className='flex items-center mb-6 cursor-pointer'
-          onClick={() => route.push("/profile")}
+          onClick={() => route.push('/profile')}
         >
           <Image
             src='/images/post.jpg'
@@ -179,11 +84,11 @@ export default function HomePage() {
         </div>
 
         {[
-          { name: "tasneem28", followedBy: "mubaranapur", time: "16" },
-          { name: "jamilazuzerbhai", followedBy: "burhan72002", time: "5" },
-          { name: "taher_8_", followedBy: "m_o_h_a_m_m_e_d", time: "" },
-          { name: "kayda_husain", followedBy: "shubham_pathak_", time: "" },
-          { name: "ali_k_hasam", followedBy: "chuna.huzefa", time: "12" },
+          { name: 'tasneem28', followedBy: 'mubaranapur', time: '16' },
+          { name: 'jamilazuzerbhai', followedBy: 'burhan72002', time: '5' },
+          { name: 'taher_8_', followedBy: 'm_o_h_a_m_m_e_d', time: '' },
+          { name: 'kayda_husain', followedBy: 'shubham_pathak_', time: '' },
+          { name: 'ali_k_hasam', followedBy: 'chuna.huzefa', time: '12' },
         ].map((suggestion, i) => (
           <div key={i} className='flex items-center mb-3'>
             <Image
@@ -196,7 +101,7 @@ export default function HomePage() {
             <div className='flex-1'>
               <div className='font-semibold text-sm'>{suggestion.name}</div>
               <div className='text-gray-500 text-xs'>
-                Followed by {suggestion.followedBy}{" "}
+                Followed by {suggestion.followedBy}{' '}
                 {suggestion.time && `+ ${suggestion.time}`}
               </div>
             </div>
