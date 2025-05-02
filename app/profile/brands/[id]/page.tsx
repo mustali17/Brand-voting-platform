@@ -53,7 +53,7 @@ export default function Brand({ params }: { params: { id: string } }) {
         brandScreenStates.isEdit || brandScreenStates.isAddProduct
           ? 'w-3xl'
           : 'w-full'
-      } mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 min-h-screen overflow-hidden relative shadow-none outline-0 border-0`}
+      }  mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 min-h-screen overflow-hidden relative shadow-none outline-0 border-0`}
     >
       {brandScreenStates.isEdit ? (
         <BrandForm
@@ -115,14 +115,14 @@ export default function Brand({ params }: { params: { id: string } }) {
             />
           </CardHeader>
 
-          <CardContent className='space-y-4 md:col-span-2'>
+          <CardContent className='space-y-4 md:col-span-2 w-full p-0'>
             <Tabs defaultValue='description'>
               <TabsList className='w-full'>
                 <TabsTrigger value='description' className='flex-1'>
                   Description
                 </TabsTrigger>
-                <TabsTrigger value='posts' className='flex-1'>
-                  Posts
+                <TabsTrigger value='products' className='flex-1'>
+                  Products
                 </TabsTrigger>
               </TabsList>
 
@@ -150,7 +150,7 @@ export default function Brand({ params }: { params: { id: string } }) {
                   </div>
                 </TabsContent>
 
-                <TabsContent value='posts' className='pt-4'>
+                <TabsContent value='products' className='pt-4'>
                   <Products
                     products={brand.products}
                     updateProduct={(product) => {
