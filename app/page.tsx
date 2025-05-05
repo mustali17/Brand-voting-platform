@@ -20,18 +20,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const categories = [
-  { name: 'zaincontra...', img: '/images/post.jpg' },
-  { name: 'hakimkap...', img: '/images/story.jpg' },
-  { name: 'hisukriti', img: '/images/story.jpg' },
-  { name: 'bhuvan.ba...', img: '/images/story.jpg' },
-  { name: 'mipalkarof...', img: '/images/story.jpg' },
-  { name: 'mipalkarof...', img: '/images/story.jpg' },
-  { name: 'mipalkarof...', img: '/images/story.jpg' },
-  { name: 'naughtyw...', img: '/images/story.jpg' },
-  { name: 'thehungry...', img: '/images/story.jpg' },
-];
-
 export default function HomePage() {
   const route = useRouter();
   const { data: session, status: sessionStatus } = useSession();
@@ -49,7 +37,7 @@ export default function HomePage() {
         {/* Mobile Header */}
 
         <div className='flex-1 overflow-y-auto'>
-          <CategoriesSlider Categories={categories} />
+          <CategoriesSlider />
 
           {/* Feed */}
           <div className='max-w-xl mx-auto w-full'>
