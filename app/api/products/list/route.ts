@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
         .skip(skip)
         .limit(limit)
         .populate("brandId", "name logoUrl")
-        .populate("categoryId", "name")
+        .populate("categoryId", "name subcategories")
         .lean() as Array<{ _id: string; [key: string]: any }>;
   
        total = await Product.countDocuments(filter);
@@ -89,13 +89,13 @@ export async function GET(req: NextRequest) {
       const priorityProducts = await Product.find({ brandId: { $in: followingBrandIds } })
         .sort({ createdAt: -1 })
         .populate("brandId", "name logoUrl")
-        .populate("categoryId", "name")
+        .populate("categoryId", "name subcategories")
         .lean();
 
       const otherProducts = await Product.find({ brandId: { $nin: followingBrandIds } })
         .sort({ createdAt: -1 })
         .populate("brandId", "name logoUrl")
-        .populate("categoryId", "name")
+        .populate("categoryId", "name subcategories")
         .lean();
 
       const combinedProducts = [...priorityProducts, ...otherProducts];
@@ -110,15 +110,28 @@ export async function GET(req: NextRequest) {
     const votes = await Vote.find({ userId, productId: { $in: productIds } }).select("productId").lean();
     const votedProductIds = new Set(votes.map(v => v.productId.toString()));
 
-    const productsWithVotesAndFollowing = products.map((product) => ({
-      ...product,
-      hasVoted: votedProductIds.has(product._id.toString()),
-      isFollowing: followingBrandIds.includes(product.brandId?._id?.toString() || ""),
-    }));
+    const productsWithExtras = products.map((product) => {
+      const category = product.categoryId;
+      const subcategoryIds = product.subcategory.map((id: any) => id.toString());
+      const subcategoryNames = (category?.subcategories || [])
+      .filter((sub: any) => subcategoryIds.includes(sub._id.toString()))
+      .map((sub: any) => sub.name);
+      
+      return {
+        ...product,
+        hasVoted: votedProductIds.has(product._id.toString()),
+        isFollowing: followingBrandIds.includes(product.brandId?._id?.toString() || ""),
+        category:category?.name || "",
+        subcategory: subcategoryNames,
+        categoryId: undefined,
+      };
+    });
+
+    const cleanedProducts = productsWithExtras.map(({ categoryId, ...rest }) => rest);
 
     return NextResponse.json({
       success: true,
-      products:productsWithVotesAndFollowing,
+      products:cleanedProducts,
       pagination: {
         total,
         page,

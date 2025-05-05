@@ -38,15 +38,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const isValidSub = subcategory.every((sub) =>
-      category.subcategories.includes(sub)
-    );
+    const validSubIds = category.subcategories.map((s: any) => s._id.toString());
+    const isValidSub = subcategory.every((id: string) => validSubIds.includes(id));
 
     if (!isValidSub) {
-      return NextResponse.json(
-        { error: "One or more invalid subcategories" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "One or more invalid subcategories" }, { status: 400 });
     }
 
     const brand = await Brand.findById(brandId);
