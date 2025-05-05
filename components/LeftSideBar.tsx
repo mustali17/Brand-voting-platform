@@ -27,24 +27,17 @@ const LeftSideBar = () => {
         <nav className='flex-1'>
           <div className='space-y-1 px-3'>
             <Link
-              href='#'
+              href='/'
               className='flex items-center px-3 py-3 text-xl my-4 italic font-medium rounded-md hover:bg-gray-100'
             >
               Brand Voting
             </Link>
             <Link
-              href='#'
+              href='/'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
               <Home className='mr-3 h-5 w-5' />
               Home
-            </Link>
-            <Link
-              href='#'
-              className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
-            >
-              <Compass className='mr-3 h-5 w-5' />
-              Explore
             </Link>
 
             <Link
