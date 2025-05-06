@@ -2,6 +2,8 @@
 import { CategoriesSlider } from '@/components/categoriesSlider';
 import InfiniteScroll from '@/components/InfiniteScroll';
 import SearchOverlay from '@/components/searchOverkay';
+import { setUser } from '@/lib/features/user/userSlice';
+import { useLazyGetUserByIdQuery } from '@/lib/services/user.service';
 import {
   Bell,
   Compass,
@@ -19,16 +21,31 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function HomePage() {
   const route = useRouter();
   const { data: session, status: sessionStatus } = useSession();
+  const [fetchUserDataById] = useLazyGetUserByIdQuery();
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user.user);
 
   useEffect(() => {
     if (sessionStatus === 'unauthenticated') {
       route.replace('/login');
+    } else if (sessionStatus === 'authenticated') {
+      getUserDataById();
     }
   }, [sessionStatus]);
+
+  //#region Internal Function
+  const getUserDataById = async () => {
+    if (session?.user?.id) {
+      const userData = await fetchUserDataById(session?.user?.id).unwrap();
+      userData && dispatch(setUser(userData));
+    }
+  };
+  //#endregion
 
   return (
     <div className='flex h-screen bg-white pt-2 w-full'>
@@ -53,17 +70,7 @@ export default function HomePage() {
           className='flex items-center mb-6 cursor-pointer'
           onClick={() => route.push('/profile')}
         >
-          <Image
-            src='/images/post.jpg'
-            alt='Profile'
-            width={56}
-            height={56}
-            className='rounded-full w-14 h-14 mr-4'
-          />
-          <div>
-            <div className='font-semibold'>mr.mohammad_02</div>
-            <div className='text-gray-500 text-sm'>محمد</div>
-          </div>
+          <div className='font-semibold'>{user?.name}</div>
         </div>
 
         <div className='flex justify-between items-center mb-4'>

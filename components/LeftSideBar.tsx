@@ -11,9 +11,11 @@ import { signOut } from 'next-auth/react';
 import React, { useState } from 'react';
 import SearchOverlay from './searchOverkay';
 import Link from 'next/link';
+import { useDispatch } from 'react-redux';
 
 const LeftSideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -68,7 +70,9 @@ const LeftSideBar = () => {
             <Link
               href='#'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100 text-red-400'
-              onClick={() => signOut()}
+              onClick={() => {
+                signOut();
+              }}
             >
               <LogOut className='mr-3 h-5 w-5 ' />
               Logout

@@ -1,6 +1,10 @@
 'use client';
 
-import { useGetBrandByIdQuery } from '@/lib/services/brand.service';
+import {
+  useFollowBrandMutation,
+  useGetBrandByIdQuery,
+  useUnFollowBrandMutation,
+} from '@/lib/services/brand.service';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +18,11 @@ import ProductForm from './productForm';
 import Products from '../../products';
 import { ProductDto } from '@/utils/models/product.model';
 import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { userAgentFromString } from 'next/server';
+import toast from 'react-hot-toast';
+import { updateUser } from '@/lib/features/user/userSlice';
+import { RootState } from '@/lib/store';
 
 interface State {
   isEdit: boolean;
@@ -29,7 +38,12 @@ export default function Brand({ params }: { params: { id: string } }) {
   const { id } = params;
   const { data: brand, isLoading, error } = useGetBrandByIdQuery(id);
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.user);
+  const isOwner = brand?.brand?.ownerId === user?._id;
 
+  const [followBrand] = useFollowBrandMutation();
+  const [unFollowBrand] = useUnFollowBrandMutation();
   //#region Internal Hooks
   const [brandScreenStates, setBrandScreenStates] = useState(initialState);
 
@@ -43,9 +57,43 @@ export default function Brand({ params }: { params: { id: string } }) {
   //#region UI Component
   if (isLoading)
     return <div className='flex justify-center p-8'>Loading brand...</div>;
-  if (error || !brand)
+  if (error || !brand || !user)
     return <div className='flex justify-center p-8'>Something went wrong.</div>;
   //#endregion
+
+  const handleFollow = async (follow: boolean) => {
+    if (isOwner) return;
+    if (user.following?.includes(brand.brand._id)) {
+      try {
+        await unFollowBrand({ brandId: brand.brand._id }).unwrap();
+        dispatch(
+          updateUser({
+            following: user.following.filter(
+              (id: string) => id !== brand.brand._id
+            ),
+          })
+        );
+        toast.success('Unfollowed successfully');
+      } catch (error) {
+        toast.error('Failed to unfollow brand');
+      }
+      return;
+    } else {
+      try {
+        await followBrand({ brandId: brand.brand._id }).unwrap();
+        dispatch(
+          updateUser({
+            following: [...user.following, brand.brand._id],
+          })
+        );
+        toast.success('Followed successfully');
+      } catch (error) {
+        toast.error('Failed to follow brand');
+      }
+    }
+  };
+
+  console.log('Brand', brand);
 
   return (
     <Card
@@ -94,7 +142,9 @@ export default function Brand({ params }: { params: { id: string } }) {
             <div className='flex w-full justify-center gap-8 text-center'>
               <div>
                 {/* <p className='font-semibold'>{brand.brand.followers}</p> */}
-                <p className='font-semibold'>{0}</p>
+                <p className='font-semibold'>
+                  {brand.brand.followers.length || 0}
+                </p>
                 <p className='text-sm text-muted-foreground'>Followers</p>
               </div>
               <div>
@@ -102,17 +152,32 @@ export default function Brand({ params }: { params: { id: string } }) {
                 <p className='text-sm text-muted-foreground'>Posts</p>
               </div>
             </div>
-
-            <Button
-              className='w-full'
-              title='Edit'
-              onClick={() => updateState({ isEdit: true })}
-            />
-            <Button
-              className='w-full'
-              title='Add Product'
-              onClick={() => updateState({ isAddProduct: true })}
-            />
+            {isOwner ? (
+              <>
+                <Button
+                  className='w-full'
+                  title='Edit'
+                  onClick={() => updateState({ isEdit: true })}
+                />
+                <Button
+                  className='w-full'
+                  title='Add Product'
+                  onClick={() => updateState({ isAddProduct: true })}
+                />
+              </>
+            ) : (
+              <Button
+                className='w-full'
+                title={
+                  user.following?.includes(brand.brand._id)
+                    ? 'Unfollow'
+                    : 'Follow'
+                }
+                onClick={() =>
+                  handleFollow(user.following?.includes(brand.brand._id))
+                }
+              />
+            )}
           </CardHeader>
 
           <CardContent className='space-y-4 md:col-span-2 w-full p-0'>
@@ -154,10 +219,12 @@ export default function Brand({ params }: { params: { id: string } }) {
                   <Products
                     products={brand.products}
                     updateProduct={(product) => {
-                      updateState({
-                        isAddProduct: true,
-                        modifyProduct: product,
-                      });
+                      if (isOwner) {
+                        updateState({
+                          isAddProduct: true,
+                          modifyProduct: product,
+                        });
+                      }
                     }}
                   />
                 </TabsContent>

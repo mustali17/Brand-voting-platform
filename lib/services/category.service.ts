@@ -1,34 +1,35 @@
-import { UserDto } from "@/utils/models/user.model";
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { ALL, CATEGORIES, USER } from "../api/apiEndPoints";
-import { baseQuery } from "../api/baseQuery";
-import { CategoryDetailsDto } from "@/utils/models/category.model";
+import { UserDto } from '@/utils/models/user.model';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { ALL, CATEGORIES, USER } from '../api/apiEndPoints';
+import { baseQuery } from '../api/baseQuery';
+import { CategoryDetailsDto } from '@/utils/models/category.model';
+import { TopBrandsDto } from '@/utils/models/brand.model';
 
 export const categoryApi = createApi({
-  reducerPath: "categoryApi",
+  reducerPath: 'categoryApi',
   baseQuery,
-  tagTypes: ["Category"],
+  tagTypes: ['Category'],
   endpoints: (builder) => ({
     // READ: Get all users
     getCategories: builder.query<CategoryDetailsDto[], void>({
       query: () => CATEGORIES + ALL,
-      providesTags: ["Category"],
+      providesTags: ['Category'],
     }),
 
     // READ: Get single user
-    getUserById: builder.query<UserDto, string>({
-      query: (id) => `${USER}/${id}`,
-      providesTags: (result, error, id) => [{ type: "Category", id }],
+    getTopBrandsBySubCategory: builder.query<TopBrandsDto, string>({
+      query: (id) => `${CATEGORIES}/${id}/top-brands`,
+      providesTags: (result, error, id) => [{ type: 'Category', id }],
     }),
 
     // CREATE: Add a new user
     createUser: builder.mutation<UserDto, Partial<UserDto>>({
       query: (newUser) => ({
         url: USER,
-        method: "POST",
+        method: 'POST',
         body: newUser,
       }),
-      invalidatesTags: ["Category"],
+      invalidatesTags: ['Category'],
     }),
 
     // UPDATE: Update a user
@@ -38,26 +39,27 @@ export const categoryApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `${USER}/${id}`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Category", id }],
+      invalidatesTags: (result, error, { id }) => [{ type: 'Category', id }],
     }),
 
     // DELETE: Delete a user
     deleteUser: builder.mutation<{ success: boolean }, number>({
       query: (id) => ({
         url: `${USER}/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Category", id }],
+      invalidatesTags: (result, error, id) => [{ type: 'Category', id }],
     }),
   }),
 });
 
 export const {
   useGetCategoriesQuery,
-  useGetUserByIdQuery,
+  useGetTopBrandsBySubCategoryQuery,
+  useLazyGetTopBrandsBySubCategoryQuery,
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,

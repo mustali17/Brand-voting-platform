@@ -1,9 +1,10 @@
+import { DELETE } from './../../app/api/user/[id]/route';
 import {
   BrandDetailsDto,
   BrandDto,
   BrandFormDto,
 } from '@/utils/models/brand.model';
-import { BRANDS, REGISTER } from '../api/apiEndPoints';
+import { BRANDS, FOLLOW, REGISTER, UNFOLLOW } from '../api/apiEndPoints';
 import { api } from './api.service';
 
 export const brandApi = api.injectEndpoints({
@@ -18,7 +19,10 @@ export const brandApi = api.injectEndpoints({
     }),
 
     // CREATE: Add a new brand
-    createBrand: builder.mutation<BrandFormDto, Partial<BrandFormDto>>({
+    createBrand: builder.mutation<
+      { success: boolean; brand: BrandDto },
+      Partial<BrandFormDto>
+    >({
       query: (newUser) => ({
         url: BRANDS + REGISTER,
         method: 'POST',
@@ -29,7 +33,7 @@ export const brandApi = api.injectEndpoints({
 
     // UPDATE: Update a user
     updateBrand: builder.mutation<
-      BrandDto,
+      { success: boolean; brand: BrandDto },
       { id: string; data: Partial<BrandDto> }
     >({
       query: ({ id, data }) => ({
@@ -39,6 +43,35 @@ export const brandApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Brand', id }],
     }),
+
+    // Follow a brand
+    followBrand: builder.mutation<
+      boolean,
+      {
+        brandId: string;
+      }
+    >({
+      query: (brandId) => ({
+        url: BRANDS + FOLLOW,
+        method: 'POST',
+        body: brandId,
+      }),
+      invalidatesTags: ['Brand'],
+    }),
+    // UnFollow a brand
+    unFollowBrand: builder.mutation<
+      boolean,
+      {
+        brandId: string;
+      }
+    >({
+      query: (brandId) => ({
+        url: BRANDS + FOLLOW,
+        method: 'DELETE',
+        body: brandId,
+      }),
+      invalidatesTags: ['Brand'],
+    }),
   }),
 });
 
@@ -47,4 +80,6 @@ export const {
   useLazyGetBrandByIdQuery,
   useCreateBrandMutation,
   useUpdateBrandMutation,
+  useFollowBrandMutation,
+  useUnFollowBrandMutation,
 } = brandApi;

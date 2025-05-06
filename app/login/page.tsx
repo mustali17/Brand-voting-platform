@@ -26,7 +26,6 @@ const NextLoginPage = () => {
     e.preventDefault();
     const email = e.target[0].value;
     const password = e.target[1].value;
-    const saltRounds = 10;
     if (!isValidEmail(email)) {
       setError('Email is invalid');
       toast.error('Email is invalid');
