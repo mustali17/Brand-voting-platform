@@ -28,9 +28,8 @@ export default function CategoryList({
     <div className='flex-1 p-4'>
       <div className='grid grid-cols-4 gap-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8'>
         {categories.map((category: any) => (
-          <Link
+          <div
             key={category._id}
-            href={`#`}
             onClick={() => {
               if (categoryClickHandler) {
                 categoryClickHandler(category);
@@ -48,7 +47,7 @@ export default function CategoryList({
               />
             </div>
             <span className='text-center text-sm'>{category.name}</span>
-          </Link>
+          </div>
         ))}
       </div>
     </div>
