@@ -182,8 +182,8 @@ const ProductForm = ({
       if (selectedCategory) {
         const subcategoryList = selectedCategory.map((subcategory) => {
           return {
-            label: subcategory,
-            value: subcategory,
+            label: subcategory.name,
+            value: subcategory._id,
           };
         });
         updateState({

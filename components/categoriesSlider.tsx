@@ -97,7 +97,7 @@ export function CategoriesSlider() {
             <div className='rounded-full p-[2px] bg-gradient-to-tr from-white/50 to-black-600'>
               <div className='bg-white p-[2px] rounded-full'>
                 <Image
-                  src={cat.categoryImageURL || '/placeholder.svg'}
+                  src={cat.imageUrl || '/placeholder.svg'}
                   alt={`${cat.name}'s`}
                   width={36}
                   height={36}

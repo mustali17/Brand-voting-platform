@@ -2,6 +2,7 @@
 import CategoryList from '@/components/categoryList';
 import { SearchHeader } from '@/components/searchHeader';
 import { useGetCategoriesQuery } from '@/lib/services/category.service';
+import { CommonCategoryDto } from '@/utils/models/category.model';
 import { useEffect, useState } from 'react';
 
 const Category = () => {
@@ -13,15 +14,26 @@ const Category = () => {
     filteredCategories(searchValue);
   }, [searchValue]);
 
-  const filteredCategories = (value: string) => {
+  const filteredCategories = (value: string): CommonCategoryDto[] => {
     if (!categories) return [];
 
-    return categories.filter((category) =>
-      category.name.toLowerCase().includes(value.toLowerCase())
-    );
+    return categories
+      .filter((category) =>
+        category.name.toLowerCase().includes(value.toLowerCase())
+      )
+      .map((category) => {
+        return {
+          _id: category._id,
+          name: category.name,
+          imageUrl: category.imageUrl,
+        };
+      });
   };
 
-  const filteredSubCategories = (value: string, categoryId: string) => {
+  const filteredSubCategories = (
+    value: string,
+    categoryId: string
+  ): CommonCategoryDto[] => {
     if (!categories) return [];
 
     const selectedCategory = categories.find(
@@ -31,7 +43,7 @@ const Category = () => {
     if (!selectedCategory) return [];
 
     return selectedCategory.subcategories.filter((category) =>
-      category.toLowerCase().includes(value.toLowerCase())
+      category.name.toLowerCase().includes(value.toLowerCase())
     );
   };
 

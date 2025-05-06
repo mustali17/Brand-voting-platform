@@ -34,7 +34,7 @@ export interface Product {
   brandId: BrandId;
   name: string;
   imageUrl: string;
-  categoryId: CategoryId;
+  category: string;
   subcategory: string[];
   description: string;
   votes: number;
@@ -50,11 +50,6 @@ export interface BrandId {
   _id: string;
   name: string;
   logoUrl: string;
-}
-
-export interface CategoryId {
-  _id: string;
-  name: string;
 }
 
 export interface Pagination {

@@ -1,5 +1,8 @@
 'use client';
-import { CategoryDetailsDto } from '@/utils/models/category.model';
+import {
+  CategoryDetailsDto,
+  CommonCategoryDto,
+} from '@/utils/models/category.model';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -9,7 +12,7 @@ export default function CategoryList({
   isError,
   categoryClickHandler,
 }: {
-  categories: any;
+  categories: CommonCategoryDto[];
   isLoading: boolean;
   isError: boolean;
   categoryClickHandler?: (category: CategoryDetailsDto) => void;
