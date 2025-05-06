@@ -3,10 +3,12 @@ import CategoryList from '@/components/categoryList';
 import { SearchHeader } from '@/components/searchHeader';
 import { useGetCategoriesQuery } from '@/lib/services/category.service';
 import { CommonCategoryDto } from '@/utils/models/category.model';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const Category = () => {
   const { data: categories, isLoading, isError } = useGetCategoriesQuery();
+  const router = useRouter();
 
   const [searchValue, setSearchValue] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -48,8 +50,11 @@ const Category = () => {
   };
 
   return (
-    <main className='flex min-h-screen flex-col bg-white'>
-      <SearchHeader onSearch={(value: string) => setSearchValue(value)} />
+    <main className='flex min-h-screen flex-col w-full'>
+      <SearchHeader
+        onSearch={(value: string) => setSearchValue(value)}
+        searchValue={searchValue}
+      />
       {selectedCategory ? (
         <>
           <h1 className='p-4 text-xl font-bold'>Sub Category</h1>
@@ -59,7 +64,10 @@ const Category = () => {
             }
             isLoading={isLoading}
             isError={isError}
-            categoryClickHandler={(category) => {}}
+            categoryClickHandler={(category) => {
+              debugger;
+              router.push('/topBrands');
+            }}
           />
         </>
       ) : (
@@ -69,9 +77,10 @@ const Category = () => {
             categories={filteredCategories(searchValue) || []}
             isLoading={isLoading}
             isError={isError}
-            categoryClickHandler={(category) =>
-              setSelectedCategory(category._id)
-            }
+            categoryClickHandler={(category) => {
+              setSelectedCategory(category._id);
+              setSearchValue('');
+            }}
           />
         </>
       )}
