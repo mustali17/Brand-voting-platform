@@ -16,6 +16,7 @@ export interface BrandDto {
   _id: string;
   name: string;
   logoUrl: string;
+  followers: string[];
   website: string;
   description: string;
   isVerified: boolean;

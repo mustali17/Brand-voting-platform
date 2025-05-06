@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useGetTopBrandsBySubCategoryQuery } from '@/lib/services/category.service';
+import { useRouter } from 'next/navigation';
 
 export default function BrandShowcase({
   params,
@@ -11,7 +12,7 @@ export default function BrandShowcase({
   const { categoryId } = params;
   const { data, isLoading, isError } =
     useGetTopBrandsBySubCategoryQuery(categoryId);
-
+  const router = useRouter();
   if (isLoading) {
     return <div className='flex justify-center py-8'>Loading brands...</div>;
   }
@@ -39,7 +40,8 @@ export default function BrandShowcase({
         {data.brands.map((brand, index) => (
           <article
             key={brand._id}
-            className='flex flex-col md:flex-row border rounded-lg overflow-hidden shadow-sm bg-white'
+            onClick={() => router.push(`/profile/brands/${brand._id}`)}
+            className='flex flex-col md:flex-row border rounded-lg overflow-hidden cursor-pointer shadow-sm bg-white hover:shadow-md hover:scale-[1.02] transition-transform duration-200'
           >
             <div className='md:w-1/4 bg-gray-100 flex items-center justify-center p-6'>
               <Image

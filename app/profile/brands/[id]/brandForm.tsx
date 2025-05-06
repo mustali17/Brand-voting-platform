@@ -1,5 +1,6 @@
 'use client';
 import FormComponent from '@/components/ui/FormComponent';
+import { updateUser } from '@/lib/features/user/userSlice';
 import {
   useCreateBrandMutation,
   useUpdateBrandMutation,
@@ -7,10 +8,12 @@ import {
 
 import { BrandDto, BrandFormDto } from '@/utils/models/brand.model';
 import { FileUploadDto, InputFormType } from '@/utils/models/common.model';
+import { RootState } from '@reduxjs/toolkit/query';
 import { ArrowLeft } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 
 const formList: InputFormType[] = [
   {
@@ -82,6 +85,9 @@ const BrandForm = ({
     updateBrand,
     { isLoading: updateBrandLoading, isError: updateBrandError },
   ] = useUpdateBrandMutation();
+
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user.user);
   //#endregion
 
   //#region Internal Hooks
@@ -144,6 +150,13 @@ const BrandForm = ({
         data: updatedData,
       }).unwrap();
       if (res) {
+        dispatch(
+          updateUser({
+            ownedBrands: user?.ownedBrands.map((brand: BrandDto) =>
+              brand._id === res.brand._id ? res.brand : brand
+            ),
+          })
+        );
         toast.success('Brand updated successfully!');
       } else {
         toast.error('Brand creation failed!');
@@ -151,7 +164,12 @@ const BrandForm = ({
     } else {
       if (data) {
         const res = await addBrand(data).unwrap();
-        if (res) toast.success('Brand created successfully!');
+        if (res) {
+          dispatch(
+            updateUser({ ownedBrands: [...user?.ownedBrands, res.brand] })
+          );
+          toast.success('Brand created successfully!');
+        }
       } else {
         toast.error('Brand creation failed!');
       }

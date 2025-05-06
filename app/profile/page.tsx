@@ -26,6 +26,7 @@ const UserProfile = () => {
   const [fetchUserDataById] = useLazyGetUserByIdQuery();
   const dispatch = useDispatch();
   const router = useRouter();
+  console.log('UserProfile', user);
   //#endregion
 
   //#region Internal Hooks
@@ -37,21 +38,6 @@ const UserProfile = () => {
       setUserProfileScreenStates((prev) => ({ ...prev, ...updates })),
     []
   );
-
-  useEffect(() => {
-    if (session?.user.id) {
-      getUserDataById();
-    }
-  }, [session]);
-  //#endregion
-
-  //#region Internal Function
-  const getUserDataById = async () => {
-    if (session?.user?.id) {
-      const userData = await fetchUserDataById(session?.user?.id).unwrap();
-      userData && dispatch(setUser(userData));
-    }
-  };
   //#endregion
 
   return (
@@ -65,7 +51,7 @@ const UserProfile = () => {
           <BrandForm
             callBack={() => {
               updateState({ isCreateBrand: false });
-              getUserDataById();
+              // getUserDataById();
             }}
           />
         ) : (
