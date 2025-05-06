@@ -1,4 +1,4 @@
-import { ProductDto } from "./product.model";
+import { ProductDto } from './product.model';
 
 export interface BrandFormDto {
   name: string;
@@ -23,4 +23,18 @@ export interface BrandDto {
   createdAt: string;
   updatedAt: string;
   __v: number;
+}
+
+export interface TopBrandsDto {
+  success: boolean;
+  brands: Brand[];
+}
+
+export interface Brand {
+  _id: string;
+  totalVotes: number;
+  productCount: number;
+  followerCount: number;
+  name: string;
+  logoUrl: string;
 }
