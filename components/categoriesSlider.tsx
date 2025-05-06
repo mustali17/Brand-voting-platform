@@ -4,20 +4,20 @@ import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLazyGetCategoriesQuery } from '@/lib/services/category.service';
+import { CategoryDetailsDto } from '@/utils/models/category.model';
+import { useRouter } from 'next/navigation';
 
-interface Story {
-  name: string;
-  img: string;
-}
+export function CategoriesSlider() {
+  const [getAllCategories] = useLazyGetCategoriesQuery();
+  const router = useRouter();
 
-interface CategoriesSliderProps {
-  Categories: Story[];
-}
-
-export function CategoriesSlider({ Categories }: CategoriesSliderProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const [categoriesList, setCategoriesList] = useState(
+    [] as CategoryDetailsDto[]
+  );
 
   // Check if we need to show navigation arrows
   const checkScrollPosition = () => {
@@ -29,6 +29,7 @@ export function CategoriesSlider({ Categories }: CategoriesSliderProps) {
   };
 
   useEffect(() => {
+    fetchCategories();
     const scrollContainer = scrollContainerRef.current;
     if (scrollContainer) {
       scrollContainer.addEventListener('scroll', checkScrollPosition);
@@ -42,6 +43,16 @@ export function CategoriesSlider({ Categories }: CategoriesSliderProps) {
       }
     };
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await getAllCategories().unwrap();
+      setCategoriesList(response);
+      console.log('Fetched categories:', response);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
@@ -59,7 +70,7 @@ export function CategoriesSlider({ Categories }: CategoriesSliderProps) {
   };
 
   return (
-    <div className='relative border-gray-300 py-1 max-w-2xl mx-auto'>
+    <div className='relative border-gray-300 py-1 max-w-2xl mx-auto mb-3'>
       {/* Left navigation button */}
       <button
         onClick={() => scroll('left')}
@@ -76,14 +87,18 @@ export function CategoriesSlider({ Categories }: CategoriesSliderProps) {
       <div
         ref={scrollContainerRef}
         className='flex space-x-4 overflow-x-auto scrollbar-hide pb-2 px-6'
+        onClick={() => router.push('/category')}
       >
-        {Categories.map((story, i) => (
-          <div key={i} className='flex flex-col items-center flex-shrink-0'>
-            <div className='rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600'>
+        {categoriesList.map((cat) => (
+          <div
+            key={cat._id}
+            className='flex flex-col items-center flex-shrink-0 cursor-pointer'
+          >
+            <div className='rounded-full p-[2px] bg-gradient-to-tr from-white/50 to-black-600'>
               <div className='bg-white p-[2px] rounded-full'>
                 <Image
-                  src={story.img || '/placeholder.svg'}
-                  alt={`${story.name}'s story`}
+                  src={cat.imageUrl || '/placeholder.svg'}
+                  alt={`${cat.name}'s`}
                   width={36}
                   height={36}
                   className='rounded-full w-12 h-12 object-cover'
@@ -91,10 +106,20 @@ export function CategoriesSlider({ Categories }: CategoriesSliderProps) {
               </div>
             </div>
             <span className='text-xs mt-1 truncate w-14 text-center'>
-              {story.name}
+              {cat.name}
             </span>
           </div>
         ))}
+      </div>
+      {/* See All Button with Border */}
+      <div className='absolute inset-x-0 bottom-0 flex justify-center items-center'>
+        <div className='w-full border-t border-gray-300'></div>
+        <button
+          className='absolute bg-white px-4 py-1 text-sm font-small text-gray-700 rounded-full shadow-md hover:bg-gray-100 transition'
+          onClick={() => router.push('/category')}
+        >
+          See All
+        </button>
       </div>
 
       {/* Right navigation button */}

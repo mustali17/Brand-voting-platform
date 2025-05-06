@@ -106,11 +106,15 @@ export const PUT = async (
 
       // If subcategories are also provided, validate them
       if (updates.subcategory) {
-        const isValidSub = updates.subcategory.every((sub: string) =>
-          foundCategory.subcategories.includes(sub)
+        const validSubIds = foundCategory.subcategories.map((s: any) =>
+          s._id.toString()
         );
 
-        if (!isValidSub) {
+        const areValidSubIds = updates.subcategory.every((id: string) =>
+          validSubIds.includes(id)
+        );
+
+        if (!areValidSubIds) {
           return NextResponse.json(
             { error: "One or more subcategories are invalid" },
             { status: 400 }

@@ -165,7 +165,7 @@ export default function InfiniteScroll() {
                     <span className='font-semibold text-sm'>{item.name}</span>
                   </div>
                   <div className='text-xs text-gray-500'>
-                    {item.categoryId.name} • {item.subcategory.join(', ')}
+                    {item.category} • {item.subcategory.join(', ')}
                   </div>
                 </div>
               </div>
