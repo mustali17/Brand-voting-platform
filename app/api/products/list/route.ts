@@ -70,12 +70,21 @@ export async function GET(req: NextRequest) {
       } else if (categoryMatch) {
         filter.categoryId = categoryMatch._id;
       } else {
-        // Default: match by product name or subcategory
+        // Check if the search matches any subcategory name
+        const categories = await Category.find({ "subcategories.name": regex });
+      
+        const matchingSubcategoryIds: string[] = categories.flatMap((category: { subcategories: { name: string; _id: string }[] }) =>
+          category.subcategories
+            .filter((sub: { name: string }) => regex.test(sub.name))
+            .map((sub: { _id: string }) => sub._id)
+        );
+      
         filter.$or = [
           { name: regex },
-          { subcategory: regex }
+          { subcategory: { $in: matchingSubcategoryIds } }
         ];
       }
+      
        products = await Product.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
