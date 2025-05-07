@@ -9,7 +9,7 @@ import {
 import type { Product } from '@/utils/models/product.model';
 import { MoreHorizontal, ThumbsUp } from 'lucide-react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function InfiniteScroll() {
@@ -18,7 +18,8 @@ export default function InfiniteScroll() {
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const query = searchParams.get('search') || '';
+  const router = useRouter();
 
   const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -158,7 +159,10 @@ export default function InfiniteScroll() {
                   alt='Profile'
                   width={56}
                   height={56}
-                  className='rounded-full w-8 h-8 mr-4'
+                  className='rounded-full w-8 h-8 mr-4 cursor-pointer'
+                  onClick={() =>
+                    router.push(`profile/brands/${item.brandId._id}`)
+                  }
                 />
                 <div className='flex flex-col'>
                   <div className='flex items-center'>
