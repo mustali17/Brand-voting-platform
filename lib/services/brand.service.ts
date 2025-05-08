@@ -3,8 +3,15 @@ import {
   BrandDetailsDto,
   BrandDto,
   BrandFormDto,
+  SuggestedBrandDto,
 } from '@/utils/models/brand.model';
-import { BRANDS, FOLLOW, REGISTER, UNFOLLOW } from '../api/apiEndPoints';
+import {
+  BRANDS,
+  FOLLOW,
+  REGISTER,
+  SUGGESTED,
+  UNFOLLOW,
+} from '../api/apiEndPoints';
 import { api } from './api.service';
 
 export const brandApi = api.injectEndpoints({
@@ -31,7 +38,7 @@ export const brandApi = api.injectEndpoints({
       invalidatesTags: ['Brand'],
     }),
 
-    // UPDATE: Update a user
+    // UPDATE: Update a brand
     updateBrand: builder.mutation<
       { success: boolean; brand: BrandDto },
       { id: string; data: Partial<BrandDto> }
@@ -72,6 +79,14 @@ export const brandApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Brand'],
     }),
+
+    getSuggestedBrands: builder.query<
+      { success: boolean; suggestedBrands: SuggestedBrandDto[]; error: string },
+      void
+    >({
+      query: (id) => `${BRANDS}/${SUGGESTED}`,
+      providesTags: (result, error) => [{ type: 'Brand' }],
+    }),
   }),
 });
 
@@ -82,4 +97,6 @@ export const {
   useUpdateBrandMutation,
   useFollowBrandMutation,
   useUnFollowBrandMutation,
+  useGetSuggestedBrandsQuery,
+  useLazyGetSuggestedBrandsQuery,
 } = brandApi;

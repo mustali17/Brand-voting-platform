@@ -38,4 +38,16 @@ export interface Brand {
   followerCount: number;
   name: string;
   logoUrl: string;
+  description: string;
+}
+
+export interface SuggestedBrandDto {
+  _id: string;
+  name: string;
+  logoUrl: string;
+  website: string;
+  description: string;
+  isVerified: boolean;
+  followerCount: number;
+  hasFollowed?: boolean;
 }

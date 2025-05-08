@@ -145,6 +145,14 @@ export default function InfiniteScroll() {
     }));
   };
 
+  if (query && items.length === 0) {
+    return (
+      <div className='flex justify-center py-8 text-black/50'>
+        No products found.
+      </div>
+    );
+  }
+
   return (
     <div className='max-w-xl mx-auto'>
       {items.map((item) => {

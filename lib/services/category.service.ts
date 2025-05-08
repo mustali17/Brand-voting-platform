@@ -1,6 +1,6 @@
 import { UserDto } from '@/utils/models/user.model';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { ALL, CATEGORIES, USER } from '../api/apiEndPoints';
+import { ALL, BRANDS, CATEGORIES, USER } from '../api/apiEndPoints';
 import { baseQuery } from '../api/baseQuery';
 import { CategoryDetailsDto } from '@/utils/models/category.model';
 import { TopBrandsDto } from '@/utils/models/brand.model';
@@ -18,7 +18,7 @@ export const categoryApi = createApi({
 
     // READ: Get single user
     getTopBrandsBySubCategory: builder.query<TopBrandsDto, string>({
-      query: (id) => `${CATEGORIES}/${id}/top-brands`,
+      query: (id) => `${BRANDS}/top-by-subcategory/${id}`,
       providesTags: (result, error, id) => [{ type: 'Category', id }],
     }),
 
