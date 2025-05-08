@@ -93,8 +93,6 @@ export default function Brand({ params }: { params: { id: string } }) {
     }
   };
 
-  console.log('Brand', brand);
-
   return (
     <Card
       className={`${

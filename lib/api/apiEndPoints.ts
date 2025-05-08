@@ -12,3 +12,4 @@ export const VOTE = '/vote';
 export const UNVOTE = '/unvote';
 export const FOLLOW = '/follow';
 export const UNFOLLOW = '/unfollow';
+export const SUGGESTED = '/suggested';
