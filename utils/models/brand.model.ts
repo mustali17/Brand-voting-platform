@@ -38,6 +38,7 @@ export interface Brand {
   followerCount: number;
   name: string;
   logoUrl: string;
+  description: string;
 }
 
 export interface SuggestedBrandDto {

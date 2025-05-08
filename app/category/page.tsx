@@ -65,7 +65,7 @@ const Category = () => {
             isLoading={isLoading}
             isError={isError}
             categoryClickHandler={(category) => {
-              router.push(`/topBrands/${selectedCategory}`);
+              router.push(`/topBrands/${category._id}`);
             }}
           />
         </>

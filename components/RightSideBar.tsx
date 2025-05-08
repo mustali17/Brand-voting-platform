@@ -45,7 +45,9 @@ const RightSideBar = ({ user }: { user: UserDto }) => {
   return (
     <div className='w-64 border-l border-gray-300 p-4 hidden lg:block overflow-x-hidden'>
       <Link className='flex items-center mb-6 cursor-pointer' href={'/profile'}>
-        <div className='font-semibold text-md'>{user?.name}</div>
+        <div className='flex items-center p-1 text-xl italic font-medium rounded-md hover:bg-gray-100'>
+          {user?.name}
+        </div>
       </Link>
 
       <div className='flex justify-between items-center mb-4'>
