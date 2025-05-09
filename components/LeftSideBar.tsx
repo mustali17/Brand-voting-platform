@@ -15,7 +15,6 @@ import { useDispatch } from 'react-redux';
 
 const LeftSideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const dispatch = useDispatch();
 
   return (
     <>

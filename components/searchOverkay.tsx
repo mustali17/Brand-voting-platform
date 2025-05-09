@@ -56,7 +56,10 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       <div className='p-4 sm:p-6 max-w-3xl mx-auto w-full'>
         <div className='flex justify-end mb-4'>
           <button
-            onClick={onClose}
+            onClick={() => {
+              router.push(`/`);
+              onClose();
+            }}
             className='text-black hover:bg-black/10 p-2 rounded-full transition-colors'
             aria-label='Close search'
           >
@@ -85,13 +88,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
         </div>
 
         <div className='grid gap-2'>
-          {[
-            'Explore',
-            'Notifications',
-            'Profile',
-            'Saved Posts',
-            'Settings',
-          ].map((item) => (
+          {['Notifications', 'Profile'].map((item) => (
             <button
               key={item}
               className='flex items-center gap-3 p-3 rounded-lg hover:bg-black/10 text-black text-left transition-colors'

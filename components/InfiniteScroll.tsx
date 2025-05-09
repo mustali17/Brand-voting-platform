@@ -13,14 +13,17 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function InfiniteScroll() {
-  const [fetchProductList, { isLoading, isError }] =
-    useLazyGetProductListQuery();
+  //#region External Hooks
+  const [fetchProductList] = useLazyGetProductListQuery();
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
   const searchParams = useSearchParams();
   const query = searchParams.get('search') || '';
   const router = useRouter();
+  //#endregion
 
+  //#region Internal Hooks
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -28,7 +31,7 @@ export default function InfiniteScroll() {
     {}
   );
   const [likeAnimationPosition, setLikeAnimationPosition] = useState<
-    Record<string, { x: number; y: number }>
+    Record<string, boolean>
   >({});
   const [expandedDescriptions, setExpandedDescriptions] = useState<
     Record<string, boolean>
@@ -65,8 +68,11 @@ export default function InfiniteScroll() {
       if (observerRef.current) observer.unobserve(observerRef.current);
     };
   }, [hasMore]);
+  //#endregion
 
+  //#region Internal Functions
   const fetchData = async (page: number, search?: string) => {
+    setIsLoadingProducts(true);
     const products = await fetchProductList({ page, search }).unwrap();
     if (search || page === 1) {
       setItems(products.products);
@@ -74,6 +80,7 @@ export default function InfiniteScroll() {
       setItems((prev) => [...prev, ...products.products]);
     }
     setHasMore(products.pagination.pages > page);
+    setIsLoadingProducts(false);
   };
 
   const handleVote = async (
@@ -82,9 +89,11 @@ export default function InfiniteScroll() {
   ) => {
     if (addOrRemove === 'add') {
       setAnimatingItems((prev) => ({ ...prev, [productId]: true }));
+      setLikeAnimationPosition((prev) => ({ ...prev, [productId]: true }));
       setTimeout(() => {
         setAnimatingItems((prev) => ({ ...prev, [productId]: false }));
-      }, 800);
+        setLikeAnimationPosition((prev) => ({ ...prev, [productId]: false }));
+      }, 1000);
     }
 
     const updatedItems = items.map((item) =>
@@ -115,16 +124,8 @@ export default function InfiniteScroll() {
     const lastTap = lastTapTimeRef.current[productId] || 0;
     const doubleTapDelay = 300;
 
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
     if (now - lastTap < doubleTapDelay) {
       if (!items.find((item) => item._id === productId)?.hasVoted) {
-        setLikeAnimationPosition((prev) => ({
-          ...prev,
-          [productId]: { x, y },
-        }));
         handleVote(productId, 'add');
       }
       lastTapTimeRef.current[productId] = 0;
@@ -144,14 +145,23 @@ export default function InfiniteScroll() {
       [productId]: !prev[productId],
     }));
   };
+  //#endregion
 
-  if (query && items.length === 0) {
+  //#region UI Component
+  if (isLoadingProducts) {
+    return (
+      <div className='flex justify-center py-8 text-black/50'>
+        Loading products...
+      </div>
+    );
+  } else if (!isLoadingProducts && query && items.length === 0) {
     return (
       <div className='flex justify-center py-8 text-black/50'>
         No products found.
       </div>
     );
   }
+  //#endregion
 
   return (
     <div className='max-w-xl mx-auto'>
@@ -196,21 +206,17 @@ export default function InfiniteScroll() {
                 onClick={(e) => handleDoubleTap(e, item._id)}
               />
               {likeAnimationPosition[item._id] && (
-                <div
-                  className='absolute pointer-events-none heart-animation'
-                  style={{
-                    left: `${likeAnimationPosition[item._id].x}px`,
-                    top: `${likeAnimationPosition[item._id].y}px`,
-                  }}
-                >
+                <div className='absolute inset-0 flex items-center justify-center pointer-events-none heart-animation'>
                   <ThumbsUp
-                    fill='white'
-                    stroke='black'
-                    className='w-24 h-24 opacity-0'
+                    className='instagram-heart'
+                    fill='#fff'
+                    stroke='#777'
+                    size={64}
                   />
                 </div>
               )}
             </div>
+
             <div className='bg-white/70 text-gray-500 p-3 text-sm'>
               <div className='w-full'>
                 <p
@@ -218,8 +224,6 @@ export default function InfiniteScroll() {
                     !isExpanded ? 'line-clamp-2' : ''
                   }`}
                 >
-                  {item.description}
-                  {item.description}
                   {item.description}
                 </p>
                 {item.description.length > 100 && (
@@ -232,26 +236,19 @@ export default function InfiniteScroll() {
                 )}
               </div>
             </div>
+
             <div className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
-              <div
-                className={`like-button-container ${
-                  animatingItems[item._id] ? 'animate-like' : ''
-                }`}
-              >
+              <div className={`like-button-container`}>
                 {item.hasVoted ? (
                   <ThumbsUp
                     fill='#000'
                     stroke='#777'
-                    className={`w-4 h-4 cursor-pointer transition-all duration-300 ${
-                      animatingItems[item._id] ? 'linkedin-like-animation' : ''
-                    }`}
+                    className={`w-4 h-4 cursor-pointer transition-all duration-300`}
                     onClick={() => handleVote(item._id, 'remove')}
                   />
                 ) : (
                   <ThumbsUp
-                    className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-all duration-300 ${
-                      animatingItems[item._id] ? 'linkedin-like-animation' : ''
-                    }`}
+                    className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-all duration-300`}
                     onClick={() => handleVote(item._id, 'add')}
                   />
                 )}
@@ -278,55 +275,41 @@ export default function InfiniteScroll() {
       )}
 
       <style jsx global>{`
-        .linkedin-like-animation {
-          animation: linkedinLike 0.8s ease-in-out;
-        }
-        @keyframes linkedinLike {
-          0% {
-            transform: scale(1);
-          }
-          25% {
-            transform: scale(1.5);
-          }
-          50% {
-            transform: scale(0.8);
-          }
-          75% {
-            transform: scale(1.2);
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
         .heart-animation {
-          animation: heartBeat 1s ease-in-out forwards;
+          animation: instagramHeart 1s ease-in-out forwards;
           transform-origin: center;
         }
-        @keyframes heartBeat {
+        @keyframes instagramHeart {
           0% {
             transform: scale(0);
             opacity: 0;
           }
           15% {
-            transform: scale(1.3);
-            opacity: 1;
+            transform: scale(1.2);
+            opacity: 0.8;
           }
           30% {
-            transform: scale(0.9);
-            opacity: 1;
+            transform: scale(0.95);
+            opacity: 0.9;
           }
           45% {
-            transform: scale(1.2);
+            transform: scale(1);
             opacity: 1;
           }
-          60% {
+          80% {
             transform: scale(1);
             opacity: 1;
           }
           100% {
-            transform: scale(1.5);
+            transform: scale(2);
             opacity: 0;
           }
+        }
+        .instagram-heart {
+          filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+          fill: white;
+          stroke: rgba(0, 0, 0, 0.3);
+          stroke-width: 1;
         }
         .line-clamp-2 {
           display: -webkit-box;
