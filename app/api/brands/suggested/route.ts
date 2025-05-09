@@ -24,7 +24,8 @@ export async function GET(req: NextRequest) {
     const suggestedBrands = await Brand.aggregate([
       {
         $match: {
-          followers: { $ne: new mongoose.Types.ObjectId(userId) }, // Exclude followed
+          followers: { $ne: new mongoose.Types.ObjectId(userId) },
+          ownerId: { $ne: new mongoose.Types.ObjectId(userId) },
         },
       },
       {
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
         },
       },
       {
-        $limit: 10, // Adjust limit as needed
+        $limit: 10,
       },
       {
         $project: {

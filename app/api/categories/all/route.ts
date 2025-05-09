@@ -8,7 +8,6 @@ export async function GET() {
 
     const categories = await Category.find({});
 
-    console.log("🚀 ~ GET ~ categories:", categories)
     return NextResponse.json(categories);
   } catch (error) {
     console.error("Error fetching categories:", error);
