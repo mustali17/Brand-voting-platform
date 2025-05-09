@@ -202,9 +202,10 @@ export default function InfiniteScroll() {
                 src={item.imageUrl || '/images/post.jpg'}
                 width={500}
                 height={400}
-                className='w-full object-cover h-[400px] cursor-pointer'
+                className='w-full max-w-full object-contain h-[400px] cursor-pointer'
                 onClick={(e) => handleDoubleTap(e, item._id)}
               />
+
               {likeAnimationPosition[item._id] && (
                 <div className='absolute inset-0 flex items-center justify-center pointer-events-none heart-animation'>
                   <ThumbsUp
