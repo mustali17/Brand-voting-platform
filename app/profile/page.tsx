@@ -78,7 +78,7 @@ const UserProfile = () => {
                         title='Create Brand'
                         onClick={() => updateState({ isCreateBrand: true })}
                       />
-                      <Button title='Edit profile' />
+                      {/* <Button title='Edit profile' /> */}
                     </div>
                   </div>
 

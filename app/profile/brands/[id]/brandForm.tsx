@@ -181,7 +181,7 @@ const BrandForm = ({
   //#endregion
 
   return (
-    <div className='rounded w-full md:col-span-3 mt-5'>
+    <div className='rounded w-full md:col-span-3 mt-5 flex-1'>
       <div className='flex items-center'>
         <ArrowLeft onClick={callBack} className='cursor-pointer' />
         <h2 className='m-auto'>{brandData ? 'Edit Brand' : 'Add New Brand'}</h2>
