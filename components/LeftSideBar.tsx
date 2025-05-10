@@ -1,20 +1,14 @@
 'use client';
-import {
-  Home,
-  Compass,
-  SearchIcon,
-  Bell,
-  UserCircle2Icon,
-  LogOut,
-} from 'lucide-react';
+import { Bell, Home, LogOut, SearchIcon, UserCircle2Icon } from 'lucide-react';
 import { signOut } from 'next-auth/react';
-import React, { useState } from 'react';
-import SearchOverlay from './searchOverkay';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import SearchOverlay from './searchOverkay';
 
 const LeftSideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -51,7 +45,7 @@ const LeftSideBar = () => {
             </Link>
 
             <Link
-              href='#'
+              href='/notifications'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
               <Bell className='mr-3 h-5 w-5' />
@@ -71,6 +65,7 @@ const LeftSideBar = () => {
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100 text-red-400'
               onClick={() => {
                 signOut();
+                router.push('/login');
               }}
             >
               <LogOut className='mr-3 h-5 w-5 ' />

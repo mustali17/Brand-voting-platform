@@ -24,10 +24,12 @@ const BottomNavigation = () => {
             <Search className='h-6 w-6' onClick={() => setIsSearchOpen(true)} />
           </button>
           <button className='p-2 relative'>
-            <Bell className='h-6 w-6' />
+            <Link href={'/notifications'}>
+              <Bell className='h-6 w-6' />
+            </Link>
             {/* <span className='absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center'>
               8
-            </span> */}
+              </span> */}
           </button>
           <button className='p-2'>
             <Link href={'/profile'}>

@@ -60,7 +60,7 @@ const UserProfile = () => {
             <div className='flex flex-col sm:flex-row items-center justify-center px-4 py-6 gap-4'>
               <div>
                 <Image
-                  src='/images/post.jpg'
+                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.name}`}
                   alt='Profile picture'
                   width={150}
                   height={150}
@@ -78,22 +78,23 @@ const UserProfile = () => {
                         title='Create Brand'
                         onClick={() => updateState({ isCreateBrand: true })}
                       />
-                      <Button title='Edit profile' />
+                      {/* <Button title='Edit profile' /> */}
                     </div>
                   </div>
 
                   {/* Stats */}
                   <div className='flex justify-center sm:justify-start gap-6 text-sm'>
-                    <div>
+                    {/* <div>
                       <span className='font-semibold'>
                         {user?.following || 0}
                       </span>{' '}
                       followers
-                    </div>
+                    </div> */}
                   </div>
                   <div className='text-center sm:text-left'>
                     <p className='text-sm text-gray-500'>
-                      Joined on {user?.createdAt}
+                      Joined on{' '}
+                      {new Date(user?.createdAt || '').toLocaleString()}
                     </p>
                   </div>
                 </div>

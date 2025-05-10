@@ -94,12 +94,14 @@ export default function Brand({ params }: { params: { id: string } }) {
   };
 
   return (
-    <Card
-      className={`${
+    <div
+      className={`mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 min-h-screen overflow-hidden relative shadow-none outline-0 border-0
+      ${
         brandScreenStates.isEdit || brandScreenStates.isAddProduct
-          ? 'w-3xl'
+          ? 'w-full sm:flex-1 lg:max-w-2xl'
           : 'w-full'
-      }  mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-5 min-h-screen overflow-hidden relative shadow-none outline-0 border-0`}
+      }
+      `}
     >
       {brandScreenStates.isEdit ? (
         <BrandForm
@@ -120,7 +122,7 @@ export default function Brand({ params }: { params: { id: string } }) {
       ) : (
         <>
           <div className='absolute top-4 left-4 cursor-pointer'>
-            <ArrowLeft onClick={() => router.push('/profile')} />
+            <ArrowLeft onClick={() => router.back()} />
           </div>
           <CardHeader className='flex flex-col items-center space-y-4 md:col-span-1'>
             <div className='h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center'>
@@ -196,7 +198,7 @@ export default function Brand({ params }: { params: { id: string } }) {
                   <div className='space-y-2'>
                     <p className='text-sm'>
                       <span className='font-semibold'>Joined:</span>{' '}
-                      {/* {brand.brand.joinedDate} */}0
+                      {new Date(brand.brand.createdAt || '').toLocaleString()}
                     </p>
 
                     <div className='flex items-center gap-2'>
@@ -231,6 +233,6 @@ export default function Brand({ params }: { params: { id: string } }) {
           </CardContent>
         </>
       )}
-    </Card>
+    </div>
   );
 }
