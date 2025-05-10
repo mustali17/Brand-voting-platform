@@ -11,6 +11,7 @@ const nextConfig = {
         hostname: '**', // allows all HTTPS domains
       },
     ],
+    dangerouslyAllowSVG: true,
   },
 };
 

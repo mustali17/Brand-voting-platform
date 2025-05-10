@@ -120,7 +120,7 @@ export default function Brand({ params }: { params: { id: string } }) {
       ) : (
         <>
           <div className='absolute top-4 left-4 cursor-pointer'>
-            <ArrowLeft onClick={() => router.push('/profile')} />
+            <ArrowLeft onClick={() => router.back()} />
           </div>
           <CardHeader className='flex flex-col items-center space-y-4 md:col-span-1'>
             <div className='h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center'>
