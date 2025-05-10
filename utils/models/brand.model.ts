@@ -51,3 +51,23 @@ export interface SuggestedBrandDto {
   followerCount: number;
   hasFollowed?: boolean;
 }
+
+export interface BrandListDto {
+  _id: string;
+  name: string;
+  logoUrl: string;
+  website: string;
+  description: string;
+  isVerified: boolean;
+  ownerId: OwnerId;
+  followers: any[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface OwnerId {
+  _id: string;
+  name: string;
+  email: string;
+}

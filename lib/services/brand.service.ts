@@ -3,11 +3,13 @@ import {
   BrandDetailsDto,
   BrandDto,
   BrandFormDto,
+  BrandListDto,
   SuggestedBrandDto,
 } from '@/utils/models/brand.model';
 import {
   BRANDS,
   FOLLOW,
+  LIST,
   REGISTER,
   SUGGESTED,
   UNFOLLOW,
@@ -16,6 +18,14 @@ import { api } from './api.service';
 
 export const brandApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    getBrandList: builder.query<
+      { success: boolean; brands: BrandListDto[]; error?: string },
+      void
+    >({
+      query: () => `${BRANDS}/${LIST}`,
+      providesTags: (result, error) => [{ type: 'Brand' }],
+    }),
+
     // READ: Get single user
     getBrandById: builder.query<BrandDetailsDto, string>({
       query: (id) => `${BRANDS}/${id}`,
@@ -99,4 +109,5 @@ export const {
   useUnFollowBrandMutation,
   useGetSuggestedBrandsQuery,
   useLazyGetSuggestedBrandsQuery,
+  useGetBrandListQuery,
 } = brandApi;
