@@ -51,7 +51,7 @@ const LeftSideBar = () => {
             </Link>
 
             <Link
-              href='#'
+              href='/notifications'
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100'
             >
               <Bell className='mr-3 h-5 w-5' />
