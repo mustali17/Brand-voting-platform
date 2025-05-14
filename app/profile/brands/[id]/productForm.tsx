@@ -120,28 +120,30 @@ const ProductForm = ({
   );
 
   useEffect(() => {
-    getCategoriesList();
-    if (Object.keys(modifyProduct).length) {
-      reset({
-        name: modifyProduct.name,
-        imageUrl: modifyProduct.imageUrl,
-        categoryId: modifyProduct.categoryId,
-        subcategory: modifyProduct.subcategory,
-        description: modifyProduct.description,
-      });
-    } else {
-      reset({
-        name: '',
-        imageUrl: '',
-        categoryId: '',
-        subcategory: [],
-        description: '',
-      });
-    }
+    getCategoriesList().then(() => {
+      if (Object.keys(modifyProduct).length) {
+        reset({
+          name: modifyProduct.name,
+          imageUrl: modifyProduct.imageUrl,
+          categoryId: modifyProduct.categoryId,
+          subcategory: modifyProduct.subcategory,
+          description: modifyProduct.description,
+        });
+        handleCategoryChange(modifyProduct.categoryId);
+      } else {
+        reset({
+          name: '',
+          imageUrl: '',
+          categoryId: '',
+          subcategory: [],
+          description: '',
+        });
+      }
+    });
   }, [modifyProduct]);
 
   useEffect(() => {
-    setValue('subcategory', []);
+    // setValue('subcategory', []);
     handleCategoryChange(watch('categoryId'));
   }, [watch('categoryId')]);
   //#endregion
