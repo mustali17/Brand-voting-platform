@@ -224,6 +224,8 @@ export default function Brand({ params }: { params: { id: string } }) {
                           isAddProduct: true,
                           modifyProduct: product,
                         });
+                      } else {
+                        router.push(`/?search=${product.name}`);
                       }
                     }}
                   />
