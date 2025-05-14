@@ -11,6 +11,7 @@ import { MoreHorizontal, ThumbsUp } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import LoadingComponent from './LoadingComponent';
 
 export default function InfiniteScroll() {
   //#region External Hooks
@@ -149,11 +150,7 @@ export default function InfiniteScroll() {
 
   //#region UI Component
   if (isLoadingProducts) {
-    return (
-      <div className='flex justify-center py-8 text-black/50'>
-        Loading products...
-      </div>
-    );
+    return <LoadingComponent />;
   } else if (!isLoadingProducts && query && items.length === 0) {
     return (
       <div className='flex justify-center py-8 text-black/50'>

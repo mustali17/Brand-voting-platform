@@ -1,4 +1,5 @@
 'use client';
+import LoadingComponent from '@/components/LoadingComponent';
 import FormComponent from '@/components/ui/FormComponent';
 import { useSendOtpMutation } from '@/lib/services/user.service';
 import { InputFormType } from '@/utils/models/common.model';
@@ -136,7 +137,7 @@ const RegisterPage = () => {
 
   //#region UI Component
   if (sessionStatus === 'loading') {
-    return <h1>Loading...</h1>;
+    return <LoadingComponent />;
   }
   //#endregion
   return (

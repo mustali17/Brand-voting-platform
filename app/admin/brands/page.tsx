@@ -16,12 +16,13 @@ import {
 } from '@/lib/services/brand.service';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import LoadingComponent from '@/components/LoadingComponent';
 
 const Brands = () => {
   const { data: brandList, isLoading, isError } = useGetBrandListQuery();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent />;
   }
   if (isError) {
     return <div>Error loading brand list.</div>;

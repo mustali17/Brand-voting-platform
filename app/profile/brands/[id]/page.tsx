@@ -23,6 +23,7 @@ import { userAgentFromString } from 'next/server';
 import toast from 'react-hot-toast';
 import { updateUser } from '@/lib/features/user/userSlice';
 import { RootState } from '@/lib/store';
+import LoadingComponent from '@/components/LoadingComponent';
 
 interface State {
   isEdit: boolean;
@@ -55,8 +56,7 @@ export default function Brand({ params }: { params: { id: string } }) {
   //#endregion
 
   //#region UI Component
-  if (isLoading)
-    return <div className='flex justify-center p-8'>Loading brand...</div>;
+  if (isLoading) return <LoadingComponent />;
   if (error || !brand || !user)
     return <div className='flex justify-center p-8'>Something went wrong.</div>;
   //#endregion

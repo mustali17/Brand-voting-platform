@@ -5,6 +5,7 @@ import {
 } from '@/utils/models/category.model';
 import Image from 'next/image';
 import Link from 'next/link';
+import LoadingComponent from './LoadingComponent';
 
 export default function CategoryList({
   categories,
@@ -18,7 +19,7 @@ export default function CategoryList({
   categoryClickHandler?: (category: CategoryDetailsDto) => void;
 }) {
   if (isLoading) {
-    return <div className='flex-1 p-4'>Loading...</div>;
+    return <LoadingComponent />;
   }
 
   if (isError) {

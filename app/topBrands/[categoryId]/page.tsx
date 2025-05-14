@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useGetTopBrandsBySubCategoryQuery } from '@/lib/services/category.service';
 import { useRouter } from 'next/navigation';
+import LoadingComponent from '@/components/LoadingComponent';
 
 export default function BrandShowcase({
   params,
@@ -13,8 +14,9 @@ export default function BrandShowcase({
   const { data, isLoading, isError } =
     useGetTopBrandsBySubCategoryQuery(categoryId);
   const router = useRouter();
+
   if (isLoading) {
-    return <div className='flex justify-center py-8'>Loading brands...</div>;
+    return <LoadingComponent />;
   }
 
   if (isError || !data) {

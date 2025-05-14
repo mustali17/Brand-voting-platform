@@ -1,4 +1,5 @@
 'use client';
+import LoadingComponent from '@/components/LoadingComponent';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -54,7 +55,7 @@ const NextLoginPage = () => {
   };
 
   if (sessionStatus === 'loading') {
-    return <h1>Loading...</h1>;
+    return <LoadingComponent />;
   }
   return (
     sessionStatus !== 'authenticated' && (
