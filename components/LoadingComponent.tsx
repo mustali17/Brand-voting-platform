@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 
 const LoadingComponent = () => {
   return (
     <div
       style={{
-        background: '#fff',
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        background: "#fff",
+        width: "100%",
+        height: "100vh",
+        position: "absolute",
+        top: "50%",
+        left: "50%",
         zIndex: 999,
       }}
     >
@@ -38,7 +38,7 @@ const LoadingComponent = () => {
           }
 
           .three-body__dot:after {
-            content: '';
+            content: "";
             position: absolute;
             height: 0%;
             width: 100%;

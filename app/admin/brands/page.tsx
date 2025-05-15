@@ -1,5 +1,5 @@
-'use client';
-import React from 'react';
+"use client";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -9,14 +9,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   useGetBrandListQuery,
   useUpdateBrandMutation,
-} from '@/lib/services/brand.service';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import LoadingComponent from '@/components/LoadingComponent';
+} from "@/lib/services/brand.service";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import LoadingComponent from "@/components/LoadingComponent";
 
 const Brands = () => {
   const { data: brandList, isLoading, isError } = useGetBrandListQuery();
