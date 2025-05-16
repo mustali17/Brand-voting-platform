@@ -1,5 +1,5 @@
-"use client";
-import React from "react";
+'use client';
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -9,17 +9,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   useGetBrandListQuery,
-  useUpdateBrandMutation,
-} from "@/lib/services/brand.service";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import LoadingComponent from "@/components/LoadingComponent";
+  useVerifyUnverifyBrandMutation,
+} from '@/lib/services/brand.service';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import LoadingComponent from '@/components/LoadingComponent';
+import toast from 'react-hot-toast';
 
 const Brands = () => {
   const { data: brandList, isLoading, isError } = useGetBrandListQuery();
+
+  const [brandVerify, { isLoading: brandVerifyLoading }] =
+    useVerifyUnverifyBrandMutation();
+
+  const handleBrandVerification = async (id: string, isVerified: boolean) => {
+    const res = await brandVerify({ id, isVerified }).unwrap();
+    if (res.success) {
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+    }
+  };
 
   if (isLoading) {
     return <LoadingComponent />;
@@ -40,6 +53,7 @@ const Brands = () => {
             <TableHead>Website</TableHead>
             <TableHead>Owner</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>Verified</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -69,9 +83,18 @@ const Brands = () => {
               </TableCell>
               <TableCell>{brands.ownerId.name}</TableCell>
               <TableCell>{brands.ownerId.email}</TableCell>
+              <TableCell>{brands.isVerified.toString()}</TableCell>
               <TableCell className='flex gap-2'>
-                <Button title='Approve' className='bg-green-400' />
-                <Button title='Reject' className='bg-red-400' />
+                <Button
+                  title='Approve'
+                  className='bg-green-400 hover:bg-green-600 hover:text-white'
+                  onClick={() => handleBrandVerification(brands._id, true)}
+                />
+                <Button
+                  title='Reject'
+                  className='bg-red-400 hover:bg-red-600 hover:text-white'
+                  onClick={() => handleBrandVerification(brands._id, false)}
+                />
               </TableCell>
             </TableRow>
           ))}

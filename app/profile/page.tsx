@@ -78,7 +78,12 @@ const UserProfile = () => {
                         title='Create Brand'
                         onClick={() => updateState({ isCreateBrand: true })}
                       />
-                      {/* <Button title='Edit profile' /> */}
+                      {user?.role === 'admin' && (
+                        <Button
+                          title='Admin Dashboard'
+                          onClick={() => router.push('/admin/dashboard')}
+                        />
+                      )}
                     </div>
                   </div>
 

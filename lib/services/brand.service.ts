@@ -97,6 +97,18 @@ export const brandApi = api.injectEndpoints({
       query: (id) => `${BRANDS}/${SUGGESTED}`,
       providesTags: (result, error) => [{ type: 'Brand' }],
     }),
+
+    verifyUnverifyBrand: builder.mutation<
+      { success: boolean; message: string; brand: BrandDto },
+      { id: string; isVerified: boolean }
+    >({
+      query: ({ id, isVerified }) => ({
+        url: `${BRANDS}/${id}/verify`,
+        method: 'PATCH',
+        body: { isVerified },
+      }),
+      invalidatesTags: ['Brand'],
+    }),
   }),
 });
 
@@ -110,4 +122,5 @@ export const {
   useGetSuggestedBrandsQuery,
   useLazyGetSuggestedBrandsQuery,
   useGetBrandListQuery,
+  useVerifyUnverifyBrandMutation,
 } = brandApi;
