@@ -10,3 +10,9 @@ export interface CommonCategoryDto {
   name: string;
   imageUrl: string;
 }
+
+export interface CategoryFormDto extends CommonCategoryDto {
+  name: string;
+  categoryImageURL: string;
+  subcategories: CommonCategoryDto[];
+}
