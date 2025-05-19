@@ -156,7 +156,7 @@ const ProductForm = ({
       const categoryList = res.map((category) => {
         return {
           label: category.name,
-          value: category._id,
+          value: category._id || '',
         };
       });
       updateState({
@@ -185,7 +185,7 @@ const ProductForm = ({
         const subcategoryList = selectedCategory.map((subcategory) => {
           return {
             label: subcategory.name,
-            value: subcategory._id,
+            value: subcategory._id || '',
           };
         });
         updateState({
