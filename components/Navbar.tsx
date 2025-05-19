@@ -8,6 +8,7 @@ import { Dialog } from '@headlessui/react';
 import { FaBars } from 'react-icons/fa';
 import { FaXmark } from 'react-icons/fa6';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const { data: session }: any = useSession();
@@ -17,6 +18,7 @@ const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'Dashboard', href: '/dashboard' },
   ];
+  const router = useRouter();
 
   return (
     <>
@@ -97,6 +99,7 @@ const Navbar = () => {
                 <button
                   onClick={() => {
                     signOut();
+                    router.push('/login');
                   }}
                   className='ml-auto rounded-md bg-black border border-1 border-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                 >

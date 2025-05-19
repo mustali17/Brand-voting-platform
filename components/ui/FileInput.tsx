@@ -64,6 +64,7 @@ export function FileInput({
   };
 
   const validateAndSetFile = (selectedFile: File | null) => {
+    debugger;
     setError(null);
     if (!selectedFile) {
       setFile(null);

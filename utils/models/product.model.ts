@@ -57,3 +57,22 @@ export interface Pagination {
   page: number;
   pages: number;
 }
+
+export interface AdminDashboardDto {
+  success: boolean;
+  stats: Stats;
+}
+
+export interface Stats {
+  totalUsers: number;
+  usersChange: number;
+  totalVotes: number;
+  votesChange: number;
+  totalBrands: number;
+  totalBrandChange: number;
+  newBrands: number;
+  activeBrands: number;
+  activeBrandsChange: number;
+  engagementRate: string;
+  engagementChange: string;
+}

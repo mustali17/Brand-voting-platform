@@ -1,8 +1,19 @@
 import { UserDto } from '@/utils/models/user.model';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { ALL, BRANDS, CATEGORIES, USER } from '../api/apiEndPoints';
+import {
+  ADD_SUBCATEGORY,
+  ALL,
+  BRANDS,
+  CATEGORIES,
+  CREATE,
+  USER,
+} from '../api/apiEndPoints';
 import { baseQuery } from '../api/baseQuery';
-import { CategoryDetailsDto } from '@/utils/models/category.model';
+import {
+  CategoryDetailsDto,
+  CategoryFormDto,
+  SubCategoryPostDto,
+} from '@/utils/models/category.model';
 import { TopBrandsDto } from '@/utils/models/brand.model';
 
 export const categoryApi = createApi({
@@ -22,10 +33,25 @@ export const categoryApi = createApi({
       providesTags: (result, error, id) => [{ type: 'Category', id }],
     }),
 
-    // CREATE: Add a new user
-    createUser: builder.mutation<UserDto, Partial<UserDto>>({
+    // CREATE: Add a new category
+    createCategory: builder.mutation<
+      { success: boolean; category: CategoryDetailsDto },
+      Partial<CategoryFormDto>
+    >({
       query: (newUser) => ({
-        url: USER,
+        url: CATEGORIES + CREATE,
+        method: 'POST',
+        body: newUser,
+      }),
+      invalidatesTags: ['Category'],
+    }),
+    // CREATE: Add a new sub category
+    createSubCategory: builder.mutation<
+      { success: boolean; category: CategoryDetailsDto },
+      SubCategoryPostDto
+    >({
+      query: (newUser) => ({
+        url: CATEGORIES + ADD_SUBCATEGORY,
         method: 'POST',
         body: newUser,
       }),
@@ -33,16 +59,16 @@ export const categoryApi = createApi({
     }),
 
     // UPDATE: Update a user
-    updateUser: builder.mutation<
-      UserDto,
-      { id: number; data: Partial<UserDto> }
+    updateCategoryWithSub: builder.mutation<
+      { success: boolean; category: CategoryDetailsDto },
+      { id: string; data: Partial<CategoryFormDto> }
     >({
       query: ({ id, data }) => ({
-        url: `${USER}/${id}`,
-        method: 'PUT',
+        url: `${CATEGORIES}/${id}`,
+        method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Category', id }],
+      invalidatesTags: ['Category'],
     }),
 
     // DELETE: Delete a user
@@ -60,8 +86,9 @@ export const {
   useGetCategoriesQuery,
   useGetTopBrandsBySubCategoryQuery,
   useLazyGetTopBrandsBySubCategoryQuery,
-  useCreateUserMutation,
-  useUpdateUserMutation,
+  useCreateCategoryMutation,
+  useCreateSubCategoryMutation,
+  useUpdateCategoryWithSubMutation,
   useDeleteUserMutation,
   useLazyGetCategoriesQuery,
 } = categoryApi;

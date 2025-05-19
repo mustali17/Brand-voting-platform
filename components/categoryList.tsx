@@ -25,6 +25,7 @@ export default function CategoryList({
   if (isError) {
     return <div className='flex-1 p-4'>Error loading categories</div>;
   }
+
   return (
     <div className='flex-1 p-4'>
       <div className='grid grid-cols-4 gap-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8'>
@@ -36,11 +37,11 @@ export default function CategoryList({
                 categoryClickHandler(category);
               }
             }}
-            className='flex flex-col items-center'
+            className='flex flex-col items-center cursor-pointer'
           >
             <div className='mb-2 rounded-full overflow-hidden bg-gray-100 p-1'>
               <Image
-                src={category.categoryImageURL || '/placeholder.svg'}
+                src={category.imageUrl || '/placeholder.svg'}
                 alt={category.name}
                 width={80}
                 height={80}
