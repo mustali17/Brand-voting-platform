@@ -1,13 +1,16 @@
+import { AdminDashboardDto } from './../../utils/models/product.model';
 import {
   ProductDto,
   ProductFormDto,
   ProductListDto,
 } from '@/utils/models/product.model';
 import {
+  ADMIN,
   BRANDS,
   CREATE,
   LIST,
   PRODUCTS,
+  STATS,
   UNVOTE,
   VOTE,
 } from '../api/apiEndPoints';
@@ -81,6 +84,11 @@ export const productApi = api.injectEndpoints({
       }),
       invalidatesTags: [],
     }),
+
+    // Product List
+    getAdminStats: builder.query<AdminDashboardDto, void>({
+      query: () => ADMIN + STATS,
+    }),
   }),
 });
 
@@ -90,4 +98,5 @@ export const {
   useLazyGetProductListQuery,
   useVoteAProductMutation,
   useUnvoteAProductMutation,
+  useGetAdminStatsQuery,
 } = productApi;

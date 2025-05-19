@@ -14,3 +14,5 @@ export const FOLLOW = '/follow';
 export const UNFOLLOW = '/unfollow';
 export const SUGGESTED = '/suggested';
 export const ADD_SUBCATEGORY = '/add-subcategory';
+export const ADMIN = '/admin';
+export const STATS = '/stats';

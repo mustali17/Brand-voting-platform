@@ -1,9 +1,16 @@
+'use client';
+import LoadingComponent from '@/components/LoadingComponent';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useGetAdminStatsQuery } from '@/lib/services/product.service';
 import { ArrowUpRight, Award, TrendingUp, Users, Vote } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
 const AdminDashboard = () => {
+  const { data, isLoading } = useGetAdminStatsQuery();
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
   return (
     <div className='grid items-start gap-8 mt-5 ps-4'>
       <div className='flex items-center justify-between px-2'>
@@ -23,9 +30,9 @@ const AdminDashboard = () => {
             <Users className='h-4 w-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>1,245</div>
+            <div className='text-2xl font-bold'>{data?.stats.totalUsers}</div>
             <p className='text-xs text-muted-foreground'>
-              +12% from last month
+              +{data?.stats.usersChange}% from last month
             </p>
           </CardContent>
         </Card>
@@ -35,9 +42,9 @@ const AdminDashboard = () => {
             <Vote className='h-4 w-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>8,623</div>
+            <div className='text-2xl font-bold'>{data?.stats.totalVotes}</div>
             <p className='text-xs text-muted-foreground'>
-              +18% from last month
+              +{data?.stats.votesChange}% from last month
             </p>
           </CardContent>
         </Card>
@@ -47,8 +54,10 @@ const AdminDashboard = () => {
             <Award className='h-4 w-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>42</div>
-            <p className='text-xs text-muted-foreground'>+3 new this month</p>
+            <div className='text-2xl font-bold'>{data?.stats.activeBrands}</div>
+            <p className='text-xs text-muted-foreground'>
+              +{data?.stats.activeBrandsChange} new this month
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -59,9 +68,11 @@ const AdminDashboard = () => {
             <TrendingUp className='h-4 w-4 text-muted-foreground' />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>24.5%</div>
+            <div className='text-2xl font-bold'>
+              {data?.stats.engagementRate}%
+            </div>
             <p className='text-xs text-muted-foreground'>
-              +5.2% from last month
+              +{data?.stats.engagementChange}% from last month
             </p>
           </CardContent>
         </Card>
