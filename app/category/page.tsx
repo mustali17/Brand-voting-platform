@@ -27,7 +27,7 @@ const Category = () => {
         return {
           _id: category._id,
           name: category.name,
-          imageUrl: category.imageUrl,
+          imageUrl: category.categoryImageURL,
         };
       });
   };

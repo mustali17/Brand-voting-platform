@@ -13,3 +13,4 @@ export const UNVOTE = '/unvote';
 export const FOLLOW = '/follow';
 export const UNFOLLOW = '/unfollow';
 export const SUGGESTED = '/suggested';
+export const ADD_SUBCATEGORY = '/add-subcategory';
