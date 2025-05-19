@@ -123,11 +123,11 @@ const NextLoginPage = () => {
                   </label>
                 </div>
 
-                <div className='text-sm leading-6'>
+                {/* <div className='text-sm leading-6'>
                   <Link href='#' className='text-black hover:text-gray-900'>
                     Forgot password?
                   </Link>
-                </div>
+                </div> */}
               </div>
 
               <div>

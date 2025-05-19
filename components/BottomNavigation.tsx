@@ -15,27 +15,27 @@ const BottomNavigation = () => {
       />
       <div className='md:hidden border-t border-gray-300 py-2 bg-white fixed bottom-0 left-0 right-0'>
         <div className='flex justify-around'>
-          <button className='p-2'>
-            <Link href={'/'}>
+          <Link href={'/'}>
+            <button className='p-2'>
               <Home className='h-6 w-6' />
-            </Link>
-          </button>
+            </button>
+          </Link>
           <button className='p-2'>
             <Search className='h-6 w-6' onClick={() => setIsSearchOpen(true)} />
           </button>
-          <button className='p-2 relative'>
-            <Link href={'/notifications'}>
+          <Link href={'/notifications'}>
+            <button className='p-2 relative'>
               <Bell className='h-6 w-6' />
-            </Link>
-            {/* <span className='absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center'>
+              {/* <span className='absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center'>
               8
               </span> */}
-          </button>
-          <button className='p-2'>
-            <Link href={'/profile'}>
+            </button>
+          </Link>
+          <Link href={'/profile'}>
+            <button className='p-2'>
               <UserCircle2Icon className='h-6 w-6' />
-            </Link>
-          </button>
+            </button>
+          </Link>
         </div>
       </div>
     </>

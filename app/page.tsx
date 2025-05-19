@@ -2,28 +2,13 @@
 import { CategoriesSlider } from '@/components/categoriesSlider';
 import InfiniteScroll from '@/components/InfiniteScroll';
 import RightSideBar from '@/components/RightSideBar';
-import SearchOverlay from '@/components/searchOverkay';
 import { setUser } from '@/lib/features/user/userSlice';
 import { useLazyGetUserByIdQuery } from '@/lib/services/user.service';
 import { RootState } from '@/lib/store';
 import { UserDto } from '@/utils/models/user.model';
-import {
-  Bell,
-  Compass,
-  Home,
-  LogOut,
-  MoreHorizontal,
-  Search,
-  SearchIcon,
-  ThumbsDown,
-  ThumbsUp,
-  UserCircle2Icon,
-} from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function HomePage() {
