@@ -19,9 +19,7 @@ export default function HomePage() {
   const { user } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    if (sessionStatus === 'unauthenticated') {
-      route.replace('/login');
-    } else if (sessionStatus === 'authenticated') {
+    if (sessionStatus === 'authenticated') {
       getUserDataById();
     }
   }, [sessionStatus]);
