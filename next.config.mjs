@@ -13,6 +13,9 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
   },
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|manifest.json|login|register|api/auth).*)',
+  ],
 };
 
 export default nextConfig;
