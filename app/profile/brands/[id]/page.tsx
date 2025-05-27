@@ -29,11 +29,13 @@ interface State {
   isEdit: boolean;
   isAddProduct: boolean;
   modifyProduct: ProductDto;
+  isSubmitting: boolean;
 }
 const initialState: State = {
   isEdit: false,
   isAddProduct: false,
   modifyProduct: {} as ProductDto,
+  isSubmitting: false,
 };
 export default function Brand({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -63,6 +65,7 @@ export default function Brand({ params }: { params: { id: string } }) {
 
   const handleFollow = async (follow: boolean) => {
     if (isOwner) return;
+    updateState({ isSubmitting: true });
     if (user.following?.includes(brand.brand._id)) {
       try {
         await unFollowBrand({ brandId: brand.brand._id }).unwrap();
@@ -77,7 +80,6 @@ export default function Brand({ params }: { params: { id: string } }) {
       } catch (error) {
         toast.error('Failed to unfollow brand');
       }
-      return;
     } else {
       try {
         await followBrand({ brandId: brand.brand._id }).unwrap();
@@ -91,6 +93,7 @@ export default function Brand({ params }: { params: { id: string } }) {
         toast.error('Failed to follow brand');
       }
     }
+    updateState({ isSubmitting: false });
   };
 
   return (
@@ -127,7 +130,7 @@ export default function Brand({ params }: { params: { id: string } }) {
           <CardHeader className='flex flex-col items-center space-y-4 md:col-span-1'>
             <div className='h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center'>
               {/* Placeholder for brand logo */}
-              <div className='h-20 w-20 rounded-full overflow-hidden'>
+              <div className='h-22 w-22 rounded-full overflow-hidden'>
                 <Image
                   src={brand.brand.logoUrl}
                   alt={`${brand.brand.name} logo`}
@@ -176,6 +179,7 @@ export default function Brand({ params }: { params: { id: string } }) {
                 onClick={() =>
                   handleFollow(user.following?.includes(brand.brand._id))
                 }
+                isLoading={brandScreenStates.isSubmitting}
               />
             )}
           </CardHeader>

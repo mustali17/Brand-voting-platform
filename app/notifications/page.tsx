@@ -1,9 +1,16 @@
+import Image from 'next/image';
 import React from 'react';
 
 const Notifications = () => {
   return (
     <div className='flex flex-col items-center justify-center h-screen w-full'>
-      <h1 className='text-2xl font-bold'>Notifications</h1>
+      <Image
+        src='/images/not-found.svg'
+        alt='No Brands Found'
+        width={150}
+        height={150}
+        className='mb-4'
+      />
       <p className='mt-4 text-gray-600'>You have no new notifications.</p>
     </div>
   );

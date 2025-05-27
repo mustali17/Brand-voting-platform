@@ -59,12 +59,14 @@ interface State {
   isImageUploading: boolean;
   formList: InputFormType[];
   allCategories: CategoryDetailsDto[];
+  isLoading: boolean;
 }
 
 const initialState: State = {
   isImageUploading: false,
   formList: formList,
   allCategories: [] as CategoryDetailsDto[],
+  isLoading: false,
 };
 
 const ProductForm = ({
@@ -96,17 +98,11 @@ const ProductForm = ({
     },
     mode: 'onSubmit',
   });
-  console.log('Product Form: ', modifyProduct);
 
-  const [
-    addProduct,
-    { isLoading: addProductLoading, isError: addProductError },
-  ] = useCreateProductMutation();
+  const [addProduct, { isError: addProductError }] = useCreateProductMutation();
 
-  const [
-    updateProduct,
-    { isLoading: updateProductLoading, isError: updateProductError },
-  ] = useUpdateProductMutation();
+  const [updateProduct, { isError: updateProductError }] =
+    useUpdateProductMutation();
 
   const [getCategories] = useLazyGetCategoriesQuery();
   //#endregion
@@ -170,7 +166,6 @@ const ProductForm = ({
           return form;
         }),
       });
-      console.log('Categories: ', res);
     } else {
       toast.error('Failed to fetch categories!');
     }
@@ -222,6 +217,7 @@ const ProductForm = ({
   };
 
   const onSubmit = async (data: ProductFormDto) => {
+    updateState({ isLoading: true });
     data.brandId = brandId;
     if (Object.keys(modifyProduct).length) {
       const updatedData = {
@@ -243,6 +239,7 @@ const ProductForm = ({
         toast.success('Product Created Successfully!');
       }
     }
+    updateState({ isLoading: false });
     setTimeout(() => {
       callBack();
     }, 500);
@@ -264,13 +261,11 @@ const ProductForm = ({
         submitButtonText='Save Changes'
         handleSubmit={formHandleSubmit}
         submit={onSubmit}
-        isSubmitting={addProductLoading}
+        isSubmitting={productScreenStates.isLoading}
         handleFile={handleFileUpload}
         gridSize={1}
         submitBtnDisabled={
-          addProductLoading ||
-          updateProductLoading ||
-          productScreenStates.isImageUploading
+          productScreenStates.isLoading || productScreenStates.isImageUploading
         }
       />
     </div>

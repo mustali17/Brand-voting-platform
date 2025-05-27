@@ -15,9 +15,7 @@ const AdminDashboard = () => {
     <div className='grid items-start gap-8 mt-5 ps-4'>
       <div className='flex items-center justify-between px-2'>
         <div className='grid gap-1'>
-          <h1 className='font-heading text-3xl md:text-4xl'>
-            Brand Voting Platform
-          </h1>
+          <h1 className='font-heading text-3xl md:text-4xl'>Firm Corner</h1>
           <p className='text-lg text-muted-foreground'>
             Describe this platform
           </p>

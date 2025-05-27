@@ -138,6 +138,16 @@ const NextLoginPage = () => {
                   Sign in
                 </button>
               </div>
+              <p className='text-sm text-gray-500 text-center'>
+                Already have an account?{' '}
+                <Link
+                  href='/register'
+                  className='text-blue-300 hover:text-blue-900'
+                  title='Register here'
+                >
+                  Register
+                </Link>
+              </p>
             </form>
 
             <div>

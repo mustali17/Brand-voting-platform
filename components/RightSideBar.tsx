@@ -67,7 +67,7 @@ const RightSideBar = ({ user }: { user: UserDto }) => {
               alt={suggestion.name}
               width={44}
               height={44}
-              className='rounded-full w-11 h-11 mr-3 object-cover'
+              className='rounded-full w-11 h-11 mr-3 object-contain'
             />
             <div>
               <div className='font-semibold text-sm'>{suggestion.name}</div>

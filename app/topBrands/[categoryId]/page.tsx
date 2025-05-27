@@ -74,8 +74,17 @@ export default function BrandShowcase({
             </article>
           ))
         ) : (
-          <div className='flex justify-center py-8 text-gray-500'>
-            No brands found in this category.
+          <div className='flex justify-center py-8 text-gray-500 flex-col items-center'>
+            <div>
+              <Image
+                src='/images/not-found.svg'
+                alt='No Brands Found'
+                width={150}
+                height={150}
+                className='mb-4'
+              />
+            </div>
+            <div>No brands found in this category.</div>
           </div>
         )}
       </div>
