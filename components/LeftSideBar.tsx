@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import SearchOverlay from './searchOverkay';
+import Image from 'next/image';
 
 const LeftSideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -23,9 +24,15 @@ const LeftSideBar = () => {
           <div className='space-y-1 px-3'>
             <Link
               href='/'
-              className='flex items-center px-3 py-3 text-xl my-4 italic font-medium rounded-md hover:bg-gray-100'
+              className='flex items-center px-3 my-4 rounded-md hover:bg-gray-100'
             >
-              Brand Voting
+              <Image
+                src='/images/logo-transparent.png'
+                alt='Firm Corner Logo'
+                width={120}
+                height={32}
+                className='w-64 h-16 object-cover'
+              />
             </Link>
             <Link
               href='/'
