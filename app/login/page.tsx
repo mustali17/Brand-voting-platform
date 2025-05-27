@@ -1,20 +1,20 @@
-'use client';
-import LoadingComponent from '@/components/LoadingComponent';
-import { signIn, useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { FcGoogle } from 'react-icons/fc';
+"use client";
+import LoadingComponent from "@/components/LoadingComponent";
+import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FcGoogle } from "react-icons/fc";
 
 const NextLoginPage = () => {
   const router = useRouter();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
-    if (sessionStatus === 'authenticated') {
-      router.replace('/');
+    if (sessionStatus === "authenticated") {
+      router.replace("/");
     }
   }, [sessionStatus, router]);
 
@@ -28,37 +28,37 @@ const NextLoginPage = () => {
     const email = e.target[0].value;
     const password = e.target[1].value;
     if (!isValidEmail(email)) {
-      setError('Email is invalid');
-      toast.error('Email is invalid');
+      setError("Email is invalid");
+      toast.error("Email is invalid");
       return;
     }
 
     if (!password || password.length < 8) {
-      setError('Password is invalid');
-      toast.error('Password is invalid');
+      setError("Password is invalid");
+      toast.error("Password is invalid");
       return;
     }
 
-    const res = await signIn('credentials', {
+    const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
     });
     if (res?.error) {
-      setError('Invalid email or password');
-      toast.error('Invalid email or password');
-      if (res?.url) router.replace('/');
+      setError("Invalid email or password");
+      toast.error("Invalid email or password");
+      if (res?.url) router.replace("/");
     } else {
-      setError('');
-      toast.success('Successful login');
+      setError("");
+      toast.success("Successful login");
     }
   };
 
-  if (sessionStatus === 'loading') {
+  if (sessionStatus === "loading") {
     return <LoadingComponent />;
   }
   return (
-    sessionStatus !== 'authenticated' && (
+    sessionStatus !== "authenticated" && (
       <div className='flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8'>
         <div className='flex justify-center flex-col items-center'>
           <h2 className='mt-6 text-center text-2xl leading-9 tracking-tight text-gray-900'>
@@ -139,7 +139,7 @@ const NextLoginPage = () => {
                 </button>
               </div>
               <p className='text-sm text-gray-500 text-center'>
-                Already have an account?{' '}
+                Don&apos;t have an account?{" "}
                 <Link
                   href='/register'
                   className='text-blue-300 hover:text-blue-900'
@@ -168,7 +168,7 @@ const NextLoginPage = () => {
               <div className='mt-6'>
                 <button
                   onClick={() => {
-                    signIn('google');
+                    signIn("google");
                   }}
                   className='flex w-full items-center border border-gray-300 justify-center gap-3 rounded-md bg-white px-3 py-1.5 text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
                 >
