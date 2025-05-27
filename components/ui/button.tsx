@@ -49,6 +49,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
+        disabled={props.disabled || props.isLoading}
       >
         {props.isLoading ? (
           <span className='animate-spin w-4 h-4 border-2 border-t-transparent border-primary rounded-full'></span>

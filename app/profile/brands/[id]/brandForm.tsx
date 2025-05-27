@@ -47,10 +47,12 @@ const formList: InputFormType[] = [
 
 interface State {
   isImageUploading: boolean;
+  isSubmitting: boolean;
 }
 
 const initialState: State = {
   isImageUploading: false,
+  isSubmitting: false,
 };
 
 const BrandForm = ({
@@ -79,12 +81,8 @@ const BrandForm = ({
     mode: 'onChange',
   });
 
-  const [addBrand, { isLoading: addBrandLoading, isError: addBrandError }] =
-    useCreateBrandMutation();
-  const [
-    updateBrand,
-    { isLoading: updateBrandLoading, isError: updateBrandError },
-  ] = useUpdateBrandMutation();
+  const [addBrand, { isError: addBrandError }] = useCreateBrandMutation();
+  const [updateBrand, { isError: updateBrandError }] = useUpdateBrandMutation();
 
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
@@ -136,6 +134,7 @@ const BrandForm = ({
     }
   };
   const onSubmit = async (data: BrandFormDto) => {
+    updateState({ isSubmitting: true });
     if (brandData) {
       const updatedData = {
         ...brandData,
@@ -176,6 +175,7 @@ const BrandForm = ({
     }
     setTimeout(() => {
       callBack();
+      updateState({ isSubmitting: false });
     }, 500);
   };
   //#endregion
@@ -194,13 +194,11 @@ const BrandForm = ({
         submitButtonText='Save Changes'
         handleSubmit={formHandleSubmit}
         submit={onSubmit}
-        isSubmitting={addBrandLoading}
+        isSubmitting={brandScreenStates.isSubmitting}
         handleFile={handleFileUpload}
         gridSize={1}
         submitBtnDisabled={
-          addBrandLoading ||
-          updateBrandLoading ||
-          brandScreenStates.isImageUploading
+          brandScreenStates.isSubmitting || brandScreenStates.isImageUploading
         }
       />
     </div>

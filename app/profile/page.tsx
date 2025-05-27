@@ -43,15 +43,18 @@ const UserProfile = () => {
   return (
     <div className='flex flex-col items-center w-full'>
       <div
-        className={`flex flex-col min-h-screen ${
-          userProfileScreenStates.isCreateBrand ? 'max-w-xl' : 'max-w-7xl'
-        } w-full text-black`}
+        className={`flex flex-col min-h-screen text-black p-6
+        ${
+          userProfileScreenStates.isCreateBrand
+            ? 'w-full sm:flex-1 lg:max-w-2xl'
+            : 'w-full'
+        }
+      `}
       >
         {userProfileScreenStates.isCreateBrand ? (
           <BrandForm
             callBack={() => {
               updateState({ isCreateBrand: false });
-              // getUserDataById();
             }}
           />
         ) : (
@@ -128,7 +131,7 @@ const UserProfile = () => {
                         alt='Brand logo'
                         width={100}
                         height={100}
-                        className='rounded-full w-24 h-24 object-cover'
+                        className='rounded-full w-24 h-24 object-contain'
                       />
                       <span className='text-sm font-semibold text-center'>
                         {brand.name}

@@ -101,7 +101,7 @@ export function CategoriesSlider() {
                   alt={`${cat.name}'s`}
                   width={36}
                   height={36}
-                  className='rounded-full w-12 h-12 object-cover'
+                  className='rounded-full w-12 h-12 object-contain'
                 />
               </div>
             </div>

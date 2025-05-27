@@ -66,7 +66,7 @@ const Brands = () => {
                   alt={brands.name}
                   width={50}
                   height={50}
-                  className='rounded-full object-cover w-10 h-10'
+                  className='rounded-full object-contain w-10 h-10'
                 />
               </TableCell>
               <TableCell className='font-medium'>{brands.name}</TableCell>

@@ -45,7 +45,7 @@ export default function CategoryList({
                 alt={category.name}
                 width={80}
                 height={80}
-                className='h-16 w-16 rounded-full object-cover transition-transform hover:scale-110'
+                className='h-16 w-16 rounded-full object-contain transition-transform hover:scale-110'
               />
             </div>
             <span className='text-center text-sm'>{category.name}</span>

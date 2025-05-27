@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 import Select, {
   SingleValue,
   MultiValue,
   ActionMeta,
   StylesConfig,
-} from "react-select";
+} from 'react-select';
 
 export type OptionType = {
   value: string;
@@ -22,56 +22,56 @@ type CustomSelectProps = {
 const customStyles: StylesConfig<OptionType, boolean> = {
   control: (provided: Record<string, unknown>, state: any) => ({
     ...provided,
-    minHeight: "40px",
-    height: "40px",
-    border: state.isFocused ? "1px solid #145673" : "1px solid #ced4da",
+    minHeight: '40px',
+    height: '40px',
+    border: state.isFocused ? '1px solid #7a33d1' : '1px solid #ced4da',
     boxShadow: state.isFocused
-      ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #145673"
-      : "none",
-    "&:hover": {
-      border: "1px solid #145673",
-      boxShadow: "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #145673",
+      ? '0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #7a33d1'
+      : 'none',
+    '&:hover': {
+      border: '1px solid #7a33d1',
+      boxShadow: '0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #7a33d1',
     },
-    borderRadius: "6px",
-    display: "flex",
-    alignItems: "center",
-    minWidth: "200px",
-    fontSize: "16px",
+    borderRadius: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    minWidth: '200px',
+    fontSize: '16px',
   }),
   valueContainer: (provided, state) => ({
     ...provided,
-    height: "100%",
-    padding: "0 6px",
-    fontSize: "16px",
+    height: '100%',
+    padding: '0 6px',
+    fontSize: '16px',
   }),
   placeholder: (provided, state) => ({
     ...provided,
-    paddingBottom: "2px",
-    fontSize: "16px",
+    paddingBottom: '2px',
+    fontSize: '16px',
   }),
   singleValue: (provided, state) => ({
     ...provided,
-    paddingTop: "1px",
+    paddingTop: '1px',
   }),
   input: (provided, state) => ({
     ...provided,
-    height: "100%",
+    height: '100%',
   }),
   indicatorsContainer: (provided, state) => ({
     ...provided,
-    height: "100%",
+    height: '100%',
   }),
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   option: (provided, state) => ({
     ...provided,
-    fontSize: "16px",
+    fontSize: '16px',
   }),
 };
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
   onChange,
-  placeholder = "Select an option",
+  placeholder = 'Select an option',
   isMulti = false,
   value,
 }) => {
@@ -93,15 +93,14 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   const getMultiSelectedValue = (inputList: OptionType[], value: any) => {
-    const splitValues = Array.isArray(value) ? value : value.split(",");
+    const splitValues = Array.isArray(value) ? value : value.split(',');
     return splitValues
       .map((obj: any) => inputList?.filter((item: any) => item?.value == obj))
       .flat();
   };
 
-  console.log("CustomSelect: ", options, value);
   return (
-    <div style={{ minWidth: "250px" }}>
+    <div style={{ minWidth: '250px' }}>
       <Select
         value={
           isMulti
@@ -119,8 +118,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           borderRadius: 0,
           colors: {
             ...theme.colors,
-            primary: "#000",
-            primary25: "#777",
+            primary: 'var(--primary-color)',
+            primary25: 'hsla(252, 63%, 54%, 0.25)',
           },
         })}
       />
