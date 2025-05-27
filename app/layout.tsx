@@ -8,6 +8,10 @@ import './globals.css';
 import { StoreProviders } from './providers';
 import LeftSideBar from '@/components/LeftSideBar';
 import BottomNavigation from '@/components/BottomNavigation';
+import { LoadingProvider } from '@/components/loadingProvider';
+import RouteLoader from '@/components/ui/routeLoader';
+import { Suspense } from 'react';
+import LoadingComponent from '@/components/LoadingComponent';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,18 +29,21 @@ export default async function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <StoreProviders>
-          <SessionProvider session={session}>
-            <Navbar />
-            <div className='mx-auto max-w-screen text-2xl gap-2 mb-10 flex flex-row'>
-              <Providers>
-                {session?.user && <LeftSideBar />}
-                {children}
-                {session?.user && <BottomNavigation />}
-              </Providers>
-            </div>
-          </SessionProvider>
-        </StoreProviders>
+        <LoadingProvider>
+          <RouteLoader />
+          <StoreProviders>
+            <SessionProvider session={session}>
+              <Navbar />
+              <div className='mx-auto max-w-screen text-2xl gap-2 mb-10 flex flex-row'>
+                <Providers>
+                  {session?.user && <LeftSideBar />}
+                  {children}
+                  {session?.user && <BottomNavigation />}
+                </Providers>
+              </div>
+            </SessionProvider>
+          </StoreProviders>
+        </LoadingProvider>
       </body>
     </html>
   );
