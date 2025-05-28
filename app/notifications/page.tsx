@@ -3,7 +3,10 @@ import React from 'react';
 
 const Notifications = () => {
   return (
-    <div className='flex flex-col items-center justify-center h-screen w-full'>
+    <div
+      className='flex flex-col items-center justify-center w-full overflow-hidden'
+      style={{ height: '90vh' }}
+    >
       <Image
         src='/images/not-found.svg'
         alt='No Brands Found'

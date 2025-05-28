@@ -151,9 +151,19 @@ export default function InfiniteScroll() {
   //#region UI Component
   if (isLoadingProducts) {
     return <LoadingComponent />;
-  } else if (!isLoadingProducts && query && items.length === 0) {
+  } else if (!isLoadingProducts && items.length === 0) {
     return (
-      <div className='flex justify-center py-8 text-black/50'>
+      <div
+        className='flex justify-center py-8 text-black/50 flex-col items-center'
+        style={{ height: '70vh' }}
+      >
+        <Image
+          src='/images/not-found.svg'
+          alt='No Brands Found'
+          width={150}
+          height={150}
+          className='mb-4'
+        />
         No products found.
       </div>
     );

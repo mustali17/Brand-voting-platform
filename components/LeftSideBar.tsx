@@ -1,11 +1,11 @@
-"use client";
-import { Bell, Home, LogOut, SearchIcon, UserCircle2Icon } from "lucide-react";
-import { signOut } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import SearchOverlay from "./searchOverkay";
-import Image from "next/image";
+'use client';
+import { Bell, Home, LogOut, SearchIcon, UserCircle2Icon } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import SearchOverlay from './searchOverkay';
+import Image from 'next/image';
 
 const LeftSideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -24,8 +24,8 @@ const LeftSideBar = () => {
           <div className='space-y-1 px-3'>
             <Link
               href='/'
-              className='flex items-center px-3 my-4 rounded-md hover:bg-gray-100 font-bold select-none italic'
-              style={{ color: "#7a33d1" }}
+              className='flex items-center px-3 my-4 rounded-md hover:bg-gray-100 varela-regular select-none'
+              style={{ color: '#7a33d1' }}
             >
               Firm Corner
             </Link>
@@ -67,7 +67,7 @@ const LeftSideBar = () => {
               className='flex items-center px-3 py-3 text-sm font-medium rounded-md hover:bg-gray-100 text-red-400'
               onClick={() => {
                 signOut();
-                router.push("/login");
+                router.push('/login');
               }}
             >
               <LogOut className='mr-3 h-5 w-5 ' />

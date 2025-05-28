@@ -1,22 +1,22 @@
-"use client";
-import React from "react";
-import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
 
-import { useState } from "react";
-import { Dialog } from "@headlessui/react";
-import { FaBars } from "react-icons/fa";
-import { FaXmark } from "react-icons/fa6";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { Dialog } from '@headlessui/react';
+import { FaBars } from 'react-icons/fa';
+import { FaXmark } from 'react-icons/fa6';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const { data: session }: any = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Dashboard", href: "/dashboard" },
+    { name: 'Home', href: '/' },
+    { name: 'Dashboard', href: '/dashboard' },
   ];
   const router = useRouter();
 
@@ -24,14 +24,14 @@ const Navbar = () => {
     <>
       <header className='bg-white shadow sticky top-0 z-50 lg:hidden'>
         <nav
-          className='mx-auto flex max-w-7xl items-center justify-between gap-x-6 p-6 py-2 lg:px-8'
+          className='mx-auto flex max-w-7xl items-center justify-between gap-x-6 p-6 py-4 lg:px-8'
           aria-label='Global'
         >
           <div className='flex lg:flex-1'>
             <Link
               href='/'
-              className='-m-1.5 p-1.5 font-bold select-none italic'
-              style={{ color: "#7a33d1" }}
+              className='-m-1.5 p-1.5 select-none varela-regular'
+              style={{ color: '#7a33d1', fontSize: '1.2rem' }}
             >
               Firm Corner
             </Link>
@@ -103,7 +103,7 @@ const Navbar = () => {
                 <button
                   onClick={() => {
                     signOut();
-                    router.push("/login");
+                    router.push('/login');
                   }}
                   className='ml-auto rounded-md bg-black border border-1 border-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                 >

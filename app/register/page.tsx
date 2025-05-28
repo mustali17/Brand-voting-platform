@@ -85,7 +85,7 @@ const RegisterPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
     if (sessionStatus === 'authenticated') {
-      router.replace('/dashboard');
+      router.replace('/');
     }
   }, [sessionStatus, router]);
 
@@ -142,15 +142,18 @@ const RegisterPage = () => {
   //#endregion
   return (
     sessionStatus !== 'authenticated' && (
-      <div className='flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8'>
+      <div
+        className='flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8'
+        style={{ height: '90vh' }}
+      >
         <div className='flex justify-center flex-col items-center'>
-          <h2 className='mt-6 text-center text-2xl leading-9 tracking-tight text-gray-900'>
+          <h2 className='lg:mt-6 sm:mt-2 text-center text-2xl leading-9 tracking-tight text-gray-900'>
             Sign up on our website
           </h2>
         </div>
 
         <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]'>
-          <div className='bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12'>
+          <div className='bg-white px-6 lg:py-12 sm:py-6 shadow sm:rounded-lg sm:px-12'>
             {errorMessage ? (
               <p className='text-red-500 text-sm'>{errorMessage}</p>
             ) : null}
