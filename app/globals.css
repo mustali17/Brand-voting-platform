@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Varela&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -119,4 +121,10 @@
 .like-button-container:hover {
   transform: scale(1.1);
   transition: transform 0.2s ease;
+}
+
+.varela-regular {
+  font-family: 'Varela', sans-serif;
+  font-weight: 800;
+  font-style: normal;
 }
