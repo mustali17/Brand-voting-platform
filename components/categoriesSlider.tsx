@@ -112,15 +112,19 @@ export function CategoriesSlider() {
         ))}
       </div>
       {/* See All Button with Border */}
-      <div className='absolute inset-x-0 bottom-0 flex justify-center items-center'>
-        <div className='w-full border-t border-gray-300'></div>
-        <button
-          className='absolute bg-white px-4 py-1 text-sm font-small text-gray-700 rounded-full shadow-md hover:bg-gray-100 transition'
-          onClick={() => router.push('/category')}
-        >
-          See All
-        </button>
-      </div>
+      {categoriesList.length ? (
+        <div className='absolute inset-x-0 bottom-0 flex justify-center items-center'>
+          <div className='w-full border-t border-gray-300'></div>
+          <button
+            className='absolute bg-white px-4 py-1 text-sm font-small text-gray-700 rounded-full shadow-md hover:bg-gray-100 transition'
+            onClick={() => router.push('/category')}
+          >
+            See All
+          </button>
+        </div>
+      ) : (
+        <></>
+      )}
 
       {/* Right navigation button */}
       <button
