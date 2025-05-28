@@ -5,7 +5,7 @@ const Notifications = () => {
   return (
     <div
       className='flex flex-col items-center justify-center w-full overflow-hidden'
-      style={{ height: '90vh' }}
+      style={{ height: '70vh' }}
     >
       <Image
         src='/images/not-found.svg'
