@@ -1,11 +1,11 @@
-'use client';
+"use client";
 import {
   CategoryDetailsDto,
   CommonCategoryDto,
-} from '@/utils/models/category.model';
-import Image from 'next/image';
-import Link from 'next/link';
-import LoadingComponent from './LoadingComponent';
+} from "@/utils/models/category.model";
+import Image from "next/image";
+import Link from "next/link";
+import LoadingComponent from "./LoadingComponent";
 
 export default function CategoryList({
   categories,
@@ -39,13 +39,13 @@ export default function CategoryList({
             }}
             className='flex flex-col items-center cursor-pointer'
           >
-            <div className='mb-2 rounded-full overflow-hidden bg-gray-100 p-1'>
+            <div className='rounded-full w-16 h-16 bg-white ring-1 ring-gray-300 p-0.5 overflow-hidden flex items-center justify-center'>
               <Image
-                src={category.imageUrl || '/placeholder.svg'}
+                src={category.imageUrl || "/placeholder.svg"}
                 alt={category.name}
                 width={80}
                 height={80}
-                className='h-16 w-16 rounded-full object-contain transition-transform hover:scale-110'
+                className='h-14 w-14 object-contain transition-transform hover:scale-110'
               />
             </div>
             <span className='text-center text-sm'>{category.name}</span>
