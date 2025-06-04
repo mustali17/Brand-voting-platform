@@ -83,7 +83,7 @@ export default function TermsAndConditions() {
             <div className='mt-12 pt-8 border-t border-gray-100'>
               <div className='bg-gray-50 rounded-xl p-6'>
                 <h3 className='font-semibold text-gray-900 mb-2'>
-                  Questions about these terms?
+                  Questions about these terms ?
                 </h3>
                 <p className='text-gray-600 text-sm mb-4'>
                   If you have any questions about these Terms of Service, please
