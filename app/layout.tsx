@@ -33,7 +33,7 @@ export default async function RootLayout({
           <StoreProviders>
             <SessionProvider session={session}>
               <Navbar />
-              <div className='mx-auto max-w-screen text-2xl gap-2 mb-10 flex flex-row'>
+              <div className='mx-auto max-w-screen text-2xl gap-2 flex flex-row'>
                 <Providers>
                   {session?.user && <LeftSideBar />}
                   {children}
