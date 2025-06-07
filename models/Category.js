@@ -13,6 +13,7 @@ const categorySchema = new mongoose.Schema(
     name: { type: String, unique: true, required: true },
     categoryImageURL: { type: String, required: true },
     subcategories: [subcategorySchema],
+    hidden: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

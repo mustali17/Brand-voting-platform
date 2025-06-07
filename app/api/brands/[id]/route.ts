@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import connect from "@/utils/db";
 import Brand from "@/models/Brand";
+import Category from "@/models/Category";
 import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
@@ -34,7 +35,15 @@ export const GET = async (
       return NextResponse.json({ error: "Brand not found" }, { status: 404 });
     }
 
-    const products = await Product.find({ brandId: id }).sort({ createdAt: -1 }).lean();
+    const visibleCategoryIds = await Category.find({ hidden: { $ne: true } }).distinct("_id");
+
+    // ✅ Only fetch products with visible categories
+    const products = await Product.find({
+      brandId: id,
+      categoryId: { $in: visibleCategoryIds }
+    })
+      .sort({ createdAt: -1 })
+      .lean();
 
     const isFollowing = userId ? brand.followers?.some((f: any) => f.toString() === userId) : false;
 

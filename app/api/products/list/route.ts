@@ -49,13 +49,22 @@ export async function GET(req: NextRequest) {
   try {
     await connect();
 
+    const visibleCategoryIds = await Category.find({
+      hidden: { $ne: true },
+    }).distinct("_id");
+
     let products: any[] = [];
     let total = 0;
 
-    const filter: any = {};
+    const filter: any = {
+      categoryId: { $in: visibleCategoryIds },
+    };
 
-    const user = await User.findById(userId).select("following").lean() as { following?: string[] } | null;
-    const followingBrandIds = user?.following?.map((id: string) => id.toString()) || [];
+    const user = (await User.findById(userId).select("following").lean()) as {
+      following?: string[];
+    } | null;
+    const followingBrandIds =
+      user?.following?.map((id: string) => id.toString()) || [];
 
     if (search) {
       const regex = new RegExp(search, "i");
@@ -72,36 +81,52 @@ export async function GET(req: NextRequest) {
       } else {
         // Check if the search matches any subcategory name
         const categories = await Category.find({ "subcategories.name": regex });
-      
-        const matchingSubcategoryIds: string[] = categories.flatMap((category: { subcategories: { name: string; _id: string }[] }) =>
-          category.subcategories
-            .filter((sub: { name: string }) => regex.test(sub.name))
-            .map((sub: { _id: string }) => sub._id)
+
+        const matchingSubcategoryIds: string[] = categories.flatMap(
+          (category: { subcategories: { name: string; _id: string }[] }) =>
+            category.subcategories
+              .filter((sub: { name: string }) => regex.test(sub.name))
+              .map((sub: { _id: string }) => sub._id)
         );
-      
+
         filter.$or = [
           { name: regex },
-          { subcategory: { $in: matchingSubcategoryIds } }
+          { subcategory: { $in: matchingSubcategoryIds } },
         ];
       }
-      
-       products = await Product.find(filter)
+
+      if (filter.categoryId && filter.categoryId.$in && filter.brandId) {
+        filter.$and = [
+          { categoryId: { $in: visibleCategoryIds } },
+          { brandId: filter.brandId },
+        ];
+        delete filter.categoryId;
+        delete filter.brandId;
+      }
+
+      products = (await Product.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .populate("brandId", "name logoUrl")
         .populate("categoryId", "name subcategories")
-        .lean() as Array<{ _id: string; [key: string]: any }>;
-  
-       total = await Product.countDocuments(filter);
-    }else {
-      const priorityProducts = await Product.find({ brandId: { $in: followingBrandIds } })
+        .lean()) as Array<{ _id: string; [key: string]: any }>;
+
+      total = await Product.countDocuments(filter);
+    } else {
+      const priorityProducts = await Product.find({
+        brandId: { $in: followingBrandIds },
+        categoryId: { $in: visibleCategoryIds }, // ✅ only visible categories
+      })
         .sort({ createdAt: -1 })
         .populate("brandId", "name logoUrl")
         .populate("categoryId", "name subcategories")
         .lean();
 
-      const otherProducts = await Product.find({ brandId: { $nin: followingBrandIds } })
+      const otherProducts = await Product.find({
+        brandId: { $nin: followingBrandIds },
+        categoryId: { $in: visibleCategoryIds }, // ✅ only visible categories
+      })
         .sort({ createdAt: -1 })
         .populate("brandId", "name logoUrl")
         .populate("categoryId", "name subcategories")
@@ -113,34 +138,41 @@ export async function GET(req: NextRequest) {
       products = combinedProducts.slice(skip, skip + limit);
     }
 
-
     // Determine hasVoted for each product
     const productIds = products.map((p) => p._id);
-    const votes = await Vote.find({ userId, productId: { $in: productIds } }).select("productId").lean();
-    const votedProductIds = new Set(votes.map(v => v.productId.toString()));
+    const votes = await Vote.find({ userId, productId: { $in: productIds } })
+      .select("productId")
+      .lean();
+    const votedProductIds = new Set(votes.map((v) => v.productId.toString()));
 
     const productsWithExtras = products.map((product) => {
       const category = product.categoryId;
-      const subcategoryIds = product.subcategory.map((id: any) => id.toString());
+      const subcategoryIds = product.subcategory.map((id: any) =>
+        id.toString()
+      );
       const subcategoryNames = (category?.subcategories || [])
-      .filter((sub: any) => subcategoryIds.includes(sub._id.toString()))
-      .map((sub: any) => sub.name);
-      
+        .filter((sub: any) => subcategoryIds.includes(sub._id.toString()))
+        .map((sub: any) => sub.name);
+
       return {
         ...product,
         hasVoted: votedProductIds.has(product._id.toString()),
-        isFollowing: followingBrandIds.includes(product.brandId?._id?.toString() || ""),
-        category:category?.name || "",
+        isFollowing: followingBrandIds.includes(
+          product.brandId?._id?.toString() || ""
+        ),
+        category: category?.name || "",
         subcategory: subcategoryNames,
         categoryId: undefined,
       };
     });
 
-    const cleanedProducts = productsWithExtras.map(({ categoryId, ...rest }) => rest);
+    const cleanedProducts = productsWithExtras.map(
+      ({ categoryId, ...rest }) => rest
+    );
 
     return NextResponse.json({
       success: true,
-      products:cleanedProducts,
+      products: cleanedProducts,
       pagination: {
         total,
         page,
