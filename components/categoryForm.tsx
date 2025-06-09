@@ -298,7 +298,7 @@ export default function CategoryForm({
                   variant='outline'
                   size='sm'
                   className='flex items-center gap-1'
-                  title='+'
+                  title={"+"}
                 />
               </div>
 
@@ -318,10 +318,8 @@ export default function CategoryForm({
                       onClick={() => fields.length > 1 && remove(index)}
                       disabled={fields.length <= 1}
                       className='h-8 w-8 text-destructive'
-                    >
-                      <Trash2 className='h-4 w-4' />
-                      <span className='sr-only'>Remove subcategory</span>
-                    </Button>
+                      title='X'
+                    />
                   </div>
 
                   <h4 className='font-medium mb-3'>Subcategory {index + 1}</h4>

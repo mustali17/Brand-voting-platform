@@ -1,10 +1,10 @@
-'use client';
-import LoadingComponent from '@/components/LoadingComponent';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useGetAdminStatsQuery } from '@/lib/services/product.service';
-import { ArrowUpRight, Award, TrendingUp, Users, Vote } from 'lucide-react';
-import Link from 'next/link';
-import React from 'react';
+"use client";
+import LoadingComponent from "@/components/LoadingComponent";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGetAdminStatsQuery } from "@/lib/services/product.service";
+import { ArrowUpRight, Award, TrendingUp, Users, Vote } from "lucide-react";
+import Link from "next/link";
+import React from "react";
 
 const AdminDashboard = () => {
   const { data, isLoading } = useGetAdminStatsQuery();
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className='text-2xl font-bold'>{data?.stats.totalUsers}</div>
             <p className='text-xs text-muted-foreground'>
-              +{data?.stats.usersChange}% from last month
+              {data?.stats.usersChange.toFixed(2)}% from last month
             </p>
           </CardContent>
         </Card>
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className='text-2xl font-bold'>{data?.stats.totalVotes}</div>
             <p className='text-xs text-muted-foreground'>
-              +{data?.stats.votesChange}% from last month
+              {data?.stats.votesChange?.toFixed(2)}% from last month
             </p>
           </CardContent>
         </Card>
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className='text-2xl font-bold'>{data?.stats.activeBrands}</div>
             <p className='text-xs text-muted-foreground'>
-              +{data?.stats.activeBrandsChange} new this month
+              {data?.stats.activeBrandsChange.toFixed(2)}% new this month
             </p>
           </CardContent>
         </Card>
@@ -70,26 +70,26 @@ const AdminDashboard = () => {
               {data?.stats.engagementRate}%
             </div>
             <p className='text-xs text-muted-foreground'>
-              +{data?.stats.engagementChange}% from last month
+              {data?.stats.engagementChange}% from last month
             </p>
           </CardContent>
         </Card>
       </div>
       <div className='grid flex-col gap-3 mb-80'>
         <Link
-          href={'/admin/brands'}
+          href={"/admin/brands"}
           className='underline flex flex-row items-center'
         >
-          Go To Brands <ArrowUpRight />{' '}
+          Go To Brands <ArrowUpRight />{" "}
         </Link>
         <Link
-          href={'/admin/category'}
+          href={"/admin/category"}
           className='underline flex flex-row items-center'
         >
           Go To Categories <ArrowUpRight />
         </Link>
         <Link
-          href={'/admin/users'}
+          href={"/admin/users"}
           className='underline flex flex-row items-center'
         >
           Go To Users <ArrowUpRight />
