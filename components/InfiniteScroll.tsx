@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import type React from 'react';
+import type React from "react";
 import {
   useLazyGetProductListQuery,
   useUnvoteAProductMutation,
   useVoteAProductMutation,
-} from '@/lib/services/product.service';
-import type { Product } from '@/utils/models/product.model';
-import { MoreHorizontal, ThumbsUp } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import LoadingComponent from './LoadingComponent';
+} from "@/lib/services/product.service";
+import type { Product } from "@/utils/models/product.model";
+import { MoreHorizontal, ThumbsUp } from "lucide-react";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import LoadingComponent from "./LoadingComponent";
 
 export default function InfiniteScroll() {
   //#region External Hooks
@@ -19,7 +19,7 @@ export default function InfiniteScroll() {
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
   const searchParams = useSearchParams();
-  const query = searchParams.get('search') || '';
+  const query = searchParams.get("search") || "";
   const router = useRouter();
   //#endregion
 
@@ -75,20 +75,24 @@ export default function InfiniteScroll() {
   const fetchData = async (page: number, search?: string) => {
     setIsLoadingProducts(true);
     const products = await fetchProductList({ page, search }).unwrap();
-    if (search || page === 1) {
-      setItems(products.products);
+    if (products.type === "product") {
+      if (search || page === 1) {
+        setItems(products.products);
+      } else {
+        setItems((prev) => [...prev, ...products.products]);
+      }
+      setHasMore(products.pagination.pages > page);
     } else {
-      setItems((prev) => [...prev, ...products.products]);
+      router.push(`/profile/brands/${products.brand._id}`);
     }
-    setHasMore(products.pagination.pages > page);
     setIsLoadingProducts(false);
   };
 
   const handleVote = async (
     productId: string,
-    addOrRemove: 'add' | 'remove'
+    addOrRemove: "add" | "remove"
   ) => {
-    if (addOrRemove === 'add') {
+    if (addOrRemove === "add") {
       setAnimatingItems((prev) => ({ ...prev, [productId]: true }));
       setLikeAnimationPosition((prev) => ({ ...prev, [productId]: true }));
       setTimeout(() => {
@@ -102,19 +106,19 @@ export default function InfiniteScroll() {
         ? {
             ...item,
             hasVoted: !item.hasVoted,
-            votes: addOrRemove === 'add' ? item.votes + 1 : item.votes - 1,
+            votes: addOrRemove === "add" ? item.votes + 1 : item.votes - 1,
           }
         : item
     );
     setItems(updatedItems);
 
     try {
-      addOrRemove === 'add'
+      addOrRemove === "add"
         ? await voteAProduct({ productId }).unwrap()
         : await unVoteAProduct({ productId }).unwrap();
     } catch (error) {
       console.error(
-        `Error ${addOrRemove === 'add' ? 'voting' : 'unvoting'}:`,
+        `Error ${addOrRemove === "add" ? "voting" : "unvoting"}:`,
         error
       );
     }
@@ -127,7 +131,7 @@ export default function InfiniteScroll() {
 
     if (now - lastTap < doubleTapDelay) {
       if (!items.find((item) => item._id === productId)?.hasVoted) {
-        handleVote(productId, 'add');
+        handleVote(productId, "add");
       }
       lastTapTimeRef.current[productId] = 0;
     } else {
@@ -155,7 +159,7 @@ export default function InfiniteScroll() {
     return (
       <div
         className='flex justify-center py-8 text-black/50 flex-col items-center'
-        style={{ height: '70vh' }}
+        style={{ height: "70vh" }}
       >
         <Image
           src='/images/not-found.svg'
@@ -180,7 +184,7 @@ export default function InfiniteScroll() {
             <div className='flex items-center p-3'>
               <div className='flex items-center'>
                 <Image
-                  src={item.brandId.logoUrl || '/images/post.jpg'}
+                  src={item.brandId.logoUrl || "/images/post.jpg"}
                   alt='Profile'
                   width={56}
                   height={56}
@@ -194,7 +198,7 @@ export default function InfiniteScroll() {
                     <span className='font-semibold text-sm'>{item.name}</span>
                   </div>
                   <div className='text-xs text-gray-500'>
-                    {item.category} • {item.subcategory.join(', ')}
+                    {item.category} • {item.subcategory.join(", ")}
                   </div>
                 </div>
               </div>
@@ -206,7 +210,7 @@ export default function InfiniteScroll() {
             <div className='relative group rounded-lg overflow-hidden'>
               <Image
                 alt='Post'
-                src={item.imageUrl || '/images/post.jpg'}
+                src={item.imageUrl || "/images/post.jpg"}
                 width={500}
                 height={400}
                 className='w-full max-w-full object-contain h-[400px] cursor-pointer'
@@ -229,7 +233,7 @@ export default function InfiniteScroll() {
               <div className='w-full'>
                 <p
                   className={`text-sm transition-all duration-300 ${
-                    !isExpanded ? 'line-clamp-2' : ''
+                    !isExpanded ? "line-clamp-2" : ""
                   }`}
                 >
                   {item.description}
@@ -239,7 +243,7 @@ export default function InfiniteScroll() {
                     className='text-xs mt-1 text-blue-500 underline'
                     onClick={() => toggleDescription(item._id)}
                   >
-                    {isExpanded ? 'See less' : 'See more'}
+                    {isExpanded ? "See less" : "See more"}
                   </button>
                 )}
               </div>
@@ -252,18 +256,18 @@ export default function InfiniteScroll() {
                     fill='#000'
                     stroke='#777'
                     className={`w-4 h-4 cursor-pointer transition-all duration-300`}
-                    onClick={() => handleVote(item._id, 'remove')}
+                    onClick={() => handleVote(item._id, "remove")}
                   />
                 ) : (
                   <ThumbsUp
                     className={`w-4 h-4 cursor-pointer hover:text-black-500 transition-all duration-300`}
-                    onClick={() => handleVote(item._id, 'add')}
+                    onClick={() => handleVote(item._id, "add")}
                   />
                 )}
               </div>
               <span
                 className={`text-sm font-medium transition-all duration-300 ${
-                  animatingItems[item._id] ? 'scale-110 font-bold' : ''
+                  animatingItems[item._id] ? "scale-110 font-bold" : ""
                 }`}
               >
                 {item.votes}
