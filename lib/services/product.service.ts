@@ -1,4 +1,4 @@
-import { AdminDashboardDto } from './../../utils/models/product.model';
+import { AdminDashboardDto, SearchApiResponse } from './../../utils/models/product.model';
 import {
   ProductDto,
   ProductFormDto,
@@ -46,7 +46,7 @@ export const productApi = api.injectEndpoints({
 
     // Product List
     getProductList: builder.query<
-      ProductListDto,
+      SearchApiResponse,
       { page: number; search?: string }
     >({
       query: ({ page, search }) =>

@@ -32,6 +32,7 @@ import Category from "@/models/Category";
 import Vote from "@/models/Vote";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
+import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -70,12 +71,25 @@ export async function GET(req: NextRequest) {
       const regex = new RegExp(search, "i");
 
       const [brandMatch, categoryMatch] = await Promise.all([
-        Brand.findOne({ name: regex }),
+        Brand.findOne({ name: regex }).lean() as Promise<{
+          _id: mongoose.Types.ObjectId;
+          name: string;
+          [key: string]: any;
+        } | null>,
         Category.findOne({ name: regex }),
       ]);
 
       if (brandMatch) {
-        filter.brandId = brandMatch._id;
+        const isFollowing = followingBrandIds.includes(
+          brandMatch._id.toString()
+        );
+        return NextResponse.json({
+          type: "brand",
+          brand: {
+            ...brandMatch,
+            isFollowing,
+          },
+        });
       } else if (categoryMatch) {
         filter.categoryId = categoryMatch._id;
       } else {
@@ -171,6 +185,7 @@ export async function GET(req: NextRequest) {
     );
 
     return NextResponse.json({
+      type: "product",
       success: true,
       products: cleanedProducts,
       pagination: {

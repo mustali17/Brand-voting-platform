@@ -1,3 +1,5 @@
+import { Brand } from "./brand.model";
+
 export interface ProductFormDto {
   brandId: string;
   name: string;
@@ -27,6 +29,7 @@ export interface ProductListDto {
   success: boolean;
   products: Product[];
   pagination: Pagination;
+  type: "product";
 }
 
 export interface Product {
@@ -76,3 +79,10 @@ export interface Stats {
   engagementRate: string;
   engagementChange: string;
 }
+
+export interface BrandListDto {
+  type: "brand";
+  brand: Brand;
+}
+
+export type SearchApiResponse = ProductListDto | BrandListDto;
