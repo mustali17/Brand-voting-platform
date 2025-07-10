@@ -46,6 +46,7 @@ const Category = () => {
       categoryImageURL: category.categoryImageURL,
       name: category.name,
       subcategories: category.subcategories,
+      hidden: category.hidden,
     };
     updateState({ editCategoryData: data });
   };
@@ -78,6 +79,7 @@ const Category = () => {
                 <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Sub Categories</TableHead>
+                <TableHead>Hide</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -97,7 +99,7 @@ const Category = () => {
                   <TableCell>
                     {cat.subcategories.map((subCat) => subCat.name + ',')}
                   </TableCell>
-
+                  <TableCell>{cat.hidden.toString()}</TableCell>
                   <TableCell className='flex gap-2'>
                     <Button
                       title='Edit'
