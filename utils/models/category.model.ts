@@ -6,6 +6,7 @@ export interface CategoryDetailsDto {
   _id: string;
   name: string;
   categoryImageURL: string;
+  hidden: boolean;
 }
 
 export interface CommonCategoryDto {
@@ -18,6 +19,7 @@ export interface CategoryFormDto {
   _id?: string;
   name: string;
   categoryImageURL: string;
+  hidden: boolean;
   subcategories: CommonCategoryDto[];
 }
 

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, useFieldArray } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
@@ -22,27 +22,27 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
-import { CategoryFormDto } from "@/utils/models/category.model";
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { CategoryFormDto } from '@/utils/models/category.model';
 import {
   useCreateCategoryMutation,
   useCreateSubCategoryMutation,
   useUpdateCategoryWithSubMutation,
-} from "@/lib/services/category.service";
-import toast from "react-hot-toast";
-import { FileInput } from "./ui/FileInput";
-import { FileUploadDto } from "@/utils/models/common.model";
+} from '@/lib/services/category.service';
+import toast from 'react-hot-toast';
+import { FileInput } from './ui/FileInput';
+import { FileUploadDto } from '@/utils/models/common.model';
 
 // Define the validation schema for subcategory
 const subcategorySchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(2, {
-    message: "Subcategory name must be at least 2 characters.",
+    message: 'Subcategory name must be at least 2 characters.',
   }),
   imageUrl: z.string().url({
-    message: "Please enter a valid URL for the subcategory image.",
+    message: 'Please enter a valid URL for the subcategory image.',
   }),
 });
 
@@ -50,11 +50,12 @@ const subcategorySchema = z.object({
 const formSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(2, {
-    message: "Category name must be at least 2 characters.",
+    message: 'Category name must be at least 2 characters.',
   }),
   categoryImageURL: z.string().url(),
+  hidden: z.boolean().optional(),
   subcategories: z.array(subcategorySchema).min(1, {
-    message: "At least one subcategory is required.",
+    message: 'At least one subcategory is required.',
   }),
 });
 
@@ -80,34 +81,37 @@ export default function CategoryForm({
   const [isLoading, setIsLoading] = useState(false);
   const [isImageUploading, setIsImageUploading] = useState(false);
 
+  console.log('Initial Data:', initialData);
+
   // Initialize the form with default values
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      name: "",
-      categoryImageURL: "",
+      name: '',
+      categoryImageURL: '',
       subcategories: [
         {
-          name: "",
-          imageUrl: "",
+          name: '',
+          imageUrl: '',
         },
       ],
+      hidden: false,
     },
   });
 
   // Set up field array for subcategories
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "subcategories",
+    name: 'subcategories',
   });
 
   const handleFileUpload = async (file: File, key: string) => {
     setIsImageUploading(true);
 
     const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/uploadToDrive", {
-      method: "POST",
+    formData.append('file', file);
+    const res = await fetch('/api/uploadToDrive', {
+      method: 'POST',
       body: formData,
     });
 
@@ -125,14 +129,14 @@ export default function CategoryForm({
     try {
       if (isEditMode) {
         const subCategoriesToAdd = formData.subcategories.filter(
-          (subcategory) => !subcategory._id || subcategory._id === "0"
+          (subcategory) => !subcategory._id || subcategory._id === '0'
         );
         const subCategoriesToUpdate = formData.subcategories.filter(
-          (subcategory) => subcategory._id && subcategory._id !== "0"
+          (subcategory) => subcategory._id && subcategory._id !== '0'
         );
         // Update existing category with subcategories
         const updateResponse = await updateCategory({
-          id: formData._id || "",
+          id: formData._id || '',
           data: { ...formData, subcategories: subCategoriesToUpdate },
         }).unwrap();
         if (subCategoriesToAdd.length) {
@@ -154,12 +158,12 @@ export default function CategoryForm({
           );
 
           if (allSubcategoriesCreated) {
-            toast.success("Subcategories Added Successfully");
+            toast.success('Subcategories Added Successfully');
           }
         }
 
         if (updateResponse.success) {
-          toast.success("Category Updated Successfully");
+          toast.success('Category Updated Successfully');
         }
       } else {
         // Create new category
@@ -190,12 +194,12 @@ export default function CategoryForm({
           );
 
           if (allSubcategoriesCreated) {
-            toast.success("Category Added Successfully");
+            toast.success('Category Added Successfully');
           }
         }
       }
     } catch (error) {
-      toast.error("An error occurred while saving the category.");
+      toast.error('An error occurred while saving the category.');
     } finally {
       callBack();
       setIsLoading(false);
@@ -204,7 +208,7 @@ export default function CategoryForm({
 
   // Add a new empty subcategory
   const addSubcategory = () => {
-    append({ _id: "0", name: "", imageUrl: "" });
+    append({ _id: '0', name: '', imageUrl: '' });
   };
 
   const isEditMode = !!initialData?._id;
@@ -214,12 +218,12 @@ export default function CategoryForm({
       <CardHeader>
         <CardTitle className='flex flex-row gap-2'>
           <ArrowLeft onClick={callBack} className='cursor-pointer' />
-          {isEditMode ? "Edit Category" : "Add New Category"}
+          {isEditMode ? 'Edit Category' : 'Add New Category'}
         </CardTitle>
         <CardDescription>
           {isEditMode
-            ? "Update the details of an existing category and its subcategories."
-            : "Add a new category with subcategories to your platform."}
+            ? 'Update the details of an existing category and its subcategories.'
+            : 'Add a new category with subcategories to your platform.'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -239,7 +243,7 @@ export default function CategoryForm({
                     <FormItem>
                       <FormLabel>ID</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} disabled />
+                        <Input {...field} value={field.value || ''} disabled />
                       </FormControl>
                     </FormItem>
                   )}
@@ -268,20 +272,38 @@ export default function CategoryForm({
                     <FormLabel>Category Image</FormLabel>
                     <FormControl>
                       <FileInput
-                        id={"categoryImageURL"}
-                        name={"categoryImageURL"}
-                        label={""}
+                        id={'categoryImageURL'}
+                        name={'categoryImageURL'}
+                        label={''}
                         accept='image/*'
                         maxSize={10}
                         onChange={(e) => {
                           if (e) {
-                            handleFileUpload(e, "categoryImageURL");
+                            handleFileUpload(e, 'categoryImageURL');
                           }
                         }}
                         {...(field.value && { previewUrl: field.value })}
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='hidden'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col items-start'>
+                    <FormLabel>Hide</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='checkbox'
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        className='h-8 w-8'
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />
@@ -298,7 +320,7 @@ export default function CategoryForm({
                   variant='outline'
                   size='sm'
                   className='flex items-center gap-1'
-                  title={"+"}
+                  title={'+'}
                 />
               </div>
 
@@ -334,7 +356,7 @@ export default function CategoryForm({
                           <FormControl>
                             <Input
                               {...idField}
-                              value={idField.value || ""}
+                              value={idField.value || ''}
                               disabled
                             />
                           </FormControl>
@@ -370,7 +392,7 @@ export default function CategoryForm({
                           <FileInput
                             id={`subcategories.${index}.imageUrl`}
                             name={`subcategories.${index}.imageUrl`}
-                            label={""}
+                            label={''}
                             accept='image/*'
                             maxSize={10}
                             onChange={(e) => {
@@ -404,12 +426,12 @@ export default function CategoryForm({
                 className='ml-auto'
                 title={
                   isImageUploading
-                    ? "Uploading Image..."
+                    ? 'Uploading Image...'
                     : isLoading
-                      ? "Saving..."
+                      ? 'Saving...'
                       : isEditMode
-                        ? "Update Category"
-                        : "Create Category"
+                        ? 'Update Category'
+                        : 'Create Category'
                 }
               />
             </CardFooter>
