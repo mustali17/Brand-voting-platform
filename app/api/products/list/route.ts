@@ -70,8 +70,8 @@ export async function GET(req: NextRequest) {
     if (search) {
       const regex = new RegExp(search, "i");
 
-      const [brandMatch, categoryMatch] = await Promise.all([
-        Brand.findOne({ name: regex }).lean() as Promise<{
+      const [brandMatches, categoryMatch] = await Promise.all([
+        Brand.find({ name: regex }).lean() as unknown as Promise<{
           _id: mongoose.Types.ObjectId;
           name: string;
           [key: string]: any;
@@ -79,17 +79,16 @@ export async function GET(req: NextRequest) {
         Category.findOne({ name: regex }),
       ]);
 
-      if (brandMatch) {
-        const isFollowing = followingBrandIds.includes(
-          brandMatch._id.toString()
-        );
-        return NextResponse.json({
-          type: "brand",
-          brand: {
-            ...brandMatch,
-            isFollowing,
-          },
-        });
+      if (brandMatches && brandMatches.length > 0) {
+         const enrichedBrands = brandMatches.map((brand: { _id: { toString: () => string; }; }) => ({
+           ...brand,
+           isFollowing: followingBrandIds.includes(brand._id.toString()),
+         }));
+
+         return NextResponse.json({
+           type: "brand",
+           brands: enrichedBrands,
+         });
       } else if (categoryMatch) {
         filter.categoryId = categoryMatch._id;
       } else {
