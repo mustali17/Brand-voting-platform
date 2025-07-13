@@ -10,20 +10,17 @@ import type { Product } from "@/utils/models/product.model";
 import { MoreHorizontal, ThumbsUp } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import LoadingComponent from "./LoadingComponent";
 
 export default function InfiniteScroll() {
-  //#region External Hooks
   const [fetchProductList] = useLazyGetProductListQuery();
   const [voteAProduct] = useVoteAProductMutation();
   const [unVoteAProduct] = useUnvoteAProductMutation();
   const searchParams = useSearchParams();
   const query = searchParams.get("search") || "";
   const router = useRouter();
-  //#endregion
 
-  //#region Internal Hooks
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -37,9 +34,27 @@ export default function InfiniteScroll() {
   const [expandedDescriptions, setExpandedDescriptions] = useState<
     Record<string, boolean>
   >({});
-  const observerRef = useRef<HTMLDivElement | null>(null);
   const lastTapTimeRef = useRef<Record<string, number>>({});
   const prevQueryRef = useRef(query);
+
+  const observer = useRef<IntersectionObserver>();
+
+  const setObserverRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (observer.current) observer.current.disconnect();
+
+      if (node) {
+        observer.current = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            setPage((prev) => prev + 1);
+          }
+        });
+
+        observer.current.observe(node);
+      }
+    },
+    [hasMore]
+  );
 
   useEffect(() => {
     if (prevQueryRef.current !== query) {
@@ -53,25 +68,6 @@ export default function InfiniteScroll() {
     fetchData(page, query);
   }, [page, query]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      { threshold: 1 }
-    );
-
-    if (observerRef.current) observer.observe(observerRef.current);
-
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
-  }, [hasMore]);
-  //#endregion
-
-  //#region Internal Functions
   const fetchData = async (page: number, search?: string) => {
     setIsLoadingProducts(true);
     const products = await fetchProductList({ page, search }).unwrap();
@@ -150,10 +146,8 @@ export default function InfiniteScroll() {
       [productId]: !prev[productId],
     }));
   };
-  //#endregion
 
-  //#region UI Component
-  if (isLoadingProducts) {
+  if (isLoadingProducts && items.length === 0) {
     return <LoadingComponent />;
   } else if (!isLoadingProducts && items.length === 0) {
     return (
@@ -172,7 +166,6 @@ export default function InfiniteScroll() {
       </div>
     );
   }
-  //#endregion
 
   return (
     <div className='max-w-xl mx-auto'>
@@ -279,7 +272,7 @@ export default function InfiniteScroll() {
 
       {hasMore && (
         <div
-          ref={observerRef}
+          ref={setObserverRef}
           className='h-10 flex justify-center items-center text-gray-500'
         >
           Loading...
