@@ -1,55 +1,52 @@
-import FormComponent from '@/components/ui/FormComponent';
-import {
-  useGetCategoriesQuery,
-  useLazyGetCategoriesQuery,
-} from '@/lib/services/category.service';
+import FormComponent from "@/components/ui/FormComponent";
+import { useLazyGetCategoriesQuery } from "@/lib/services/category.service";
 import {
   useCreateProductMutation,
   useUpdateProductMutation,
-} from '@/lib/services/product.service';
-import { CategoryDetailsDto } from '@/utils/models/category.model';
-import { FileUploadDto, InputFormType } from '@/utils/models/common.model';
-import { ProductDto, ProductFormDto } from '@/utils/models/product.model';
-import { ArrowLeft } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+} from "@/lib/services/product.service";
+import { CategoryDetailsDto } from "@/utils/models/category.model";
+import { FileUploadDto, InputFormType } from "@/utils/models/common.model";
+import { ProductDto, ProductFormDto } from "@/utils/models/product.model";
+import { ArrowLeft } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 const formList: InputFormType[] = [
   {
-    name: 'name',
-    key: 'name',
-    label: 'Full Name',
-    type: 'text',
-    validation: 'nullValidation',
+    name: "name",
+    key: "name",
+    label: "Full Name",
+    type: "text",
+    validation: "nullValidation",
   },
   {
-    name: 'description',
-    key: 'description',
-    label: 'Description',
-    type: 'textarea',
-    validation: 'nullValidation',
+    name: "description",
+    key: "description",
+    label: "Description",
+    type: "textarea",
+    validation: "nullValidation",
   },
   {
-    name: 'imageUrl',
-    key: 'imageUrl',
-    label: 'Image',
-    type: 'file',
+    name: "imageUrl",
+    key: "imageUrl",
+    label: "Image",
+    type: "file",
   },
   {
-    name: 'categoryId',
-    key: 'categoryId',
-    label: 'Category',
-    type: 'select',
-    validation: 'nullValidation',
+    name: "categoryId",
+    key: "categoryId",
+    label: "Category",
+    type: "select",
+    validation: "nullValidation",
     selectInputList: [],
   },
   {
-    name: 'subcategory',
-    key: 'subcategory',
-    label: 'Sub Category',
-    type: 'select',
-    validation: 'nullValidation',
+    name: "subcategory",
+    key: "subcategory",
+    label: "Sub Category",
+    type: "select",
+    validation: "nullValidation",
     isMulti: true,
     selectInputList: [],
   },
@@ -89,14 +86,14 @@ const ProductForm = ({
     formState: { errors, isValid },
   } = useForm<ProductFormDto>({
     defaultValues: {
-      name: '',
-      brandId: '',
-      categoryId: '',
-      description: '',
-      imageUrl: '',
+      name: "",
+      brandId: "",
+      categoryId: "",
+      description: "",
+      imageUrl: "",
       subcategory: [],
     },
-    mode: 'onSubmit',
+    mode: "onSubmit",
   });
 
   const [addProduct, { isError: addProductError }] = useCreateProductMutation();
@@ -128,11 +125,11 @@ const ProductForm = ({
         handleCategoryChange(modifyProduct.categoryId);
       } else {
         reset({
-          name: '',
-          imageUrl: '',
-          categoryId: '',
+          name: "",
+          imageUrl: "",
+          categoryId: "",
           subcategory: [],
-          description: '',
+          description: "",
         });
       }
     });
@@ -140,24 +137,25 @@ const ProductForm = ({
 
   useEffect(() => {
     // setValue('subcategory', []);
-    handleCategoryChange(watch('categoryId'));
-  }, [watch('categoryId')]);
+    handleCategoryChange(watch("categoryId"));
+  }, [watch("categoryId")]);
   //#endregion
 
   //#region Internal Function
   const getCategoriesList = async () => {
     const res = await getCategories().unwrap();
     if (res) {
-      updateState({ allCategories: res });
-      const categoryList = res.map((category) => {
+      let hideCategories = res.filter((category) => !category.hidden);
+      updateState({ allCategories: hideCategories });
+      const categoryList = hideCategories.map((category) => {
         return {
           label: category.name,
-          value: category._id || '',
+          value: category._id || "",
         };
       });
       updateState({
         formList: formList.map((form) => {
-          if (form.key === 'categoryId') {
+          if (form.key === "categoryId") {
             return {
               ...form,
               selectInputList: categoryList,
@@ -167,7 +165,7 @@ const ProductForm = ({
         }),
       });
     } else {
-      toast.error('Failed to fetch categories!');
+      toast.error("Failed to fetch categories!");
     }
   };
 
@@ -180,12 +178,12 @@ const ProductForm = ({
         const subcategoryList = selectedCategory.map((subcategory) => {
           return {
             label: subcategory.name,
-            value: subcategory._id || '',
+            value: subcategory._id || "",
           };
         });
         updateState({
           formList: productScreenStates.formList.map((form) => {
-            if (form.key === 'subcategory') {
+            if (form.key === "subcategory") {
               return {
                 ...form,
                 selectInputList: subcategoryList,
@@ -202,9 +200,9 @@ const ProductForm = ({
     updateState({ isImageUploading: true });
 
     const formData = new FormData();
-    formData.append('file', file);
-    const res = await fetch('/api/uploadToDrive', {
-      method: 'POST',
+    formData.append("file", file);
+    const res = await fetch("/api/uploadToDrive", {
+      method: "POST",
       body: formData,
     });
 
@@ -213,7 +211,7 @@ const ProductForm = ({
       setValue(key as keyof ProductFormDto, data.url);
       updateState({ isImageUploading: false });
     }
-    console.log('Uploaded File ID:', data);
+    console.log("Uploaded File ID:", data);
   };
 
   const onSubmit = async (data: ProductFormDto) => {
@@ -229,14 +227,14 @@ const ProductForm = ({
         data: updatedData,
       }).unwrap();
       if (res) {
-        toast.success('Product updated successfully!');
+        toast.success("Product updated successfully!");
       } else {
-        toast.error('Product creation failed!');
+        toast.error("Product creation failed!");
       }
     } else {
       const res = await addProduct(data).unwrap();
       if (res) {
-        toast.success('Product Created Successfully!');
+        toast.success("Product Created Successfully!");
       }
     }
     updateState({ isLoading: false });
@@ -250,7 +248,7 @@ const ProductForm = ({
       <div className='flex items-center'>
         <ArrowLeft onClick={callBack} className='cursor-pointer' />
         <h2 className='m-auto'>
-          {modifyProduct ? 'Edit Product' : 'Add Product'}
+          {modifyProduct ? "Edit Product" : "Add Product"}
         </h2>
       </div>
 

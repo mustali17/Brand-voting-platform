@@ -1,5 +1,5 @@
-import { UserDto } from '@/utils/models/user.model';
-import { createApi } from '@reduxjs/toolkit/query/react';
+import { UserDto } from "@/utils/models/user.model";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import {
   ADD_SUBCATEGORY,
   ALL,
@@ -7,30 +7,30 @@ import {
   CATEGORIES,
   CREATE,
   USER,
-} from '../api/apiEndPoints';
-import { baseQuery } from '../api/baseQuery';
+} from "../api/apiEndPoints";
+import { baseQuery } from "../api/baseQuery";
 import {
   CategoryDetailsDto,
   CategoryFormDto,
   SubCategoryPostDto,
-} from '@/utils/models/category.model';
-import { TopBrandsDto } from '@/utils/models/brand.model';
+} from "@/utils/models/category.model";
+import { TopBrandsDto } from "@/utils/models/brand.model";
 
 export const categoryApi = createApi({
-  reducerPath: 'categoryApi',
+  reducerPath: "categoryApi",
   baseQuery,
-  tagTypes: ['Category'],
+  tagTypes: ["Category"],
   endpoints: (builder) => ({
     // READ: Get all users
     getCategories: builder.query<CategoryDetailsDto[], void>({
       query: () => CATEGORIES + ALL,
-      providesTags: ['Category'],
+      providesTags: ["Category"],
     }),
 
     // READ: Get single user
     getTopBrandsBySubCategory: builder.query<TopBrandsDto, string>({
       query: (id) => `${BRANDS}/top-by-subcategory/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Category', id }],
+      providesTags: (result, error, id) => [{ type: "Category", id }],
     }),
 
     // CREATE: Add a new category
@@ -40,10 +40,10 @@ export const categoryApi = createApi({
     >({
       query: (newUser) => ({
         url: CATEGORIES + CREATE,
-        method: 'POST',
+        method: "POST",
         body: newUser,
       }),
-      invalidatesTags: ['Category'],
+      invalidatesTags: ["Category"],
     }),
     // CREATE: Add a new sub category
     createSubCategory: builder.mutation<
@@ -52,10 +52,10 @@ export const categoryApi = createApi({
     >({
       query: (newUser) => ({
         url: CATEGORIES + ADD_SUBCATEGORY,
-        method: 'POST',
+        method: "POST",
         body: newUser,
       }),
-      invalidatesTags: ['Category'],
+      invalidatesTags: ["Category"],
     }),
 
     // UPDATE: Update a user
@@ -65,19 +65,39 @@ export const categoryApi = createApi({
     >({
       query: ({ id, data }) => ({
         url: `${CATEGORIES}/${id}`,
-        method: 'PATCH',
+        method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ['Category'],
+      invalidatesTags: ["Category"],
     }),
 
     // DELETE: Delete a user
     deleteUser: builder.mutation<{ success: boolean }, number>({
       query: (id) => ({
         url: `${USER}/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Category', id }],
+      invalidatesTags: (result, error, id) => [{ type: "Category", id }],
+    }),
+
+    // Inside categoryApi endpoints
+    toggleCategoryVisibility: builder.mutation<
+      {
+        success: boolean;
+        message: string;
+        categoryId: string;
+        hidden: boolean;
+      },
+      string // categoryId
+    >({
+      query: (categoryId) => ({
+        url: `${CATEGORIES}/${categoryId}/visibility`,
+        method: "PATCH",
+      }),
+      invalidatesTags: (result, error, categoryId) => [
+        { type: "Category", id: categoryId },
+        { type: "Category" }, // Also invalidate the entire category list
+      ],
     }),
   }),
 });
@@ -91,4 +111,5 @@ export const {
   useUpdateCategoryWithSubMutation,
   useDeleteUserMutation,
   useLazyGetCategoriesQuery,
+  useToggleCategoryVisibilityMutation,
 } = categoryApi;

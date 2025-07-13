@@ -21,7 +21,7 @@ const Category = () => {
 
     return categories
       .filter((category) =>
-        category.name.toLowerCase().includes(value.toLowerCase())
+        category.name.toLowerCase().includes(value.toLowerCase()) && !category.hidden
       )
       .map((category) => {
         return {
