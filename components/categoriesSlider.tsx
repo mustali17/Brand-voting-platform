@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useLazyGetCategoriesQuery } from '@/lib/services/category.service';
-import { CategoryDetailsDto } from '@/utils/models/category.model';
-import { useRouter } from 'next/navigation';
+import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useLazyGetCategoriesQuery } from "@/lib/services/category.service";
+import { CategoryDetailsDto } from "@/utils/models/category.model";
+import { useRouter } from "next/navigation";
 
 export function CategoriesSlider() {
   const [getAllCategories] = useLazyGetCategoriesQuery();
@@ -35,14 +35,14 @@ export function CategoriesSlider() {
     fetchCategories();
     const scrollContainer = scrollContainerRef.current;
     if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', checkScrollPosition);
+      scrollContainer.addEventListener("scroll", checkScrollPosition);
       // Initial check
       checkScrollPosition();
     }
 
     return () => {
       if (scrollContainer) {
-        scrollContainer.removeEventListener('scroll', checkScrollPosition);
+        scrollContainer.removeEventListener("scroll", checkScrollPosition);
       }
     };
   }, []);
@@ -50,14 +50,16 @@ export function CategoriesSlider() {
   const fetchCategories = async () => {
     try {
       const response = await getAllCategories().unwrap();
-      setCategoriesList(response);
-      console.log('Fetched categories:', response);
+      let hideCategories = response.filter((category) => !category.hidden);
+
+      setCategoriesList(hideCategories);
+      console.log("Fetched categories:", response);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scroll = (direction: "left" | "right") => {
     if (!scrollContainerRef.current) return;
 
     const scrollAmount = 200; // Adjust scroll amount as needed
@@ -65,10 +67,10 @@ export function CategoriesSlider() {
 
     scrollContainerRef.current.scrollTo({
       left:
-        direction === 'left'
+        direction === "left"
           ? currentScroll - scrollAmount
           : currentScroll + scrollAmount,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -76,10 +78,10 @@ export function CategoriesSlider() {
     <div className='relative border-gray-300 py-1 max-w-2xl mx-auto mb-3'>
       {/* Left navigation button */}
       <button
-        onClick={() => scroll('left')}
+        onClick={() => scroll("left")}
         className={cn(
-          'absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-1 opacity-90 hover:opacity-100 transition-opacity',
-          !showLeftArrow && 'hidden'
+          "absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-1 opacity-90 hover:opacity-100 transition-opacity",
+          !showLeftArrow && "hidden"
         )}
         aria-label='Scroll left'
       >
@@ -90,7 +92,7 @@ export function CategoriesSlider() {
       <div
         ref={scrollContainerRef}
         className='flex space-x-4 overflow-x-auto scrollbar-hide pb-2 px-6'
-        onClick={() => router.push('/category')}
+        onClick={() => router.push("/category")}
       >
         {categoriesList.map((cat) => (
           <div
@@ -100,7 +102,7 @@ export function CategoriesSlider() {
             <div className='rounded-full p-[2px] bg-gradient-to-tr from-white/50 to-black-600'>
               <div className='rounded-full w-12 h-12 bg-white ring-1 ring-gray-300 p-0.5 overflow-hidden flex items-center justify-center'>
                 <Image
-                  src={cat.categoryImageURL || '/placeholder.svg'}
+                  src={cat.categoryImageURL || "/placeholder.svg"}
                   alt={`${cat.name}'s`}
                   width={48}
                   height={48}
@@ -120,7 +122,7 @@ export function CategoriesSlider() {
           <div className='w-full border-t border-gray-300'></div>
           <button
             className='absolute bg-white px-4 py-1 text-sm font-small text-gray-700 rounded-full shadow-md hover:bg-gray-100 transition'
-            onClick={() => router.push('/category')}
+            onClick={() => router.push("/category")}
           >
             See All
           </button>
@@ -131,10 +133,10 @@ export function CategoriesSlider() {
 
       {/* Right navigation button */}
       <button
-        onClick={() => scroll('right')}
+        onClick={() => scroll("right")}
         className={cn(
-          'absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-1 opacity-90 hover:opacity-100 transition-opacity',
-          !showRightArrow && 'hidden'
+          "absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-1 opacity-90 hover:opacity-100 transition-opacity",
+          !showRightArrow && "hidden"
         )}
         aria-label='Scroll right'
       >
