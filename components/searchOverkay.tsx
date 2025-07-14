@@ -3,8 +3,11 @@
 import type React from 'react';
 
 import { Search, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLazyGetProductListQuery } from '@/lib/services/product.service';
+import { Brand } from '@/utils/models/brand.model';
+import { useDebounceCallback } from '@/lib/hook/useDebounceCallback';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -13,8 +16,11 @@ interface SearchOverlayProps {
 
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [brandSuggestionList, setBrandSuggestionList] = useState<Brand[]>([]);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const [triggerSearch, { data: brandList }] = useLazyGetProductListQuery();
 
   // Focus the input when the overlay opens
   useEffect(() => {
@@ -49,6 +55,30 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     }
   };
 
+  const fetchBrandSuggestions = useCallback(async () => {
+    if (searchQuery.trim()) {
+      const { data } = await triggerSearch({ page: 1, search: searchQuery });
+      if (data && data.type === 'brand') {
+        const suggestions = data.brands;
+        setBrandSuggestionList(suggestions);
+      } else {
+        setBrandSuggestionList([]);
+      }
+    } else {
+      setBrandSuggestionList([]);
+    }
+  }, [searchQuery, triggerSearch]);
+
+  // Debounced version of the function
+  const debouncedFetch = useDebounceCallback(fetchBrandSuggestions, 300);
+
+  // Run debounced function on searchQuery change
+  useEffect(() => {
+    debouncedFetch(searchQuery);
+  }, [searchQuery, debouncedFetch]);
+
+  console.log('Brand Suggestions:', brandSuggestionList);
+
   if (!isOpen) return null;
 
   return (
@@ -82,8 +112,34 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             />
           </div>
         </form>
+        <div
+          className={`transition-all duration-500 ease-out ${
+            brandSuggestionList.length > 0
+              ? 'opacity-100 translate-y-0'
+              : 'opacity-0 -translate-y-2 pointer-events-none'
+          }`}
+        >
+          <div className='text-black/70 text-sm font-medium mb-2'>Brands</div>
+          <div className='grid gap-2'>
+            {brandSuggestionList.map((item) => (
+              <button
+                key={item._id}
+                className='flex items-center gap-3 p-3 rounded-lg hover:bg-black/10 text-black text-left transition-colors'
+                onClick={() => {
+                  router.push(`/profile/brands/${item._id}`);
+                  onClose();
+                }}
+              >
+                <div className='flex-shrink-0 w-5 h-5 flex items-center justify-center'>
+                  <Search className='h-4 w-4' />
+                </div>
+                <span>{item.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-        <div className='text-black/70 text-sm font-medium mb-2'>
+        <div className='text-black/70 text-sm font-medium my-2'>
           QUICK LINKS
         </div>
 
