@@ -64,6 +64,8 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       } else {
         setBrandSuggestionList([]);
       }
+    } else {
+      setBrandSuggestionList([]);
     }
   }, [searchQuery, triggerSearch]);
 
