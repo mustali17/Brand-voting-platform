@@ -205,17 +205,19 @@ export default function Brand({ params }: { params: { id: string } }) {
                       {new Date(brand.brand.createdAt || '').toLocaleString()}
                     </p>
 
-                    <div className='flex items-center gap-2'>
-                      <span className='text-sm font-semibold'>Website:</span>
-                      <Link
-                        href={brand?.brand?.website}
-                        className='text-sm text-primary flex items-center gap-1 hover:underline'
-                        target='_blank'
-                      >
-                        {brand?.brand?.website?.replace('https://', '')}
-                        <ExternalLink className='h-3 w-3' />
-                      </Link>
-                    </div>
+                    {brand?.brand?.website && (
+                      <div className='flex items-center gap-2'>
+                        <span className='text-sm font-semibold'>Website:</span>
+                        <Link
+                          href={brand?.brand?.website}
+                          className='text-sm text-primary flex items-center gap-1 hover:underline'
+                          target='_blank'
+                        >
+                          {brand?.brand?.website?.replace('https://', '')}
+                          <ExternalLink className='h-3 w-3' />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
 
