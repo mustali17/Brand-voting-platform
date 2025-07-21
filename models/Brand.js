@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const BrandSchema = new Schema({
     name: { type: String, required: true },
     logoUrl: { type: String, required: true },
-    website: { type: String, required: true },
+    website: { type: String, required: false },
     description: { type: String },
     isVerified: { type: Boolean, default: false },
     ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
