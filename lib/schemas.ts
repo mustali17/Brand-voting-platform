@@ -26,7 +26,7 @@ export const LoginSchema = z.object({
 export const RegisterBrandSchema = z.object({
   name: z.string().min(1),
   logoUrl: z.string().url(),
-  website: z.string().url(),
+  website: z.string().url().optional(),
   description: z.string(),
 });
 
