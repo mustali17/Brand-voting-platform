@@ -135,6 +135,9 @@ const BrandForm = ({
   };
   const onSubmit = async (data: BrandFormDto) => {
     updateState({ isSubmitting: true });
+    if (!data.website) {
+      delete data.website;
+    }
     if (brandData) {
       const updatedData = {
         ...brandData,

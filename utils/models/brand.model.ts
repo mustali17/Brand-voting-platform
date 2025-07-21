@@ -3,7 +3,7 @@ import { ProductDto } from './product.model';
 export interface BrandFormDto {
   name: string;
   logoUrl: string;
-  website: string;
+  website?: string;
   description: string;
 }
 
