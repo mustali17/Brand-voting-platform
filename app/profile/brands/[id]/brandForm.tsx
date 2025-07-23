@@ -82,9 +82,9 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
     },
     {
       title: "Brand Logo",
-      description: "Upload your brand logo (optional)",
+      description: "Upload your brand logo *",
       fields: ["logoUrl"],
-      isValid: () => true, // Logo is optional
+      isValid: () => formData.logoUrl && formData.logoUrl.trim().length > 0, // Logo is now required
     },
     {
       title: "Website",
@@ -183,6 +183,16 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
         setError("description", {
           type: "required",
           message: "Description is required",
+        });
+        hasErrors = true;
+      }
+      if (
+        field === "logoUrl" &&
+        (!formData.logoUrl || formData.logoUrl.trim().length === 0)
+      ) {
+        setError("logoUrl", {
+          type: "required",
+          message: "Brand logo is required",
         });
         hasErrors = true;
       }
@@ -365,7 +375,7 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Brand Logo
+                Brand Logo *
               </label>
               <div className="flex flex-col items-center justify-center w-full">
                 {formData.logoUrl ? (
@@ -383,7 +393,13 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
                   </div>
                 ) : (
                   <label className="w-full max-w-sm cursor-pointer">
-                    <div className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed border-gray-300 hover:border-purple-400 rounded-lg hover:bg-purple-50 transition-all">
+                    <div
+                      className={`flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg transition-all ${
+                        errors.logoUrl
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300 hover:border-purple-400 hover:bg-purple-50"
+                      }`}
+                    >
                       {isImageUploading ? (
                         <>
                           <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mb-3"></div>
@@ -398,7 +414,7 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
                             Click to upload logo
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
-                            PNG, JPG up to 5MB
+                            PNG, JPG up to 5MB (Required)
                           </p>
                         </>
                       )}
@@ -413,6 +429,11 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
                   </label>
                 )}
               </div>
+              {errors.logoUrl && (
+                <p className="mt-1 text-sm text-red-600 text-center">
+                  {errors.logoUrl.message}
+                </p>
+              )}
             </div>
           </div>
         );
@@ -559,14 +580,19 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
           {!isLastStep ? (
             <button
               onClick={handleNext}
-              disabled={!isCurrentStepValid}
+              disabled={
+                !isCurrentStepValid || (currentStep === 2 && isImageUploading)
+              }
               style={{
-                backgroundColor: isCurrentStepValid ? "rgb(122, 51, 209)" : "",
+                backgroundColor:
+                  isCurrentStepValid && !(currentStep === 2 && isImageUploading)
+                    ? "rgb(122, 51, 209)"
+                    : "",
               }}
               className={`
                 flex items-center justify-center px-4 py-2 md:px-6 md:py-3 rounded-lg font-semibold transition-all duration-200 text-sm md:text-base min-w-[80px] md:min-w-[100px]
                 ${
-                  isCurrentStepValid
+                  isCurrentStepValid && !(currentStep === 2 && isImageUploading)
                     ? "text-white hover:opacity-90 hover:shadow-lg transform hover:scale-105"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }
@@ -618,24 +644,6 @@ const BrandForm: React.FC<BrandFormProps> = ({ brandData, callBack }) => {
               )}
             </button>
           )}
-        </div>
-
-        {/* Progress Bar */}
-        <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-200">
-          <div className="flex justify-between text-xs md:text-sm font-medium text-gray-700 mb-3">
-            <span>Overall Progress</span>
-            <span>{progressPercent}% Complete</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 md:h-3 overflow-hidden">
-            <div
-              className="h-2 md:h-3 rounded-full transition-all duration-500 ease-out"
-              style={{
-                width: `${progressPercent}%`,
-                background:
-                  "linear-gradient(to right, rgb(122, 51, 209), rgb(34, 197, 94))",
-              }}
-            />
-          </div>
         </div>
       </div>
     </div>
