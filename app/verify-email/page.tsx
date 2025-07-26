@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
+} from '@/components/ui/input-otp';
 import {
   useCreateUserMutation,
   useVerifyOtpMutation,
-} from "@/lib/services/user.service";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+} from '@/lib/services/user.service';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function MobileVerification() {
   //#region External Hook
@@ -26,9 +26,9 @@ export default function MobileVerification() {
   //#endregion
 
   //#region Internal Hook
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState('');
   const [isResending, setIsResending] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   //#endregion
   //#region Internal Function
   const handleResend = () => {
@@ -41,7 +41,7 @@ export default function MobileVerification() {
 
   const handleVerify = async (code: string) => {
     if (code.length === 6) {
-      const signUpData = localStorage.getItem("signUpData");
+      const signUpData = localStorage.getItem('signUpData');
       if (!signUpData) {
         return;
       }
@@ -54,16 +54,16 @@ export default function MobileVerification() {
       }).unwrap();
       if (res.success) {
         // Handle successful verification
-        console.log("Verification successful");
+        console.log('Verification successful');
         await addUser(parsedData).unwrap();
 
-        localStorage.removeItem("signUpData");
+        localStorage.removeItem('signUpData');
         // Redirect to the next page or show a success message
-        router.push("/login");
+        router.push('/login');
       }
       if (res.error) {
         // Handle error
-        console.log("Verification failed", res.error);
+        console.log('Verification failed', res.error);
         setError(res.error);
       }
     }
@@ -71,7 +71,7 @@ export default function MobileVerification() {
   //#endregion
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
+    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4 w-full'>
       <Card className='w-full max-w-md rounded-xl shadow-sm'>
         <CardContent className='pt-6 pb-8 px-8'>
           <div className='flex flex-col items-center space-y-6'>
@@ -117,7 +117,7 @@ export default function MobileVerification() {
 
             <div className='w-full space-y-4'>
               <Button
-                title={"Verify Code"}
+                title={'Verify Code'}
                 className='mt-4 w-full h-12 text-base font-medium rounded-lg bg-black'
                 onClick={() => {
                   handleVerify(code);
@@ -127,13 +127,13 @@ export default function MobileVerification() {
               />
 
               <div className='text-center text-gray-500 text-sm'>
-                {"Didn't receive code?"}{" "}
+                {"Didn't receive code?"}{' '}
                 <button
                   onClick={handleResend}
                   disabled={isResending}
                   className='text-indigo-500 hover:text-indigo-600 font-medium focus:outline-none'
                 >
-                  {isResending ? "Sending..." : "Resend"}
+                  {isResending ? 'Sending...' : 'Resend'}
                 </button>
               </div>
             </div>
