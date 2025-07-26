@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import connect from "@/utils/db";
 import User from "@/models/User";
 import Brand from "@/models/Brand";
+import { RegisterUserSchema } from '@/lib/schemas';
+import OTP from '@/models/Otp';
 
 // Create a new user
 export const POST = async (request: NextRequest) => {
