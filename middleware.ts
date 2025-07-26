@@ -22,6 +22,7 @@ export function middleware(request: NextRequest) {
     '/manifest.json',
     '/terms-and-conditions',
     '/images',
+    '/verify-email',
   ];
 
   const isPublic = publicPaths.some((path) => pathname.startsWith(path));
