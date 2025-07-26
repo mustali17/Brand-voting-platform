@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
     '/login',
     '/register',
     '/api/auth', // next-auth endpoints
+    '/api/user',
     '/_next', // static assets
     '/favicon.ico',
     '/robots.txt',
