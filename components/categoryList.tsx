@@ -47,7 +47,6 @@ export default function CategoryList({
                 onError={(e) => {
                   console.error('Image load error:', e);
                   console.error('Category Image:', category.imageUrl);
-                  e.currentTarget.src = '/images/logo.jpeg'; // Fallback image
                 }}
               />
             </div>
