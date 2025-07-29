@@ -50,7 +50,6 @@ export default function CategoryList({
                     console.error('Image load error:', e);
                     console.error('Category Image:', category.imageUrl);
                   }}
-                  unoptimized={true}
                 />
               )}
             </div>
