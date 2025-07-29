@@ -11,7 +11,6 @@ const nextConfig = {
         hostname: '**', // allows all HTTPS domains
       },
     ],
-    unoptimized: true,
     dangerouslyAllowSVG: true,
   },
   matcher: [
