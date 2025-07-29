@@ -1,11 +1,9 @@
-"use client";
+'use client';
 import {
   CategoryDetailsDto,
   CommonCategoryDto,
-} from "@/utils/models/category.model";
-import Image from "next/image";
-import Link from "next/link";
-import LoadingComponent from "./LoadingComponent";
+} from '@/utils/models/category.model';
+import LoadingComponent from './LoadingComponent';
 
 export default function CategoryList({
   categories,
@@ -40,12 +38,17 @@ export default function CategoryList({
             className='flex flex-col items-center cursor-pointer'
           >
             <div className='rounded-full w-16 h-16 bg-white ring-1 ring-gray-300 p-0.5 overflow-hidden flex items-center justify-center'>
-              <Image
-                src={category.imageUrl || "/placeholder.svg"}
+              <img
+                src={category.imageUrl || '/images/logo.jpeg'}
                 alt={category.name}
                 width={80}
                 height={80}
                 className='h-14 w-14 object-contain transition-transform hover:scale-110'
+                onError={(e) => {
+                  console.error('Image load error:', e);
+                  console.error('Category Image:', category.imageUrl);
+                  e.currentTarget.src = '/images/logo.jpeg'; // Fallback image
+                }}
               />
             </div>
             <span className='text-center text-sm'>{category.name}</span>
