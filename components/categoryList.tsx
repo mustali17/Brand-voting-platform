@@ -4,7 +4,7 @@ import {
   CommonCategoryDto,
 } from '@/utils/models/category.model';
 import LoadingComponent from './LoadingComponent';
-import Image from 'next/image';
+import ImageSkeleton from './ImageSkeleton';
 
 export default function CategoryList({
   categories,
@@ -39,19 +39,17 @@ export default function CategoryList({
             className='flex flex-col items-center cursor-pointer'
           >
             <div className='rounded-full w-16 h-16 bg-white ring-1 ring-gray-300 p-0.5 overflow-hidden flex items-center justify-center'>
-              {category.imageUrl && (
-                <Image
-                  src={category.imageUrl || '/images/logo.jpeg'}
-                  alt={category.name}
-                  width={80}
-                  height={80}
-                  className='h-14 w-14 object-contain transition-transform hover:scale-110'
-                  onError={(e) => {
-                    console.error('Image load error:', e);
-                    console.error('Category Image:', category.imageUrl);
-                  }}
-                />
-              )}
+              <ImageSkeleton
+                src={category.imageUrl || '/images/logo.jpeg'}
+                alt={category.name}
+                width={56}
+                height={56}
+                className='h-14 w-14 object-contain transition-transform hover:scale-110'
+                onError={(e) => {
+                  console.error('Image load error:', e);
+                  console.error('Category Image:', category.imageUrl);
+                }}
+              />
             </div>
             <span className='text-center text-sm'>{category.name}</span>
           </div>

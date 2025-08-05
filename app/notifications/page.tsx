@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import ImageSkeleton from '@/components/ImageSkeleton';
 import React from 'react';
 
 const Notifications = () => {
@@ -7,7 +7,7 @@ const Notifications = () => {
       className='flex flex-col items-center justify-center w-full overflow-hidden'
       style={{ height: '70vh' }}
     >
-      <Image
+      <ImageSkeleton
         src='/images/not-found.svg'
         alt='No Brands Found'
         width={150}

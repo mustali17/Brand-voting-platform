@@ -14,7 +14,7 @@ import {
   useGetBrandListQuery,
   useVerifyUnverifyBrandMutation,
 } from "@/lib/services/brand.service";
-import Image from "next/image";
+import ImageSkeleton from "@/components/ImageSkeleton";
 import { Button } from "@/components/ui/button";
 import LoadingComponent from "@/components/LoadingComponent";
 import toast from "react-hot-toast";
@@ -61,7 +61,7 @@ const Brands = () => {
           {brandList.brands.map((brands) => (
             <TableRow key={brands._id}>
               <TableCell>
-                <Image
+                <ImageSkeleton
                   src={brands.logoUrl}
                   alt={brands.name}
                   width={50}

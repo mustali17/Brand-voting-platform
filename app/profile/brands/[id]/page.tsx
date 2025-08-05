@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import Image from "next/image";
+import ImageSkeleton from "@/components/ImageSkeleton";
 import Link from "next/link";
 import Post from "../../products";
 import { useCallback, useEffect, useState } from "react";
@@ -133,7 +133,7 @@ export default function Brand({ params }: { params: { id: string } }) {
             <div className="h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center">
               {/* Placeholder for brand logo */}
               <div className="h-22 w-22 rounded-full overflow-hidden">
-                <Image
+                <ImageSkeleton
                   src={brand.brand.logoUrl}
                   alt={`${brand.brand.name} logo`}
                   width={80}

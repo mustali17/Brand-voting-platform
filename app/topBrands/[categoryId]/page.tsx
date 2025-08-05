@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ImageSkeleton from "@/components/ImageSkeleton";
 import { useGetTopBrandsBySubCategoryQuery } from "@/lib/services/category.service";
 import { useRouter } from "next/navigation";
 import LoadingComponent from "@/components/LoadingComponent";
@@ -103,7 +103,7 @@ export default function BrandShowcase({
                     >
                       <div className="text-center">
                         <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
-                          <Image
+                          <ImageSkeleton
                             src={data.brands[1].logoUrl || "/placeholder.svg"}
                             alt={`${data.brands[1].name} logo`}
                             width={50}
@@ -135,7 +135,7 @@ export default function BrandShowcase({
                     >
                       <div className="text-center">
                         <div className="w-20 h-20 mx-auto mb-3 bg-white rounded-full flex items-center justify-center">
-                          <Image
+                          <ImageSkeleton
                             src={data.brands[0].logoUrl || "/placeholder.svg"}
                             alt={`${data.brands[0].name} logo`}
                             width={60}
@@ -167,7 +167,7 @@ export default function BrandShowcase({
                     >
                       <div className="text-center">
                         <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
-                          <Image
+                          <ImageSkeleton
                             src={data.brands[2].logoUrl || "/placeholder.svg"}
                             alt={`${data.brands[2].name} logo`}
                             width={50}
@@ -221,7 +221,7 @@ export default function BrandShowcase({
 
                       {/* Brand Logo */}
                       <div className="flex-shrink-0 w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-3 shadow-sm">
-                        <Image
+                        <ImageSkeleton
                           src={brand.logoUrl || "/placeholder.svg"}
                           alt={`${brand.name} logo`}
                           width={40}
@@ -278,7 +278,7 @@ export default function BrandShowcase({
         ) : (
           <div className="flex justify-center py-12 text-gray-500 flex-col items-center bg-white rounded-xl shadow-lg">
             <div className="mb-4">
-              <Image
+              <ImageSkeleton
                 src="/images/not-found.svg"
                 alt="No Brands Found"
                 width={150}

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Upload, X, FileIcon, ImageIcon } from 'lucide-react';
-import Image from 'next/image';
+import ImageSkeleton from '@/components/ImageSkeleton';
 
 interface FileInputProps {
   id: string;
@@ -190,7 +190,7 @@ export function FileInput({
             <div className='flex items-center gap-4'>
               {preview ? (
                 <div className='relative w-16 h-16 overflow-hidden rounded-md'>
-                  <Image
+                  <ImageSkeleton
                     src={preview}
                     alt='File preview'
                     className='object-cover w-full h-full'

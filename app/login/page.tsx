@@ -1,7 +1,7 @@
 'use client';
 import LoadingComponent from '@/components/LoadingComponent';
 import { signIn, useSession } from 'next-auth/react';
-import Image from 'next/image';
+import ImageSkeleton from '@/components/ImageSkeleton';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -197,7 +197,7 @@ const NextLoginPage = () => {
         </div>
         <div className='hidden lg:block lg:w-1/2 bg-gray-100'>
           <div className='flex h-screen items-center justify-center'>
-            <Image
+            <ImageSkeleton
               src='/images/signup.svg'
               alt='Register Illustration'
               className='w-full h-auto p-12'
