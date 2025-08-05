@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useGetUsersQuery } from '@/lib/services/user.service';
-import Image from 'next/image';
+import ImageSkeleton from '@/components/ImageSkeleton';
 
 const Users = () => {
   const { data: userList, isLoading, isError } = useGetUsersQuery();
@@ -39,7 +39,7 @@ const Users = () => {
           {userList.map((user) => (
             <TableRow key={user._id}>
               <TableCell>
-                <Image
+                <ImageSkeleton
                   src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.name}`}
                   alt={user.name}
                   width={50}

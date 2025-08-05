@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import SearchOverlay from './searchOverkay';
-import Image from 'next/image';
+import ImageSkeleton from './ImageSkeleton';
 
 const LeftSideBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);

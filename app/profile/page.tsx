@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { RootState } from '@/lib/store';
 import { LinkIcon, Settings } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+import ImageSkeleton from '@/components/ImageSkeleton';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,7 +62,7 @@ const UserProfile = () => {
             {/* Profile Header */}
             <div className='flex flex-col sm:flex-row items-center justify-center px-4 py-6 gap-4'>
               <div>
-                <Image
+                <ImageSkeleton
                   src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.name}`}
                   alt='Profile picture'
                   width={150}
@@ -126,7 +126,7 @@ const UserProfile = () => {
                       href={`/profile/brands/${brand._id}`}
                       className='flex flex-col items-center gap-2'
                     >
-                      <Image
+                      <ImageSkeleton
                         src={brand.logoUrl}
                         alt='Brand logo'
                         width={100}

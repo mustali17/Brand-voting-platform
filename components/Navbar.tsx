@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { FaBars } from 'react-icons/fa';
 import { FaXmark } from 'react-icons/fa6';
-import Image from 'next/image';
+import ImageSkeleton from './ImageSkeleton';
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
@@ -92,7 +92,7 @@ const Navbar = () => {
             <div className='flex items-center gap-x-6'>
               <Link href='/' className='-m-1.5 p-1.5'>
                 <span className='sr-only'>Your Company</span>
-                <Image
+                <ImageSkeleton
                   width={50}
                   height={50}
                   src='/logo 1.png'

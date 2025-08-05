@@ -8,7 +8,7 @@ import {
 } from '@/lib/services/product.service';
 import type { Product } from '@/utils/models/product.model';
 import { MoreHorizontal, ThumbsUp } from 'lucide-react';
-import Image from 'next/image';
+import ImageSkeleton from '@/components/ImageSkeleton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import LoadingComponent from './LoadingComponent';
@@ -155,7 +155,7 @@ export default function InfiniteScroll() {
         className='flex justify-center py-8 text-black/50 flex-col items-center'
         style={{ height: '70vh' }}
       >
-        <Image
+        <ImageSkeleton
           src='/images/not-found.svg'
           alt='No Brands Found'
           width={150}
@@ -173,15 +173,21 @@ export default function InfiniteScroll() {
         const isExpanded = expandedDescriptions[item._id];
 
         return (
-          <div className='border-b border-gray-300 pb-4' key={item._id}>
-            <div className='flex items-center p-3'>
-              <div className='flex items-center'>
-                <Image
+          <div
+            className='border-b border-gray-300 pb-4 flex flex-col items-center'
+            key={item._id}
+          >
+            <div
+              className='flex items-center p-3 pl-0 w-100'
+              style={{ width: '-webkit-fill-available' }}
+            >
+              <div className='flex gap-3'>
+                <ImageSkeleton
                   src={item.brandId.logoUrl || '/images/post.jpg'}
                   alt='Profile'
-                  width={56}
-                  height={56}
-                  className='rounded-full w-8 h-8 mr-4 cursor-pointer'
+                  width={40}
+                  height={40}
+                  className='rounded-full w-10 h-10 cursor-pointer'
                   onClick={() =>
                     router.push(`profile/brands/${item.brandId._id}`)
                   }
@@ -195,18 +201,15 @@ export default function InfiniteScroll() {
                   </div>
                 </div>
               </div>
-              <button className='ml-auto'>
-                <MoreHorizontal className='h-5 w-5 text-gray-500' />
-              </button>
             </div>
 
             <div className='relative group rounded-lg overflow-hidden'>
-              <Image
+              <ImageSkeleton
                 alt='Post'
                 src={item.imageUrl || '/images/post.jpg'}
                 width={500}
                 height={400}
-                className='w-full max-w-full object-contain h-[400px] cursor-pointer'
+                className='w-full max-w-full object-contain h-[400px] cursor-pointer bg-slate-100 rounded-lg '
                 onClick={(e) => handleDoubleTap(e, item._id)}
               />
 
@@ -242,7 +245,10 @@ export default function InfiniteScroll() {
               </div>
             </div>
 
-            <div className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700'>
+            <div
+              className='flex justify-center mt-2 items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700 w-100'
+              style={{ width: '-webkit-fill-available' }}
+            >
               <div className={`like-button-container`}>
                 {item.hasVoted ? (
                   <ThumbsUp

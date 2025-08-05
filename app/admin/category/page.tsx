@@ -15,7 +15,7 @@ import {
   CategoryDetailsDto,
   CategoryFormDto,
 } from '@/utils/models/category.model';
-import Image from 'next/image';
+import ImageSkeleton from '@/components/ImageSkeleton';
 import React, { useCallback, useState } from 'react';
 interface State {
   isAddOrEditCategory: boolean;
@@ -87,7 +87,7 @@ const Category = () => {
               {categories.map((cat) => (
                 <TableRow key={cat._id}>
                   <TableCell>
-                    <Image
+                    <ImageSkeleton
                       src={cat.categoryImageURL}
                       alt={cat.name}
                       width={50}

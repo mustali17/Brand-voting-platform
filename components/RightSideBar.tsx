@@ -5,7 +5,7 @@ import {
   useUnFollowBrandMutation,
 } from '@/lib/services/brand.service';
 import { UserDto } from '@/utils/models/user.model';
-import Image from 'next/image';
+import ImageSkeleton from './ImageSkeleton';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
@@ -60,9 +60,9 @@ const RightSideBar = ({ user }: { user: UserDto }) => {
         <div key={i} className='flex items-center mb-3'>
           <Link
             href={`/profile/brands/${suggestion._id}`}
-            className='flex items-center flex-1'
+            className='flex items-center flex-1 gap-3'
           >
-            <Image
+            <ImageSkeleton
               src={suggestion?.logoUrl}
               alt={suggestion.name}
               width={44}

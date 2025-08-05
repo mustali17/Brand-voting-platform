@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import Image from "next/image";
+import ImageSkeleton from "./ImageSkeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLazyGetCategoriesQuery } from "@/lib/services/category.service";
@@ -101,11 +101,11 @@ export function CategoriesSlider() {
           >
             <div className='rounded-full p-[2px] bg-gradient-to-tr from-white/50 to-black-600'>
               <div className='rounded-full w-12 h-12 bg-white ring-1 ring-gray-300 p-0.5 overflow-hidden flex items-center justify-center'>
-                <Image
+                <ImageSkeleton
                   src={cat.categoryImageURL || "/placeholder.svg"}
                   alt={`${cat.name}'s`}
-                  width={48}
-                  height={48}
+                  width={40}
+                  height={40}
                   className='w-10 h-10 object-contain' // Adjust w-10 h-10 as needed to give some padding within the circle
                 />
               </div>
